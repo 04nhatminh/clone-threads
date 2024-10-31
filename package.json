@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
-    "watch": "node-sass -w src/public/scss -o src/public/css"
+    "watch": "node-sass -w src/resources/scss/ -o src/public/css/"
   },
   "repository": {
     "type": "git",
