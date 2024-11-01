@@ -1,0 +1,176 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; }
+
+a {
+  text-decoration: none;
+  color: black; }
+
+.login-button {
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  cursor: pointer; }
+
+.login-button:active {
+  scale: 0.95; }
+
+logo > img:hover {
+  scale: 1.1; }
+
+.navbar {
+  width: 4rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed; }
+
+.navbar * {
+  cursor: pointer; }
+
+.navbar img {
+  width: 2rem;
+  height: 2rem;
+  padding: 0.5rem; }
+
+.icons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; }
+
+.icon,
+.more-icon {
+  border-radius: 20%; }
+
+.icon:hover,
+.more-icon:hover {
+  scale: 1.1;
+  background-color: #f1f1f1; }
+
+.main-container {
+  width: 50%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4rem;
+  border-top: 1px solid lightgray; }
+
+.options-container {
+  background-color: white;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(50% - 2rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid lightgray; }
+
+.all-option,
+.following-option {
+  flex-basis: 50%;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 2rem;
+  cursor: pointer; }
+
+.all-option:hover,
+.following-option:hover {
+  background-color: #f1f1f1; }
+
+.question {
+  background-color: white;
+  padding: 0.5rem;
+  color: gray;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray; }
+
+.question > button {
+  flex-basis: 10%;
+  margin-left: auto;
+  margin-right: 0.5rem; }
+
+.post-button {
+  color: black;
+  font-weight: bold;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer; }
+
+.thread {
+  display: flex;
+  border-top: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  padding: 0.5rem; }
+
+.avatar {
+  flex-basis: 10%;
+  display: flex;
+  justify-content: center;
+  padding: 0 0.5rem; }
+
+.avatar > img {
+  cursor: pointer;
+  width: 80%;
+  height: fit-content; }
+
+.right-container {
+  display: flex;
+  flex-direction: column; }
+
+.username-time {
+  display: flex;
+  gap: 1rem; }
+
+.content > p {
+  margin: 0.5rem 0; }
+
+.username {
+  font-weight: bold; }
+
+.time {
+  color: gray; }
+
+.like-comment {
+  height: 1rem;
+  display: flex;
+  gap: 1rem; }
+
+.heart, .comment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem; }
+
+.heart > *, .comment > * {
+  height: 100%;
+  width: fit-content;
+  padding: 0;
+  margin: 0; }
+
+.heart > img, .comment > img {
+  cursor: pointer; }
+
+.heart > p, .comment > p {
+  line-height: 100%; }
