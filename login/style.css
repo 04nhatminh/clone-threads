@@ -1,0 +1,127 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: normal;
+}
+
+body{
+    background-color: #FFFFFF;
+
+}
+
+main{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.threads{
+    width: 430px;
+    padding: 29px;
+    text-align: center;
+}
+
+.logo{
+    width: 85px;
+}
+
+.threads h1{
+    font-size: 16px !important;
+    margin: 0 0 16px;
+    font-weight: 700;
+}
+
+.threads p{
+    font-size:30px;
+    font-weight: 100;
+    margin-bottom: 20px;
+}
+
+.img-logo{
+    width: 16px;
+
+}
+
+.btn{
+    width: 100%;
+    padding: 15px 50px;
+    margin: 50px;
+    border-radius: 10px;
+    border: #99999938;
+    background: #F5F5F5;
+    box-shadow: 0, 0, 1, 1, #99999948;
+    margin: 8px 0;
+
+}
+
+.gray-text{
+    color: rgb(217 217 217);
+}
+
+.btn-threads span{
+    font-size: 15px;
+    margin-left: 10px;
+}
+
+.hr-tem{
+    display: flex;
+    justify-content: center;
+}
+
+div hr{
+    width: 150px;
+    margin-top: 10px;
+    border-color: #ffffff62;
+}
+
+.hr-1{
+    padding-right: 20px;
+}
+
+.hr-2{
+    padding-left: 20px;
+}
+
+input{
+    width: 100%;
+    padding: 15px 50px;
+    border-radius: 10px;
+    border: none;
+    background-color: #F5F5F5;
+    box-shadow: 0, 0, 1, 1, #99999948;
+    outline: none;
+    font-size: 15px;
+    text-align:start;
+    margin-top: 10px;
+    
+}
+
+.btn-for{
+    background-color: rgb(0, 0, 0) !important;
+    color: rgb(102 102 102);
+    font-size: 15px;
+    transition: transform 0.1s ease;
+    margin-top: 15px;
+}
+
+.btn-orther{
+    font-size: 15px;
+    transition: transform 0.1s ease;
+    margin-top: 15px;
+}
+.btn-for:active, .btn-orther:active{
+    transform: scale(0.95);
+}
+
+footer{
+    text-align: center;
+    font-size: 14px;
+    color: rgb(102 102 102);
+    
+}
+
+
