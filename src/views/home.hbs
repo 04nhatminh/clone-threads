@@ -1,64 +1,67 @@
 <body>
-    <button class="fixed top-4 right-4 bg-black text-white text-center font-medium rounded-xl px-4 py-2">Log in</button>
-    
-    <div class="fixed col-span-1 w-10 h-full flex-column gap-4">
-        <a href="/">
-            <logo>
-                <img src="/images/logo.png" alt="Simple Threads">
-            </logo>
-        </a>
+    <button
+        class="fixed top-4 right-4 z-10 bg-black text-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95">Log
+        in</button>
 
-        <div class="icons-container">
-            <div class="icon" id="home-icon">
+    <div class="fixed w-20 h-screen flex flex-col justify-between p-3" id="sidebar">
+        <logo class="z-20 p-4 hover:scale-110">
+            <a href="/">
+                <img src="/images/logo.png" alt="Simple Threads">
+            </a>
+        </logo>
+
+        <div class="flex flex-col gap-4" id="menu">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200" id="home-icon">
                 <a href="/"><img src="/images/home.png" alt="Home"></a>
             </div>
-            <div class="icon" id="search-icon">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="search-icon">
                 <a href="/search"><img src="/images/search.png" alt="Search"></a>
             </div>
-            <div class="icon" id="create-icon">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="create-icon">
                 <img src="/images/create.png" alt="Create">
             </div>
-            <div class="icon" id="heart-icon">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="heart-icon">
                 <img src="/images/heart.png" alt="Follow">
             </div>
-            <div class="icon" id="user-icon">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="user-icon">
                 <img src="/images/user.png" alt="Profile">
             </div>
         </div>
 
-        <div class="more-icon">
+        <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-100">
             <img src="/images/more.png" alt="More">
         </div>
     </div>
 
-    {{!-- <div class="options-container">
-        <div class="all-option">All</div>
-        <div class="following-option">Following</div>
+    <div class="fixed z-10 left-1/2 -translate-x-1/2 w-1/2 flex justify-center gap-4 p-4 bg-white border-b border-gray-300" id="options">
+        <div class="w-1/2 rounded-xl p-4 text-center hover:bg-gray-200 cursor-pointer" id="all">All</div>
+        <div class="w-1/2 rounded-xl p-4 text-center hover:bg-gray-200 cursor-pointer" id="following">Following</div>
     </div>
 
-    <div class="main-container">
-        <div class="question">
-            <div class="avatar">
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-1/2 mt-2 border-l border-r border-gray-300" id="feeds">
+        <div class="p-4 flex place-items-center" id="question">
+            <div class="basis-1/12 min-w-10">
                 <img src="/images/avatar.png" alt="Avatar">
             </div>
-            <p>How are you today?</p>
-            <button class="post-button">Post</button>
+            <span class="text-gray-400 leading-none p-4">How are you today?</span>
+            <button
+                class="absolute right-4 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
         </div>
 
-        <div class="thread">
-            <div class="avatar">
+        <div class="p-4 flex border-t border-gray-300" id="thread">
+            <div class="basis-1/12 min-w-10 bg-red-200" id="thread-avatar">
                 <img src="/images/avatar.png" alt="Avatar">
             </div>
-            <div class="right-container">
-                <div class="username-time">
-                    <div class="username">
+            <div class="basis-11/12 px-4 bg-blue-300">
+                <div class="flex gap-2">
+                    <div class="font-medium">
                         nhatminh.22clc
                     </div>
-                    <div class="time">
+                    <div class="text-gray-300">
                         2h
                     </div>
                 </div>
-                <div class="content">
+                <div>
                     <p>
                         Nhật Minh
                         <br>
@@ -67,161 +70,16 @@
                         Phát triển ứng dụng web
                     </p>
                 </div>
-                <div class="like-comment">
-                    <div class="heart">
-                        <img src="/images/heart.png" alt="">
-                        <p>10</p>
-                    </div>
-                    <div class="comment">
-                        <img src="/images/comment.png" alt="">
-                        <p>1</p>
+                <div class="flex gap-2 place-items-center">
+                        <img class="w-4 h-fit" src="/images/heart.png" alt="">
+                        <span class="leading-none">10</span>
+                        <img class="w-4 h-fit" src="/images/comment.png" alt="">
+                        <span class="leading-none">1</span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="thread">
-            <div class="avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="right-container">
-                <div class="username-time">
-                    <div class="username">
-                        nhatminh.22clc
-                    </div>
-                    <div class="time">
-                        2h
-                    </div>
-                </div>
-                <div class="content">
-                    <p>
-                        Nhật Minh
-                        <br>
-                        22CLC09
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="like-comment">
-                    <div class="heart">
-                        <img src="/images/heart.png" alt="">
-                        <p>10</p>
-                    </div>
-                    <div class="comment">
-                        <img src="/images/comment.png" alt="">
-                        <p>1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="thread">
-            <div class="avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="right-container">
-                <div class="username-time">
-                    <div class="username">
-                        nhatminh.22clc
-                    </div>
-                    <div class="time">
-                        2h
-                    </div>
-                </div>
-                <div class="content">
-                    <p>
-                        Nhật Minh
-                        <br>
-                        22CLC09
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="like-comment">
-                    <div class="heart">
-                        <img src="/images/heart.png" alt="">
-                        <p>10</p>
-                    </div>
-                    <div class="comment">
-                        <img src="/images/comment.png" alt="">
-                        <p>1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="thread">
-            <div class="avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="right-container">
-                <div class="username-time">
-                    <div class="username">
-                        nhatminh.22clc
-                    </div>
-                    <div class="time">
-                        2h
-                    </div>
-                </div>
-                <div class="content">
-                    <p>
-                        Nhật Minh
-                        <br>
-                        22CLC09
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="like-comment">
-                    <div class="heart">
-                        <img src="/images/heart.png" alt="">
-                        <p>10</p>
-                    </div>
-                    <div class="comment">
-                        <img src="/images/comment.png" alt="">
-                        <p>1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="thread">
-            <div class="avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="right-container">
-                <div class="username-time">
-                    <div class="username">
-                        nhatminh.22clc
-                    </div>
-                    <div class="time">
-                        2h
-                    </div>
-                </div>
-                <div class="content">
-                    <p>
-                        Nhật Minh
-                        <br>
-                        22CLC09
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="like-comment">
-                    <div class="heart">
-                        <img src="/images/heart.png" alt="">
-                        <p>10</p>
-                    </div>
-                    <div class="comment">
-                        <img src="/images/comment.png" alt="">
-                        <p>1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="create-screen">
+    {{!-- <div class="create-overlay">
         <div class="create-box">
             <button id="close-create">Cancel</button>
             <div class="create-header">
@@ -232,12 +90,12 @@
 </body>
 
 <script>
-    document.getElementById("create-icon").addEventListener("click", function() {
+    document.getElementById("create-icon").addEventListener("click", function () {
         document.querySelector(".create-screen").style.display = "block";
         document.body.style.overflow = "hidden";
     });
 
-    document.getElementById("close-create").addEventListener("click", function() {
+    document.getElementById("close-create").addEventListener("click", function () {
         document.querySelector(".create-screen").style.display = "none";
         document.body.style.overflow = "auto";
     });
