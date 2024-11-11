@@ -1,63 +1,106 @@
 <body>
-    <button
-        class="fixed top-4 right-4 z-10 bg-black text-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95">Log
-        in</button>
+    <button id="login-button" class="
+        fixed 
+        top-2 
+        right-2
+        md:top-4
+        md:right-4 
+        z-20 
+        bg-black 
+        text-white 
+        text-center 
+        font-medium 
+        rounded-xl 
+        px-4 
+        py-1
+        hover:scale-95
+        ">
+        Login
+    </button>
 
-    <div class="fixed w-20 h-screen flex flex-col justify-between p-3" id="sidebar">
-        <logo class="z-20 p-4 hover:scale-110">
+    <logo id="mobile-logo" class="z-20 p-2 md:hover:scale-110 fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
+        <a href="/">
+            <img class="w-6 h-fit" src="/images/logo.png" alt="Simple Threads">
+        </a>
+    </logo>
+
+    <div id="mobile-more" class="fixed z-20 top-2 left-2 p-2 opacity-50 rounded-xl md:hidden">
+            <img class="w-6 h-fit" src="/images/more.png" alt="More">
+    </div>
+
+    <div id="sidebar" class="
+        fixed 
+        bottom-0
+        z-20
+        bg-white
+        w-full
+        md:w-20
+        h-20
+        md:h-screen 
+        flex 
+        md:flex-col 
+        md:justify-between 
+        p-3
+        ">
+        <logo class="z-20 p-4 md:hover:scale-110 hidden md:block" id="pc-logo">
             <a href="/">
-                <img src="/images/logo.png" alt="Simple Threads">
+                <img class="w-6 h-fit" src="/images/logo.png" alt="Simple Threads">
             </a>
         </logo>
 
-        <div class="flex flex-col gap-4" id="menu">
+        <div class="flex mx-auto md:flex-col gap-4" id="menu">
             <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200" id="home-icon">
-                <a href="/"><img src="/images/home.png" alt="Home"></a>
+                <a href="/"><img class="w-6 h-fit" src="/images/home.png" alt="Home"></a>
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="search-icon">
-                <a href="/search"><img src="/images/search.png" alt="Search"></a>
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100 relative" id="noti-icon">
+                <img class="w-6 h-fit" src="/images/noti.png" alt="Notification">
+                <div class="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-600"></div>
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="create-icon">
-                <img src="/images/create.png" alt="Create">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="create-icon"
+                onclick="createNewThread()">
+                <img class="w-6 h-fit" src="/images/create.png" alt="Create">
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="heart-icon">
-                <img src="/images/heart.png" alt="Follow">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="heart-icon">
+                <img class="w-6 h-fit" src="/images/heart.png" alt="Follow">
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50" id="user-icon">
-                <img src="/images/user.png" alt="Profile">
+            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="user-icon">
+                <img class="w-6 h-fit" src="/images/user.png" alt="Profile">
             </div>
         </div>
 
-        <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-100">
+        <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-100 opacity-50 hover:opacity-100 hidden md:block" id="pc-more">
             <img src="/images/more.png" alt="More">
         </div>
     </div>
 
-    <div class="fixed z-10 left-1/2 -translate-x-1/2 w-1/2 flex justify-center gap-4 p-4 bg-white border-b border-gray-300" id="options">
-        <div class="w-1/2 rounded-xl p-4 text-center hover:bg-gray-200 cursor-pointer" id="all">All</div>
-        <div class="w-1/2 rounded-xl p-4 text-center hover:bg-gray-200 cursor-pointer" id="following">Following</div>
+    <div class="fixed z-10 left-1/2 -translate-x-1/2 w-full md:w-1/2 flex justify-center md:gap-4 md:p-4 pt-14 bg-white border-b border-gray-300"
+        id="options">
+        <div class="w-1/2 md:rounded-xl p-4 text-center font-bold hover:bg-gray-200 cursor-pointer" id="all">All</div>
+        <div class="w-1/2 md:rounded-xl p-4 text-center font-bold hover:bg-gray-200 cursor-pointer" id="following">
+            Following</div>
     </div>
 
-    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-1/2 mt-2 border-l border-r border-gray-300" id="feeds">
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 md:w-1/2 w-full md:mt-2 mt-8 pb-16 border-l border-r border-gray-300" id="feeds">
         <div class="p-4 flex place-items-center" id="question">
             <div class="basis-1/12 min-w-10">
                 <img src="/images/avatar.png" alt="Avatar">
             </div>
-            <span class="text-gray-400 leading-none p-4">How are you today?</span>
+            <span class="text-gray-400 leading-none p-4" onclick="createNewThread()">How are you today?</span>
             <button
-                class="absolute right-4 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
+                class="absolute right-4 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none"
+                onclick="createNewThread()">Post</button>
         </div>
 
-        <div class="p-4 flex border-t border-gray-300" id="thread">
-            <div class="basis-1/12 min-w-10 bg-red-200" id="thread-avatar">
+        <div class="p-4 flex border-t border-gray-300" id="thread1">
+            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
                 <img src="/images/avatar.png" alt="Avatar">
             </div>
-            <div class="basis-11/12 px-4 bg-blue-300">
+            <div class="basis-11/12 px-4 bg-white">
                 <div class="flex gap-2">
                     <div class="font-medium">
                         nhatminh.22clc
                     </div>
-                    <div class="text-gray-300">
+                    <div class="text-gray-400">
                         2h
                     </div>
                 </div>
@@ -70,34 +113,129 @@
                         Phát triển ứng dụng web
                     </p>
                 </div>
-                <div class="flex gap-2 place-items-center">
-                        <img class="w-4 h-fit" src="/images/heart.png" alt="">
-                        <span class="leading-none">10</span>
-                        <img class="w-4 h-fit" src="/images/comment.png" alt="">
-                        <span class="leading-none">1</span>
-                    </div>
+                <div class="flex gap-1 place-items-center py-2">
+                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
+                    <span class="leading-none">10</span>
+                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
+                    <span class="leading-none">1</span>
                 </div>
             </div>
         </div>
-    {{!-- <div class="create-overlay">
-        <div class="create-box">
-            <button id="close-create">Cancel</button>
-            <div class="create-header">
-                <p>New thread</p>
+
+        <div class="p-4 flex border-t border-gray-300" id="thread2">
+            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                <img src="/images/avatar.png" alt="Avatar">
+            </div>
+            <div class="basis-11/12 px-4 bg-white">
+                <div class="flex gap-2">
+                    <div class="font-medium">
+                        vanminh.22clc
+                    </div>
+                    <div class="text-gray-400">
+                        5h
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        Văn Minh
+                        <br>
+                        22CLC01
+                        <br>
+                        Phát triển ứng dụng web
+                    </p>
+                </div>
+                <div class="flex gap-1 place-items-center py-2">
+                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
+                    <span class="leading-none">10</span>
+                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
+                    <span class="leading-none">1</span>
+                </div>
             </div>
         </div>
-    </div> --}}
+
+        <div class="p-4 flex border-t border-gray-300" id="thread3">
+            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                <img src="/images/avatar.png" alt="Avatar">
+            </div>
+            <div class="basis-11/12 px-4 bg-white">
+                <div class="flex gap-2">
+                    <div class="font-medium">
+                        thanhnam.22clc
+                    </div>
+                    <div class="text-gray-400">
+                        1d
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        Thanh Nam
+                        <br>
+                        22CLC10
+                        <br>
+                        Phát triển ứng dụng web
+                    </p>
+                </div>
+                <div class="flex gap-1 place-items-center py-2">
+                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
+                    <span class="leading-none">10</span>
+                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
+                    <span class="leading-none">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-black bg-opacity-80 w-screen h-screen fixed z-20 justify-center place-items-center hidden" id="overlay">
+        <div class="w-full md:w-1/2 h-full md:h-1/2 md:max-h-2/3 bg-white md:rounded-xl relative" id="create-container">
+            <div class="text-center font-bold p-4 border-b border-gray-300 relative">New thread
+                <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate()">Cancel</button>
+            </div>
+
+            <div class="p-4 flex h-3/4">
+                <div class="basis-1/12 min-w-10 bg-white">
+                    <img src="/images/avatar.png" alt="Avatar">
+                </div>
+
+                <div class="basis-11/12 pl-4 bg-white flex flex-col">
+                    <div class="font-medium">
+                        nhatminh.22clc
+                    </div>
+                    <textarea name="content" class="leading-5 outline-none resize-none" id="content"
+                        placeholder="What's new?" rows="1"></textarea>
+                    <img class="max-w-2/3 h-fit" src="" alt="" id="attach-image">
+                    <img class="max-w-4 h-fit mt-2 cursor-pointer" src="/images/image.png" alt="">
+                </div>
+            </div>
+
+            <button
+                class="absolute right-4 bottom-2 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
+        </div>
+    </div>
 </body>
 
 <script>
-    document.getElementById("create-icon").addEventListener("click", function () {
-        document.querySelector(".create-screen").style.display = "block";
-        document.body.style.overflow = "hidden";
+    // Create new thread + close
+    function createNewThread() {
+        document.getElementById('overlay').classList.remove('hidden');
+        document.getElementById('overlay').classList.add('flex');
+    }
+
+    function exitCreate() {
+        document.getElementById('overlay').classList.remove('flex');
+        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('content').value = '';
+    }
+
+    document.getElementById('overlay').addEventListener('click', function (e) {
+        const createContainer = document.getElementById('create-container');
+        if (!createContainer.contains(e.target)) {
+            exitCreate();
+        }
     });
 
-    document.getElementById("close-create").addEventListener("click", function () {
-        document.querySelector(".create-screen").style.display = "none";
-        document.body.style.overflow = "auto";
+    document.getElementById('content').addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
     });
 </script>
 
