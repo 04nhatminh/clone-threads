@@ -1,242 +1,495 @@
-<body>
-    <button id="login-button" class="
-        fixed 
-        top-2 
-        right-2
-        md:top-4
-        md:right-4 
-        z-20 
-        bg-black 
-        text-white 
-        text-center 
-        font-medium 
-        rounded-xl 
-        px-4 
-        py-1
-        hover:scale-95
-        ">
-        Login
-    </button>
-
-    <logo id="mobile-logo" class="z-20 p-2 md:hover:scale-110 fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
+<body class="md:bg-[#fafafa] h-screen flex flex-col overflow-hidden">
+    {{!-- Login button --}}
+    <a href="/login">
+        <button id="login-button"
+            class="fixed top-4 right-4 z-20 bg-black text-white text-center font-medium rounded-xl leading-none px-4 py-2 hover:scale-95">
+            Log in
+        </button>
+    </a>
+    {{!-- Mobile logo --}}
+    <div id="mobile-logo" class="z-20 p-2 md fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
         <a href="/">
-            <img class="w-6 h-fit" src="/images/logo.png" alt="Simple Threads">
+            <i class="fa-brands fa-threads fa-2xl"></i>
         </a>
-    </logo>
-
-    <div id="mobile-more" class="fixed z-20 top-2 left-2 p-2 opacity-50 rounded-xl md:hidden">
-            <img class="w-6 h-fit" src="/images/more.png" alt="More">
+    </div>
+    {{!-- More button Mobile --}}
+    <div id="mobile-more"
+        class="fixed z-20 top-2 left-2 p-2 opacity-40 hover:opacity-100 cursor-pointer rounded-xl md:hidden">
+        <i class="fa-solid fa-bars" onclick="showLogOutMobile()"></i>
     </div>
 
-    <div id="sidebar" class="
-        fixed 
-        bottom-0
-        z-20
-        bg-white
-        w-full
-        md:w-20
-        h-20
-        md:h-screen 
-        flex 
-        md:flex-col 
-        md:justify-between 
-        p-3
-        ">
-        <logo class="z-20 p-4 md:hover:scale-110 hidden md:block" id="pc-logo">
+    {{!-- Side bar --}}
+    <nav
+        class="fixed bottom-0 z-20 w-full md:w-20 h-20 md:h-screen flex md:flex-col md:justify-between md:bg-[#fafafa] bg-[#ffffff] text-center">
+        <div class="z-20 p-4 hidden md:block hover:scale-110 transition ease-in-out duration-200" id="pc-logo">
             <a href="/">
-                <img class="w-6 h-fit" src="/images/logo.png" alt="Simple Threads">
+                <i class="fa-brands fa-threads fa-2xl"></i>
             </a>
-        </logo>
+        </div>
 
-        <div class="flex mx-auto md:flex-col gap-4" id="menu">
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200" id="home-icon">
-                <a href="/"><img class="w-6 h-fit" src="/images/home.png" alt="Home"></a>
-            </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100 relative" id="noti-icon">
-                <img class="w-6 h-fit" src="/images/noti.png" alt="Notification">
-                <div class="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-600"></div>
-            </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="create-icon"
+        <div class="flex md:flex-col w-full justify-around items-center gap-2 md:gap-4">
+            <a href="/">
+                <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] transition ease-in-out duration-200">
+                    <i class="fa-solid fa-house fa-xl text-black"></i>
+                </div>
+            </a>
+
+            <a href="/search">
+                <div
+                    class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200">
+                    <i class="fa-solid fa-magnifying-glass fa-xl text-[#b1b1b1]"></i>
+                </div>
+            </a>
+
+            <div class="p-4 md:px-5 md:py-3 rounded-2xl bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200 hidden md:block"
                 onclick="createNewThread()">
-                <img class="w-6 h-fit" src="/images/create.png" alt="Create">
+                <i class="fa-solid fa-plus fa-xl text-[#b1b1b1] hover:text-black"></i>
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="heart-icon">
-                <img class="w-6 h-fit" src="/images/heart.png" alt="Follow">
+
+            <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200 md:hidden"
+                onclick="createNewThread()">
+                <i class="fa-regular fa-pen-to-square fa-xl text-[#b1b1b1]"></i>
             </div>
-            <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-200 opacity-50 hover:opacity-100" id="user-icon">
-                <img class="w-6 h-fit" src="/images/user.png" alt="Profile">
-            </div>
+
+            <a href="/notifications">
+                <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] transition ease-in-out duration-200">
+                    <i class="fa-regular fa-bell fa-xl text-[#b1b1b1]"></i>
+                </div>
+            </a>
+
+            <a href="./profile">
+                <div
+                    class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200">
+                    <i class="fa-regular fa-user fa-xl text-[#b1b1b1]"></i>
+                </div>
+            </a>
         </div>
 
-        <div class="p-4 rounded-xl hover:scale-110 hover:bg-gray-100 opacity-50 hover:opacity-100 hidden md:block" id="pc-more">
-            <img src="/images/more.png" alt="More">
+        <div id="more" class="mb-9 rounded-2xl cursor-pointer hidden md:block transition ease-in-out duration-200">
+            <i class="fa-solid fa-bars fa-xl text-[#b1b1b1] hover:text-black" onclick="showLogOutPC()"></i>
+        </div>
+    </nav>
+    {{!-- All/Following Options --}}
+    <div id="options"
+        class="fixed z-10 top-0 left-1/2 -translate-x-1/2 w-full md:w-1/2 flex justify-center md:gap-4 md:py-1 pt-14 md:bg-[#fafafa] bg-white">
+        <div class="w-1/2 md:rounded-xl py-4 text-center font-medium cursor-pointer border-b-2 border-black md:border-none md:hover:bg-gray-200"
+            id="all">All</div>
+        <div class="w-1/2 md:rounded-xl py-4 text-center font-medium cursor-pointer border-b-2 border-black opacity-40 md:border-none md:hover:bg-gray-200"
+            id="following">Following</div>
+    </div>
+
+    <div class="fixed bg-[#ffffff] border-[#d9d9d9] bottom-6 right-6 md:block hidden px-8 py-6 rounded-2xl border shadow-lg hover:scale-110 transition ease-in-out duration-200 cursor-pointer z-10"
+        onclick="createNewThread()">
+        <i class="fa-solid fa-plus fa-xl"></i>
+    </div>
+    {{!-- Main container --}}
+    <div class="main-container mt-10 flex justify-center h-screen overflow-hidden">
+        <div id="feeds"
+            class="shadow-lg bg-[#ffffff] w-full h-full md:w-[640px] border-[#d6d6d6] border rounded-t-3xl overflow-y-auto md:mt-6 mt-16 pb-36 md:pb-10"
+            style="scrollbar-width: none;">
+            <div class="p-4 md:flex items-center hidden relative" id="question">
+                <div class="basis-1/12 min-w-10">
+                    <a href="/profile"><img class="rounded-full" src="./images/avatar.jpg" alt="Avatar"></a>
+                </div>
+                <span class="opacity-40 leading-none p-4" onclick="createNewThread()">How are you today?</span>
+                <button
+                    class="absolute right-4 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none"
+                    onclick="createNewThread()">Post</button>
+            </div>
+
+            <div class="p-4 pb-1 flex border-t border-gray-300" id="thread1">
+                <a href=""></a>
+                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="./images/avatar.jpg"
+                            alt="Avatar"></a>
+                </div>
+                <div class="basis-11/12 px-4 bg-white">
+                    <div class="flex gap-2">
+                        <div class="font-medium hover:underline">
+                            <a href="./other-profile.html?userId=1">nhatminh.22clc</a>
+                        </div>
+                        <div class="opacity-40">
+                            2 minutes ago
+                        </div>
+                    </div>
+                    <a href="./post.html">
+                        <p>
+                            Nhật Minh
+                            <br>
+                            22127269
+                            <br>
+                            Phát triển ứng dụng web
+                        </p>
+                    </a>
+                    <div class="flex gap-2 place-items-center">
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>10</span>
+                        </div>
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-comment cursor-pointer"></i>
+                            <span class="leading-none">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pb-1 flex border-t border-gray-300" id="thread2">
+                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                    <a href="./other-profile.html?userId=2"><img class="rounded-full" src="./images/avatar.jpg"
+                            alt="Avatar"></a>
+                </div>
+                <div class="basis-11/12 px-4 bg-white">
+                    <div class="flex gap-2">
+                        <div class="font-medium hover:underline">
+                            <a href="./other-profile.html?userId=2">vanminh.22clc</a>
+                        </div>
+                        <div class="opacity-40">
+                            5 minutes ago
+                        </div>
+                    </div>
+                    <a href="./post.html">
+                        <p>
+                            Văn Minh
+                            <br>
+                            22127272
+                            <br>
+                            Phát triển ứng dụng web
+                        </p>
+                    </a>
+                    <div class="flex gap-2 place-items-center">
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>10</span>
+                        </div>
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-comment cursor-pointer"></i>
+                            <span class="leading-none">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pb-1 flex border-t border-gray-300" id="thread3">
+                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                    <a href="./other-profile.html?userId=3"><img class="rounded-full" src="./images/avatar.jpg"
+                            alt="Avatar"></a>
+                </div>
+                <div class="basis-11/12 px-4 bg-white">
+                    <div class="flex gap-2">
+                        <div class="font-medium hover:underline">
+                            <a href="./other-profile.html?userId=3">thanhnam.22clc</a>
+                        </div>
+                        <div class="opacity-40">
+                            1 hour ago
+                        </div>
+                    </div>
+                    <a href="./post.html">
+                        <p>
+                            Thanh Nam
+                            <br>
+                            22127286
+                            <br>
+                            Phát triển ứng dụng web
+                        </p>
+                    </a>
+                    <div class="flex gap-2 place-items-center">
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>10</span>
+                        </div>
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-comment cursor-pointer"></i>
+                            <span class="leading-none">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 pb-1 flex border-t border-gray-300" id="thread4">
+                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                    <a href="./other-profile.html?userId=4"></a><img class="rounded-full" src="./images/avatar.jpg"
+                        alt="Avatar">
+                </div>
+                <div class="basis-11/12 px-4 bg-white">
+                    <div class="flex gap-2">
+                        <div class="font-medium hover:underline">
+                            <a href="./other-profile.html?userId=4">_trustmebro_</a>
+                        </div>
+                        <div class="opacity-40">
+                            1 day ago
+                        </div>
+                    </div>
+                    <a href="./post.html">
+                        <p>
+                            Hellooooo.
+                            My name is ABC.
+                        </p>
+                    </a>
+                    <div class="flex gap-2 place-items-center">
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>10</span>
+                        </div>
+                        <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
+                            <i class="fa-regular fa-comment cursor-pointer"></i>
+                            <span class="leading-none">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="fixed z-10 left-1/2 -translate-x-1/2 w-full md:w-1/2 flex justify-center md:gap-4 md:p-4 pt-14 bg-white border-b border-gray-300"
-        id="options">
-        <div class="w-1/2 md:rounded-xl p-4 text-center font-bold hover:bg-gray-200 cursor-pointer" id="all">All</div>
-        <div class="w-1/2 md:rounded-xl p-4 text-center font-bold hover:bg-gray-200 cursor-pointer" id="following">
-            Following</div>
-    </div>
-
-    <div class="absolute top-20 left-1/2 -translate-x-1/2 md:w-1/2 w-full md:mt-2 mt-8 pb-16 border-l border-r border-gray-300" id="feeds">
-        <div class="p-4 flex place-items-center" id="question">
-            <div class="basis-1/12 min-w-10">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <span class="text-gray-400 leading-none p-4" onclick="createNewThread()">How are you today?</span>
-            <button
-                class="absolute right-4 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none"
-                onclick="createNewThread()">Post</button>
-        </div>
-
-        <div class="p-4 flex border-t border-gray-300" id="thread1">
-            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="basis-11/12 px-4 bg-white">
-                <div class="flex gap-2">
-                    <div class="font-medium">
-                        nhatminh.22clc
-                    </div>
-                    <div class="text-gray-400">
-                        2h
-                    </div>
-                </div>
-                <div>
-                    <p>
-                        Nhật Minh
-                        <br>
-                        22CLC09
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="flex gap-1 place-items-center py-2">
-                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
-                    <span class="leading-none">10</span>
-                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
-                    <span class="leading-none">1</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 flex border-t border-gray-300" id="thread2">
-            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="basis-11/12 px-4 bg-white">
-                <div class="flex gap-2">
-                    <div class="font-medium">
-                        vanminh.22clc
-                    </div>
-                    <div class="text-gray-400">
-                        5h
-                    </div>
-                </div>
-                <div>
-                    <p>
-                        Văn Minh
-                        <br>
-                        22CLC01
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="flex gap-1 place-items-center py-2">
-                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
-                    <span class="leading-none">10</span>
-                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
-                    <span class="leading-none">1</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 flex border-t border-gray-300" id="thread3">
-            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                <img src="/images/avatar.png" alt="Avatar">
-            </div>
-            <div class="basis-11/12 px-4 bg-white">
-                <div class="flex gap-2">
-                    <div class="font-medium">
-                        thanhnam.22clc
-                    </div>
-                    <div class="text-gray-400">
-                        1d
-                    </div>
-                </div>
-                <div>
-                    <p>
-                        Thanh Nam
-                        <br>
-                        22CLC10
-                        <br>
-                        Phát triển ứng dụng web
-                    </p>
-                </div>
-                <div class="flex gap-1 place-items-center py-2">
-                    <img class="w-4 h-fit cursor-pointer" src="/images/heart.png" alt="">
-                    <span class="leading-none">10</span>
-                    <img class="w-4 h-fit cursor-pointer ml-2" src="/images/comment.png" alt="">
-                    <span class="leading-none">1</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-black bg-opacity-80 w-screen h-screen fixed z-20 justify-center place-items-center hidden" id="overlay">
-        <div class="w-full md:w-1/2 h-full md:h-1/2 md:max-h-2/3 bg-white md:rounded-xl relative" id="create-container">
-            <div class="text-center font-bold p-4 border-b border-gray-300 relative">New thread
+    {{!-- New Thread Overlay --}}
+    <div id="new-thread-overlay"
+        class="bg-[#030303] bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
+        <div class="w-full md:max-w-[600px] h-full md:max-h-[60vh] bg-white md:rounded-xl relative overflow-hidden flex flex-col"
+            id="create-container">
+            {{!-- Header --}}
+            <div class="text-center font-semibold p-4 border-b border-gray-300 relative">
+                New thread
                 <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate()">Cancel</button>
+            </div>
+
+            <form action="/" method="POST" class="h-full">
+                {{!-- Scrollable content area --}}
+                <div class="overflow-y-auto scrollable flex-1">
+                    <div class="p-4 flex">
+                        <div class="basis-1/12 min-w-10 bg-white">
+                            <img class="rounded-full" src="./images/avatar.jpg" alt="Avatar">
+                        </div>
+                        <div class="basis-11/12 pl-4 bg-white flex flex-col">
+                            <div class="font-medium">nhatminh.22clc</div>
+                            <textarea name="content" class="post-input leading-5 outline-none resize-none pt-1"
+                                id="content" placeholder="What's new?" rows="1"
+                                style="scrollbar-width: none;"></textarea>
+                            <input type="file" accept="image/*" id="image-upload" class="hidden" name="image"
+                                onchange="previewImage(event)">
+                            <label for="image-upload" class="cursor-pointer">
+                                <i class="fa-regular fa-image mt-2"></i>
+                            </label>
+                            <img class="max-w-2/3 h-fit mt-2 hidden" src="" alt="" id="attach-image">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {{!-- Footer --}}
+            <div class="p-4 bg-white">
+                <button id="post-button" onclick="submitNewThread()"
+                    class="float-right font-medium rounded-full px-4 py-3 bg-transparent border border-[#d9d9d9] text-gray-400 cursor-not-allowed leading-none">Post</button>
+            </div>
+        </div>
+    </div>
+
+    {{!-- Comment Overlay --}}
+    <div id="comment-overlay"
+        class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
+        <div class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative"
+            id="comment-container">
+            <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
+                <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
             </div>
 
             <div class="p-4 flex h-3/4">
                 <div class="basis-1/12 min-w-10 bg-white">
-                    <img src="/images/avatar.png" alt="Avatar">
+                    <img class="rounded-full" src="./images/avatar.jpg" alt="Avatar">
                 </div>
 
                 <div class="basis-11/12 pl-4 bg-white flex flex-col">
                     <div class="font-medium">
                         nhatminh.22clc
                     </div>
-                    <textarea name="content" class="leading-5 outline-none resize-none" id="content"
-                        placeholder="What's new?" rows="1"></textarea>
-                    <img class="max-w-2/3 h-fit" src="" alt="" id="attach-image">
-                    <img class="max-w-4 h-fit mt-2 cursor-pointer" src="/images/image.png" alt="">
+                    <textarea name="comment" class="leading-5 outline-none resize-none" id="comment"
+                        placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
                 </div>
             </div>
 
             <button
-                class="absolute right-4 bottom-2 bg-white text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
+                class="absolute right-6 bottom-4 bg-black text-white text-center font-medium rounded-xl px-6 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
         </div>
     </div>
-</body>
 
-<script>
-    // Create new thread + close
-    function createNewThread() {
-        document.getElementById('overlay').classList.remove('hidden');
-        document.getElementById('overlay').classList.add('flex');
-    }
+    <script>
+        // Create new thread + close
+        const postInput = document.querySelector('.post-input');
+        const postButton = document.getElementById('post-button');
 
-    function exitCreate() {
-        document.getElementById('overlay').classList.remove('flex');
-        document.getElementById('overlay').classList.add('hidden');
-        document.getElementById('content').value = '';
-    }
-
-    document.getElementById('overlay').addEventListener('click', function (e) {
-        const createContainer = document.getElementById('create-container');
-        if (!createContainer.contains(e.target)) {
-            exitCreate();
+        // Post button state
+        if (postInput && postButton) {
+            postInput.addEventListener('input', () => {
+                if (postInput.value.trim()) {
+                    postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                    postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
+                } else {
+                    postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                    postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
+                }
+            });
         }
-    });
 
-    document.getElementById('content').addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
-    });
-</script>
+        const createNewThread = () => {
+            document.getElementById('new-thread-overlay').classList.remove('hidden');
+            document.getElementById('new-thread-overlay').classList.add('flex');
+        }
+
+        const exitCreate = () => {
+            document.getElementById('new-thread-overlay').classList.add('hidden');
+
+            const textarea = document.getElementById('content');
+            textarea.value = '';
+            textarea.style.height = 'auto';
+
+            const image = document.getElementById('attach-image');
+            image.src = '';
+            image.classList.add('hidden');
+
+            const fileInput = document.getElementById('image-upload');
+            fileInput.value = '';
+
+            const postButton = document.getElementById('post-button');
+            postButton.classList.add('text-gray-400', 'cursor-not-allowed');
+            postButton.classList.remove('text-blue-500', 'cursor-pointer');
+
+            if (image.src.startsWith('blob:')) {
+                URL.revokeObjectURL(image.src);
+            }
+        }
+
+        document.getElementById('new-thread-overlay').addEventListener('click', (e) => {
+            const createContainer = document.getElementById('create-container');
+            if (!createContainer.contains(e.target)) {
+                exitCreate();
+            }
+        });
+
+        const previewImage = (event) => {
+            const image = document.getElementById('attach-image');
+
+            image.src = URL.createObjectURL(event.target.files[0]);
+            image.classList.remove('hidden');
+
+            image.onload = () => {
+                URL.revokeObjectURL(image.src);
+            };
+        }
+
+        document.getElementById('content').addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        const submitNewThread = () => {
+            const content = document.getElementById('content').value;
+            if (content.trim()) {
+                // Submit form
+                const form = document.querySelector('form');
+                form.submit();
+            }
+        }
+
+        // Change mode all - following
+        document.getElementById('all').addEventListener('click', function () {
+            document.getElementById('all').classList.remove('opacity-40');
+            document.getElementById('all').classList.add('opacity-100');
+            document.getElementById('following').classList.remove('opacity-100');
+            document.getElementById('following').classList.add('opacity-40');
+        });
+        document.getElementById('following').addEventListener('click', function () {
+            document.getElementById('following').classList.remove('opacity-40');
+            document.getElementById('following').classList.add('opacity-100');
+            document.getElementById('all').classList.remove('opacity-100');
+            document.getElementById('all').classList.add('opacity-40');
+        });
+
+        // React + Comment
+        document.querySelectorAll('.fa-heart').forEach(item => {
+            item.parentElement.addEventListener('click', function () {
+                if (item.classList.contains('fa-regular')) {
+                    item.classList.remove('fa-regular');
+                    item.classList.add('fa-solid');
+                    item.classList.add('text-red-500');
+                    item.parentElement.querySelector('span').innerText = parseInt(item.parentElement.querySelector('span').innerText) + 1;
+                    item.parentElement.querySelector('span').classList.add('text-red-500');
+                } else {
+                    item.classList.remove('text-red-500');
+                    item.classList.remove('fa-solid');
+                    item.classList.add('fa-regular');
+                    item.parentElement.querySelector('span').innerText = parseInt(item.parentElement.querySelector('span').innerText) - 1;
+                    item.parentElement.querySelector('span').classList.remove('text-red-500');
+                }
+            });
+        });
+
+        function exitComment() {
+            document.getElementById('comment-overlay').classList.remove('flex');
+            document.getElementById('comment-overlay').classList.add('hidden');
+            document.getElementById('comment').value = '';
+        }
+
+        document.querySelectorAll('.fa-comment').forEach(item => {
+            item.parentElement.addEventListener('click', function () {
+                document.getElementById('comment-overlay').classList.remove('hidden');
+                document.getElementById('comment-overlay').classList.add('flex');
+            });
+        });
+
+        document.getElementById('comment-overlay').addEventListener('click', function (e) {
+            const commentContainer = document.getElementById('comment-container');
+            if (!commentContainer.contains(e.target)) {
+                exitComment();
+            }
+        });
+
+        // Logout
+        function showLogOutPC() {
+            document.querySelectorAll('.logout-popup').forEach(popup => popup.remove());
+
+            const popup = document.createElement('div');
+            popup.classList.add('logout-popup', 'absolute', 'z-20', 'bg-white', 'border', 'rounded-xl', 'shadow-lg', 'p-2');
+            popup.style.top = `${document.getElementById('more').getBoundingClientRect().top - popup.offsetHeight - 20}px`;
+            popup.style.left = `${document.getElementById('more').getBoundingClientRect().left + document.getElementById('more').offsetWidth}px`;
+
+            const logoutButton = document.createElement('button');
+            logoutButton.textContent = 'Log out';
+            logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]');
+            logoutButton.onclick = function () {
+                window.location.href = '/login';
+            };
+
+            popup.appendChild(logoutButton);
+            document.body.appendChild(popup);
+
+            document.addEventListener('click', function (e) {
+                if (!popup.contains(e.target) && !document.getElementById('more').contains(e.target)) {
+                    popup.remove();
+                }
+            });
+        }
+
+        function showLogOutMobile() {
+            document.querySelectorAll('.logout-popup').forEach(popup => popup.remove());
+
+            const popup = document.createElement('div');
+            popup.classList.add('logout-popup', 'absolute', 'top-12', 'left-0', 'z-50', 'bg-white', 'border', 'rounded-xl', 'shadow-lg', 'p-2');
+
+            const logoutButton = document.createElement('button');
+            logoutButton.textContent = 'Log out';
+            logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]');
+            logoutButton.onclick = function () {
+                window.location.href = './login.html';
+            };
+
+            popup.appendChild(logoutButton);
+            document.body.appendChild(popup);
+
+            document.addEventListener('click', function (e) {
+                if (!popup.contains(e.target) && !document.getElementById('mobile-more').contains(e.target)) {
+                    popup.remove();
+                }
+            });
+        }
+    </script>
+</body>
 
 </html>
