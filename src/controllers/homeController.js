@@ -1,12 +1,16 @@
 class homeController {
     renderHome(req, res) {
-        res.locals.title = 'Simple Threads';
-        res.render('home');
+        res.render("home", {
+            title: "Home • Threads",
+            isHome: true,
+        });
     }
 
     renderNotification(req, res) {
-        res.locals.title = 'Notifications';
-        res.render('noti');
+        res.render('noti', {
+            title: 'Notifications',
+            isNoti: true,
+        });
     }
 }
 
