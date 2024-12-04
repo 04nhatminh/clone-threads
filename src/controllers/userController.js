@@ -1,4 +1,4 @@
-class userController {
+class koginController {
     logIn(req, res) {
         res.render('login');
     }
