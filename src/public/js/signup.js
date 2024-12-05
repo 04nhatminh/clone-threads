@@ -50,6 +50,6 @@ function process(e){
     {
         return;
     }
-    window.location.href = './signupStep2.html';
+    window.location.href = '/signup2';
     return false;
 }

@@ -21,7 +21,7 @@ document.querySelectorAll('.form-control').forEach(input => {
 
 function process(e){
     e.preventDefault();
-    window.location.href = './index.html';
+    window.location.href = '/';
     return false;
 }
 

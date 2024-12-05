@@ -1,6 +1,6 @@
 <div class="flex flex-col items-center justify-center flex-grow min-h-screen bg-white">
     <!-- Logo -->
-    <a href="./index.html"><i class="fa-brands fa-threads fa-3x"></i></a>
+    <a href="/"><i class="fa-brands fa-threads fa-3x"></i></a>
     <div class="text-center w-full max-w-[386px] sm-custom:max-w-[418px] p-6 gap-0 mb-2">
         <!-- Heading -->
         <h1 class="mb-4 text-xl font-bold">Log in</h1>
@@ -33,17 +33,15 @@
             </div>
 
             <!-- Submit Button -->
-            <!-- Web tĩnh nên tạm thời sử dụng type = button
-                    và dùng onclick điều hướng đến trang chủ, coi như đã đăng nhập -->
             <button id="login-button" type="button"
                 class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
-                onclick="window.location.href='./index.html'">
+                onsubmit="">
                 Log in
             </button>
         </form>
 
         <div class="my-2 text-center ">
-            <a href="./forgotPassword.html" class="opacity-40"><small>Forgot password?</small></a>
+            <a href="/forgot-password" class="opacity-40"><small>Forgot password?</small></a>
         </div>
 
         <!-- Or divider -->
@@ -58,7 +56,7 @@
         <button 
             type="button" 
             class="w-full p-4 mb-2 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-100"
-            onclick="window.location.href='./index.html'">
+            onclick="window.location.href='#'">
             <i class="fa-brands fa-google fa-xl me-2"></i>
             Continue with Google
         </button>
@@ -67,7 +65,7 @@
         <!-- Signup Redirect -->
         <button id="signup-button" type="button"
                 class="w-full p-4 font-medium text-white bg-black rounded-2xl"
-                onclick="window.location.href='./signup.html'">
+                onclick="window.location.href='/signup'">
                 Sign up
         </button>
     </div>

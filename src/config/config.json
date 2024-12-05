@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "postgres",
-    "password": "",
-    "database": "threads",
+    "password": "12345",
+    "database": "wad",
     "host": "127.0.0.1",
     "dialect": "postgres",
     "port": 5432
