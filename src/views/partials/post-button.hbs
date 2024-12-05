@@ -5,10 +5,12 @@
 </div>
 
 <!-- New Thread Overlay -->
+{{#with currentUser}}
 <div id="new-thread-overlay"
     class="bg-vampire-black dark:bg-eerie-black dark:bg-opacity-10 bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
-    <div class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+    <form action="/" method="POST" class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
         id="create-container">
+        <input type="hidden" name="userId" value="{{id}}">
         <!-- Header -->
         <div class="text-center font-semibold p-4 border-b border-gray-300 relative">
             New thread
@@ -19,10 +21,10 @@
         <div class="overflow-y-auto scrollable flex-1" id="scrollable-content">
             <div class="p-4 flex">
                 <div class="basis-1/12 min-w-10 bg-white dark:bg-eerie-black">
-                    <img class="rounded-full" src="/images/avatar.jpg" alt="Avatar">
+                    <img class="rounded-full" src="{{avatarUrl}}" alt="Avatar">
                 </div>
                 <div class="basis-11/12 pl-4 bg-white dark:bg-eerie-black flex flex-col">
-                    <div class="font-medium">nhatminh.22clc</div>
+                    <div class="font-medium">{{username}}</div>
                     <textarea name="content"
                         class="post-input leading-5 outline-none resize-none pt-1 dark:bg-eerie-black placeholder:text-spanish-gray dark:placeholder:text-sonic-silver"
                         id="content" placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
@@ -37,11 +39,12 @@
 
         <!-- Footer with post button -->
         <div class="p-4 bg-white dark:bg-eerie-black">
-            <button id="post-button"
+            <button id="post-button" type="button"
                 class="float-right font-medium rounded-full px-4 py-3 bg-transparent border border-[#d9d9d9] text-gray-400 cursor-not-allowed leading-none">Post</button>
         </div>
-    </div>
+    </form>
 </div>
+{{/with}}
 
 <script>
     
