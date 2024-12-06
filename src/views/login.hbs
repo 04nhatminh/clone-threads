@@ -6,10 +6,10 @@
         <h1 class="mb-4 text-xl font-bold">Log in</h1>
 
         <!-- Form -->
-        <form class="flex flex-col gap-2" method="POST" action="">
+        <form action="/login" class="flex flex-col gap-2" id="login-from" method="POST" >
             <!-- Email Input -->
             <div>
-                <label for="Username or email" class="sr-only">Username or email</label>
+                <label for="usernameOrEmail" class="sr-only">Username or email</label>
                 <input 
                     type="text" 
                     id="usernameOrEmail"
@@ -33,7 +33,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button id="login-button" type="button"
+            <button id="login-button" type="submit"
                 class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
                 onsubmit="">
                 Log in

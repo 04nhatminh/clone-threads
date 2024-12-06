@@ -9,7 +9,7 @@
         <p class="mb-4 opacity-40">Create your display name.</p>
 
         <!-- Form -->
-        <form id="createDisplayname-form" class="flex flex-col gap-2" method="POST" action="#" onsubmit="process(event)">
+        <form id="createDisplaynameForm" class="flex flex-col gap-2" method="POST" action="#" onsubmit="process(event)">
             
             <div>
                 <label for="displayname" class="sr-only form-lable">Display name</label>
@@ -20,7 +20,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button id="submit-button" type="submit"
+            <button id="updateBtn" type="submit"
                 class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
                 >
                 Update
@@ -38,7 +38,7 @@
 
 
         <!-- Signup Redirect -->
-        <button id="login-button" type="button"
+        <button id="loginBtn" type="button"
                 class="w-full p-4 font-medium text-white bg-black rounded-2xl"
                 onclick="window.location.href='/login'">
                 Log in
