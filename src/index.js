@@ -47,6 +47,9 @@ app.engine(
             },
             breaklines: (text) => {
                 return text.replace(/\n/g, '<br>');
+            },
+            includes: (array, value) => {
+                return array.includes(value);
             }
         }
     })
@@ -59,6 +62,10 @@ app.set('views', path.join(__dirname, 'views'));
 // Cau hinh doc du lieu gui theo phuong thuc POST
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Cau hinh doc ghi cookie
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 route(app);
 

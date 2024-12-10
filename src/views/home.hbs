@@ -60,12 +60,12 @@
                 <img src="{{imageUrl}}" alt="Image"
                     class="rounded-xl max-h-[300px] my-2 {{#if imageUrl}} block {{else}} hidden {{/if}}">
                 <div class="flex gap-2 place-items-center">
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="{{id}}">
-                        <i class="fa-regular fa-heart"></i>
+                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2 {{#if (includes ../likedThreadIds this.id)}} text-red-500 {{/if}}" data-thread-id="{{id}}">
+                        <i class="{{#if (includes ../likedThreadIds this.id)}} fa-solid {{else}} fa-regular {{/if}} fa-heart"></i>
                         <span class="likes-count">{{likes.length}}</span>
                     </div>
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2">
-                        <i class="fa-regular fa-comment cursor-pointer"></i>
+                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="{{id}}">
+                        <i class="fa-regular fa-comment"></i>
                         <span class="comments-count">{{comments.length}}</span>
                     </div>
                 </div>
@@ -79,7 +79,10 @@
 {{#with currentUser}}
 <div id="comment-overlay"
     class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
-    <div class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
+    <form action="/addComment" method="POST"
+        class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
+        <input type="hidden" name="user" value="{{id}}">
+        <input type="hidden" name="thread" id="comment-thread-id">
         <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
             <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
         </div>
@@ -94,13 +97,13 @@
                     {{username}}
                 </div>
                 <textarea name="comment" class="leading-5 outline-none resize-none" id="comment"
-                    placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
+                    placeholder="Enter your comment" rows="1" style="scrollbar-width: none;"></textarea>
             </div>
         </div>
 
-        <button
+        <button type="submit"
             class="absolute right-6 bottom-4 bg-black text-white text-center font-medium rounded-xl px-6 py-2 hover:scale-95 border border-gray-300 leading-none">Post</button>
-    </div>
+    </form>
 </div>
 {{/with}}
 
@@ -203,13 +206,13 @@
                 if (data.success) {
                     likesCount.textContent = data.likesCount;
                     if (data.liked) {
-                        item.classList.add('fa-solid', 'text-red-500');
+                        item.classList.add('fa-solid');
                         item.classList.remove('fa-regular');
-                        item.parentElement.querySelector('span').classList.add('text-red-500');
+                        item.parentElement.classList.add('text-red-500');
                     } else {
                         item.classList.add('fa-regular');
-                        item.classList.remove('fa-solid', 'text-red-500');
-                        item.parentElement.querySelector('span').classList.remove('text-red-500');
+                        item.classList.remove('fa-solid');
+                        item.parentElement.classList.remove('text-red-500');
                     }
                 } else {
                     alert(data.message || "Something went wrong");
@@ -221,7 +224,6 @@
         })
     });
 
-
     function exitComment() {
         document.getElementById('comment-overlay').classList.remove('flex');
         document.getElementById('comment-overlay').classList.add('hidden');
@@ -230,6 +232,8 @@
 
     document.querySelectorAll('.fa-comment').forEach(item => {
         item.parentElement.addEventListener('click', function () {
+            const threadId = item.parentElement.getAttribute('data-thread-id');
+            document.getElementById('comment-thread-id').value = threadId;
             document.getElementById('comment-overlay').classList.remove('hidden');
             document.getElementById('comment-overlay').classList.add('flex');
         });

@@ -1,12 +1,30 @@
 let controller = {};
 const { where } = require('sequelize');
+const sequelize = require('sequelize');
 const models = require('../models');
 const { use } = require('../routes/home');
+const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
 controller.renderHome = async (req, res) => {
-    const threads = await models.Thread.findAll({ include: [ 'user', 'likes', 'comments' ] });
-    const currentUser = await models.User.findOne( { where: { id: 1 } });
+    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
+    const currentUser = await models.User.findOne({ where: { id: userId } });
+    const threads = await models.Thread.findAll({
+        include: ['user', 'likes', 'comments'],
+        order: [['createdAt', 'DESC']],
+    });
+
+    // Lấy danh sách các thread mà người dùng hiện tại đã like
+    const likedThreads = await models.Like.findAll({
+        where: { userId: userId },
+        attributes: ['threadId']
+    });
+
+    // Chuyển đổi danh sách likedThreads thành mảng các threadId
+    const likedThreadIds = likedThreads.map(like => like.threadId);
+
     res.locals.threads = threads;
     res.locals.currentUser = currentUser;
+    res.locals.likedThreadIds = likedThreadIds;
+
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,
@@ -16,15 +34,17 @@ controller.renderHome = async (req, res) => {
 }
 
 controller.loadFollowingThreads = async (req, res) => {
-    const currentUser = await models.User.findOne( { where: { id: 1 } });
+    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
+    const currentUser = await models.User.findOne({ where: { id: userId } });
     const following = await models.Follow.findAll({ where: { followerId: currentUser.id } });
     const followingUserIds = following.map(follow => follow.userId);
     // console.log("--------------------");
     // console.log(followingUserIds);
     // console.log("--------------------");
-    const threads = await models.Thread.findAll({ 
-        include: [ 'user', 'likes', 'comments' ], 
-        where: { userId: followingUserIds } 
+    const threads = await models.Thread.findAll({
+        include: ['user', 'likes', 'comments'],
+        order: [['updatedAt', 'DESC']],
+        where: { userId: followingUserIds }
     });
     res.locals.threads = threads;
     res.locals.currentUser = currentUser;
@@ -65,17 +85,17 @@ controller.toggleLikes = async (req, res) => {
     console.log(threadId, userId);
 
     try {
-        const thread = await models.Thread.findOne( {where: { id: threadId }} );
+        const thread = await models.Thread.findOne({ where: { id: threadId } });
         if (!thread) {
             return res.status(404).json({ success: false, message: 'Thread not found' });
         }
 
         // Kiểm tra xem user đã like chưa
         const existingLike = await models.Like.findOne({
-            where: 
-            { 
+            where:
+            {
                 userId: userId,
-                threadId: threadId 
+                threadId: threadId
             }
         });
 
@@ -90,11 +110,84 @@ controller.toggleLikes = async (req, res) => {
         // Lấy lại số lượng likes sau khi thay đổi
         const likesCount = await models.Like.count({ where: { threadId } });
 
+        // Cập nhật lại trường updatedAt của thread dưới database
+        await models.Thread.update(
+            { id: threadId * 1 },
+            { where: { id: threadId } }
+        );
+
         res.json({ success: true, liked: !existingLike, likesCount });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
+
+controller.addComment = async (req, res) => {
+    const threadId = parseInt(req.body.thread);
+    const userId = parseInt(req.body.user);
+    const content = req.body.comment;
+
+    try {
+        const thread = await models.Thread.findOne({ where: { id: threadId } });
+        if (!thread) {
+            return res.status(404).json({ success: false, message: 'Thread not found' });
+        }
+
+        const newComment = await models.Comment.create({
+            userId,
+            threadId,
+            content,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        await models.Thread.update(
+            { id: threadId * 1 },
+            { where: { id: threadId } }
+        );
+
+        return res.redirect('/');
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+controller.login = async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    try {
+        // Tìm user trong cơ sở dữ liệu
+        let user = await models.User.findOne({ where: { email } });
+
+        // Nếu không tìm thấy user, tạo user mới
+        if (!user) {
+            const hashedPassword = await hashPassword(password); // Mã hóa mật khẩu
+            user = await models.User.create({
+                email,
+                username: email,
+                password: hashedPassword,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
+
+        // Xác minh mật khẩu
+        const isMatch = await comparePassword(password, user.password); // So sánh mật khẩu đã mã hóa
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Invalid password' });
+        }
+
+        res.cookie('userId', user.id, { maxAge: 900000, httpOnly: true });
+        res.redirect('/');
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 
 module.exports = controller;
