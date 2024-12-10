@@ -3,7 +3,33 @@ const app = express();
 const route = require('./routes');
 const path = require('path');
 const expressHbs = require('express-handlebars');
+const session = require('express-session');
+const connectRedis  = require('connect-redis');
+const { createClient } = require('redis');
+const bodyParser = require('body-parser');
 const port = 3000;
+
+// const redisClient = createClient({
+//     url: 'rediss://red-ct8uaq5ds78s73ch9d50:jsCk4S0kocDWyBVza0v97HBm72d0aMIl@singapore-redis.render.com:6379'
+// });
+// redisClient.connect().catch(console.error);
+
+// Tạo Redis client
+// const redisClient = createClient({
+//     socket: {
+//         host: 'localhost', // Địa chỉ Redis server của bạn
+//         port: 6379,        // Cổng Redis mặc định
+//     },
+// });
+
+// // Kết nối Redis client
+// redisClient.connect().catch(console.error);
+
+// // Tạo Redis store sử dụng Redis client
+// const RedisStore = connectRedis.default; // Cách này đúng với phiên bản 8.x.x
+
+// const passport = require('./controllers/passport');
+// const flash = require('connect-flash');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -31,6 +57,38 @@ app.engine(
 
 app.set('view engine', '.hbs');
 
+//Them
+// app.use(session({
+//     secret: 's3cret',
+//     store: new redisStore({ client: redisClient}),
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//         httpOnly: true,
+//         maxAge: 20 * 60 *1000,
+//     }
+// }));
+// app.use(
+//     session({
+//         secret: 's3cret',
+//         store: RedisStore({ client: redisClient }), // Dùng RedisStore với Redis client
+//         resave: false,
+//         saveUninitialized: false,
+//         cookie: {
+//             httpOnly: true,
+//             maxAge: 20 * 60 * 1000, // Cookie hết hạn sau 20 phút
+//         },
+//     })
+// );
+// //cau hinh su dung passport
+// app.use(passport.initialize());
+// app.use(passport.session());
+// //cau hinh su dung connect-flash
+// app.use(flash());
+// //midleware
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.set('views', path.join(__dirname, 'views'));
 
 route(app);

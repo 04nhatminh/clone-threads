@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/login', loginController.logIn);
+router.post('/login', loginController.logInHandle);
 router.get('/signup', loginController.signUp);
 router.get('/signup2', loginController.signUp2);
 router.get('/forgot-password', loginController.forgotPassword);

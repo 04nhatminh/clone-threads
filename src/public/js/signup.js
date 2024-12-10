@@ -44,12 +44,25 @@ document.querySelectorAll('.form-control').forEach(input => {
     });
 });
 
-function process(e){
+function process(e) {
     e.preventDefault();
-    if(!validateSignupForm())
-    {
+    if (!validateSignupForm()) {
         return;
     }
-    window.location.href = '/signup2';
+
+    const formData = new FormData(document.getElementById('signupForm'));
+    fetch('/signup', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/signup2';
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
     return false;
 }
