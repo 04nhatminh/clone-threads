@@ -35,9 +35,14 @@
             <!-- Submit Button -->
             <button id="login-button" type="submit"
                 class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
-                onsubmit="">
+                >
                 Log in
             </button>
+            {{#if loginMessage}}
+                <div>
+                    <div class="alert alert-warning">{{loginMessage}}</div>
+                </div>
+            {{/if}}
         </form>
 
         <div class="my-2 text-center ">
