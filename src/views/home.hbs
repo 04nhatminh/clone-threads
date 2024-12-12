@@ -1,13 +1,6 @@
 {{> navbar}}
 {{> post-button}}
-
-{{!-- Login button --}}
-<a href="/login">
-    <button id="login-button"
-        class="fixed top-4 right-4 z-20 bg-black text-white text-center font-medium rounded-xl leading-none px-4 py-2 hover:scale-95 {{#if loggedIn}} hidden {{/if}}">
-        Log in
-    </button>
-</a>
+{{> login-button}}
 
 {{!-- All/Following Options --}}
 <div id="options"
@@ -108,85 +101,6 @@
 {{/with}}
 
 <script>
-    // Create new thread + close
-    const postInput = document.querySelector('.post-input');
-    const postButton = document.getElementById('post-button');
-
-    // Post button state
-    if (postInput && postButton) {
-        postInput.addEventListener('input', () => {
-            if (postInput.value.trim()) {
-                postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
-                postButton.type = 'submit';
-            } else {
-                postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
-                postButton.type = 'button';
-            }
-        });
-    }
-
-    const createNewThread = () => {
-        document.getElementById('new-thread-overlay').classList.remove('hidden');
-        document.getElementById('new-thread-overlay').classList.add('flex');
-        const createContainer = document.getElementById('create-container');
-        setTimeout(() => {
-            const createContainer = document.getElementById('create-container');
-            createContainer.classList.remove('scale-95', 'opacity-0');
-            createContainer.classList.add('scale-100', 'opacity-100');
-        }, 100);
-    }
-
-    const exitCreate = () => {
-        document.getElementById('new-thread-overlay').classList.add('hidden');
-        const createContainer = document.getElementById('create-container');
-        createContainer.classList.remove('scale-100', 'opacity-100');
-        createContainer.classList.add('scale-95', 'opacity-0');
-
-        const textarea = document.getElementById('content');
-        textarea.value = '';
-        textarea.style.height = 'auto';
-
-        const image = document.getElementById('attach-image');
-        image.src = '';
-        image.classList.add('hidden');
-
-        const fileInput = document.getElementById('image-upload');
-        fileInput.value = '';
-
-        const postButton = document.getElementById('post-button');
-        postButton.classList.add('text-gray-400', 'cursor-not-allowed');
-        postButton.classList.remove('text-blue-500', 'cursor-pointer');
-
-        if (image.src.startsWith('blob:')) {
-            URL.revokeObjectURL(image.src);
-        }
-    }
-
-    document.getElementById('new-thread-overlay').addEventListener('click', (e) => {
-        const createContainer = document.getElementById('create-container');
-        if (!createContainer.contains(e.target)) {
-            exitCreate();
-        }
-    });
-
-    const previewImage = (event) => {
-        const image = document.getElementById('attach-image');
-
-        image.src = URL.createObjectURL(event.target.files[0]);
-        image.classList.remove('hidden');
-
-        image.onload = () => {
-            URL.revokeObjectURL(image.src);
-        };
-    }
-
-    document.getElementById('content').addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
-    });
-
     // React + Comment
     document.querySelectorAll('.fa-heart').forEach(item => {
         item.parentElement.addEventListener('click', async function () {

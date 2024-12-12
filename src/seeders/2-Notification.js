@@ -18,6 +18,7 @@ module.exports = {
     for (let i = 0; i < 1000; i++) {
       notifications.push({
         userId: Math.floor(Math.random() * 100) + 1,
+        fromId: Math.floor(Math.random() * 100) + 1,
         type: faker.helpers.arrayElement(["like", "comment", "follow"]),
         isRead: Math.random() < 0.5,
         createdAt: Sequelize.literal("NOW()"),

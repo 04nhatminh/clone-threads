@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'user'
       });
+      Notification.belongsTo(models.User, {
+        foreignKey: 'fromId',
+        as: 'from'
+      });
     }
   }
   Notification.init({
@@ -24,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     userId: DataTypes.INTEGER,
+    fromId: DataTypes.INTEGER,
     type: DataTypes.STRING,
     isRead: DataTypes.BOOLEAN,
     createdAt: DataTypes.DATE,
