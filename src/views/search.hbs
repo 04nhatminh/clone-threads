@@ -1,1 +1,70 @@
-<h1>Search page</h1>
+{{> navbar}}
+{{> post-button}}
+{{> login-button}}
+
+<!-- Header -->
+<div id="header"
+    class="fixed z-10 left-1/2 -translate-x-1/2 w-full md:w-[640px] text-center md:pt-5 pt-16 md:bg-[#fafafa] text-[15px] font-semibold md:block hidden">
+    <span>Search</span>
+</div>
+
+<!-- Main Content -->
+<div class="main-container md:mt-[50px] mt-2 flex justify-center h-screen overflow-hidden">
+    <div class="shadow-lg bg-[#ffffff] w-full h-full md:w-[640px] border-[#d6d6d6] border md:rounded-t-3xl overflow-y-auto md:mt-[10px] mt-12 pb-32 md:pb-10"
+        style="scrollbar-width: none;">
+        <!-- Search input -->
+        <div class="w-full max-w-2xl bg-[#ffffff] overflow-y-auto">
+            <!-- Search Bar -->
+            <div class="sticky top-0 p-6" id="searchBar">
+                <div class="flex items-center gap-3 bg-[#fafafa] rounded-2xl px-4 py-3 border-[#d9d9d9] border">
+                    <i class="fa-solid fa-magnifying-glass text-[#b8b8b8] ml-2"></i>
+                    <input type="text" placeholder="Search" id="searchInput"
+                        class="bg-transparent w-full text-sm focus:outline-none text-black placeholder-[#777777] items-center justify-center content-center">
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="py-0 bg-[#ffffff] phone:bg-[#fafafa] phone:pt-4" id="search-result">
+                <h2 class="text-[#777777] text-md font-medium mb-2 px-6 bg-[#ffffff] phone:bg-[#fafafa]">Results</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('input', async function () {
+        const keywords = document.getElementById('searchInput').value;
+        const response = await fetch(`/search/loadUsers?keywords=${keywords}`);
+        const users = await response.json();
+        console.log(users);
+
+        // Xử lý kết quả trả về
+        const resultsContainer = document.getElementById('search-result');
+        resultsContainer.innerHTML = '';
+
+        // Hiển thị danh sách người dùng
+        users.forEach(user => {
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('p-4', 'flex', 'border-t', 'border-light-gray', 'dark:border-charleston-green');
+            userDiv.innerHTML = `
+            <div class="basis-1/12 min-w-10 flex items-center" id="thread-avatar">
+                <a href="/@${user.username}"><img class="rounded-full" src="${user.avatarUrl}" alt="Avatar"></a>
+            </div>
+            <div class="basis-11/12 px-4 flex flex-col">
+                <div class="font-medium hover:underline">
+                    <a href="/@${user.username}">${user.username}</a>
+                </div>
+                <p class="text-[#777777] text-sm">${user.description}</p>
+                <p class="text-[#777777] text-sm">${user.followers} followers</p>
+            </div>
+            <div class="flex items-center">
+                <button
+                    class="font-semibold px-7 py-1 rounded-lg bg-transparent transition-colors text-black border-[#d9d9d9] border follow-button">
+                    Follow
+                </button>
+            </div>
+        `;
+            resultsContainer.appendChild(userDiv);
+        });
+    });
+</script>
