@@ -45,7 +45,7 @@ app.set('view engine', '.hbs');
 
 app.use(
     session({
-        secret: 's3cret',
+        secret: process.env.SECRET || 'secret', // Dùng secret key để mã hóa session
         store: new redisStore({ client: redisClient }), // Dùng RedisStore với Redis client
         resave: false,
         saveUninitialized: false,

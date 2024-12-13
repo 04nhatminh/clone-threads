@@ -8,7 +8,7 @@ const models = require ('../models');
 const { Op } = require('sequelize');
 const { log, error } = require('console');
 
-class loginController {
+class authController {
     logInShow(req, res) {
         res.locals.title = 'Login';
         res.render('login', {loginMessage: req.flash('loginMessage')});
@@ -24,8 +24,7 @@ class loginController {
             }
             req.logIn(user, (error) =>{
                 if(error) {return next(error)};
-                console.log("login success")
-                // req.session.cookie.maxAge = (20*60*1000);
+                req.session.cookie.maxAge = (20*60*1000);
                 return res.redirect('/');
             });
         })(req, res, next);
@@ -59,4 +58,4 @@ class loginController {
     }
 }
 
-module.exports = new loginController();
+module.exports = new authController();
