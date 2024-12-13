@@ -38,6 +38,7 @@ controller.loadUsers = async (req, res) => {
         });
 
         res.json(users.map(user => ({
+            id: user.id,
             username: user.username,
             avatarUrl: user.avatarUrl,
             description: user.description || '',
@@ -45,6 +46,34 @@ controller.loadUsers = async (req, res) => {
         })));
     } catch (error) {
         console.error('Error when load users:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+controller.follow = async (req, res) => {
+    const userId = parseInt(req.body.target);
+    const followerId = parseInt(req.body.follower);
+
+    try {
+        const follow = await models.Follow.findOne({
+            where: {
+                userId: userId,
+                followerId: followerId,
+            }
+        });
+
+        if (follow) {
+            await follow.destroy();
+            res.json({ success: true, message: 'Unfollowed' });
+        } else {
+            await models.Follow.create({
+                userId: userId,
+                followerId: followerId,
+            });
+            res.json({ success: true, message: 'Followed' });
+        }
+    } catch (error) {
+        console.error('Error when follow:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }

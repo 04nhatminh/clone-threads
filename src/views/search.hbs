@@ -25,7 +25,7 @@
 
             <!-- Search Results -->
             <div class="py-0 bg-[#ffffff] phone:bg-[#fafafa] phone:pt-4" id="search-result">
-                <h2 class="text-[#777777] text-md font-medium mb-2 px-6 bg-[#ffffff] phone:bg-[#fafafa]">Results</h2>
+
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
 
         // Xử lý kết quả trả về
         const resultsContainer = document.getElementById('search-result');
-        resultsContainer.innerHTML = '';
+        resultsContainer.innerHTML = '<h2 class="text-[#777777] text-md font-medium mb-2 px-6 bg-[#ffffff] phone:bg-[#fafafa]">Results</h2>';
 
         // Hiển thị danh sách người dùng
         users.forEach(user => {
@@ -59,12 +59,44 @@
             </div>
             <div class="flex items-center">
                 <button
-                    class="font-semibold px-7 py-1 rounded-lg bg-transparent transition-colors text-black border-[#d9d9d9] border follow-button">
+                    class="font-semibold px-7 py-1 rounded-lg bg-black transition-colors text-white border-[#d9d9d9] border follow-button" userId="${user.id}">
                     Follow
                 </button>
             </div>
         `;
             resultsContainer.appendChild(userDiv);
         });
+    });
+
+    document.addEventListener('click', async function (event) {
+        if (event.target.classList.contains('follow-button')) {
+            const button = event.target;
+
+            const currentUser = '{{currentUser.id}}';
+            const userId = button.getAttribute('userId');
+            console.log(currentUser, userId);
+
+            try {
+                const response = await fetch('/search/follow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ follower: currentUser, target: userId })
+                });
+
+                const result = await response.json();
+
+                if (result.message === 'Followed') {
+                    button.innerText = 'Following';
+                    button.classList.remove('bg-black', 'text-white');
+                } else if (result.message === 'Unfollowed') {
+                    button.innerText = 'Follow';
+                    button.classList.add('bg-black', 'text-white');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
     });
 </script>
