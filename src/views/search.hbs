@@ -44,6 +44,12 @@
 
         // Hiển thị danh sách người dùng
         users.forEach(user => {
+            console.log(user);
+            const buttonClass = user.followed
+                ? 'font-semibold px-7 py-1 rounded-lg transition-colors border-[#d9d9d9] border follow-button'
+                : 'font-semibold px-7 py-1 rounded-lg bg-black transition-colors text-white border-[#d9d9d9] border follow-button';
+            const buttonText = user.followed ? 'Following' : 'Follow';
+
             const userDiv = document.createElement('div');
             userDiv.classList.add('p-4', 'flex', 'border-t', 'border-light-gray', 'dark:border-charleston-green');
             userDiv.innerHTML = `
@@ -58,9 +64,8 @@
                 <p class="text-[#777777] text-sm">${user.followers} followers</p>
             </div>
             <div class="flex items-center">
-                <button
-                    class="font-semibold px-7 py-1 rounded-lg bg-black transition-colors text-white border-[#d9d9d9] border follow-button" userId="${user.id}">
-                    Follow
+                <button class="${buttonClass}" userId="${user.id}">
+                    ${buttonText}
                 </button>
             </div>
         `;
@@ -68,35 +73,37 @@
         });
     });
 
-    document.addEventListener('click', async function (event) {
-        if (event.target.classList.contains('follow-button')) {
-            const button = event.target;
+    async function handleFollow(button) {
+        const currentUser = '{{currentUser.id}}';
+        const userId = button.getAttribute('userId');
+        console.log(currentUser, userId);
 
-            const currentUser = '{{currentUser.id}}';
-            const userId = button.getAttribute('userId');
-            console.log(currentUser, userId);
+        try {
+            const response = await fetch('/search/follow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ follower: currentUser, target: userId })
+            });
 
-            try {
-                const response = await fetch('/search/follow', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ follower: currentUser, target: userId })
-                });
+            const result = await response.json();
 
-                const result = await response.json();
-
-                if (result.message === 'Followed') {
-                    button.innerText = 'Following';
-                    button.classList.remove('bg-black', 'text-white');
-                } else if (result.message === 'Unfollowed') {
-                    button.innerText = 'Follow';
-                    button.classList.add('bg-black', 'text-white');
-                }
-            } catch (error) {
-                console.error('Error:', error);
+            if (result.message === 'Followed') {
+                button.innerText = 'Following';
+                button.classList.remove('bg-black', 'text-white');
+            } else if (result.message === 'Unfollowed') {
+                button.innerText = 'Follow';
+                button.classList.add('bg-black', 'text-white');
             }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('follow-button')) {
+            handleFollow(event.target);
         }
     });
 </script>

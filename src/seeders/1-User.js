@@ -10,16 +10,21 @@ module.exports = {
      *
      * Example:
      * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
+     *   name: 'John Doe',  
      *   isBetaMember: false
      * }], {});
     */
     let users = [];
 
     for (let i = 0; i < 100; i++) {
+      const usernameLength = faker.number.int({ min: 10, max: 18 }); // Độ dài username từ 5 đến 15 ký tự
+      const username = Array.from({ length: usernameLength }, () => 
+        faker.helpers.arrayElement('abcdefghijklmnopqrstuvwxyz._')
+      ).join('');
+
       users.push({
         email: faker.internet.email(),
-        username: faker.internet.displayName(),
+        username: username,
         password: await hashPassword("123456789"),
         avatarUrl: faker.image.avatar(),
         description: faker.person.bio(),

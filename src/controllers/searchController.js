@@ -34,16 +34,21 @@ controller.loadUsers = async (req, res) => {
                 id: { [Op.ne]: userId },
                 ...options.where,
             },
-            include: ['followers'],
+            include: ['follows', 'followers'],
         });
 
-        res.json(users.map(user => ({
-            id: user.id,
-            username: user.username,
-            avatarUrl: user.avatarUrl,
-            description: user.description || '',
-            followers: user.followers.length || [],
-        })));
+        res.json(users.map(user => {
+            console.log(user.id);
+            console.log(user.follows);
+            return {
+                id: user.id,
+                username: user.username,
+                avatarUrl: user.avatarUrl,
+                description: user.description || '',
+                followers: user.follows.length || 0,
+                followed: user.follows.some(follower => follower.followerId === userId),
+            };
+        }));
     } catch (error) {
         console.error('Error when load users:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
