@@ -4,16 +4,18 @@ const authController = require('../controllers/authController');
 const express = require('express');
 const router = express.Router();
 
+
 router.get('/login', authController.logInShow);
 router.post('/login', authController.logIn);
 router.get('/logout', authController.logOut);
-// router.post('/login', authController.logInHandle);
-router.get('/signup', authController.signUp);
+router.get('/signup', authController.signUpShow);
+router.post('/signup', authController.signup);  
+
 // router.post('/signup', authController.signUpHandle);
 router.get('/signup2', authController.signUp2);
 router.get('/forgot-password', authController.forgotPassword);
 router.get('/reset-password', authController.resetPassword);
-
+router.use(authController.isLoggedIn);
 router.get('/', homeController.renderHome);
 router.post('/', homeController.renderHome);
 router.get('/notifications', homeController.renderNotification);

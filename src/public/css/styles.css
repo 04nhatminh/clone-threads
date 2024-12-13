@@ -750,6 +750,10 @@ video {
   margin-top: 1rem;
 }
 
+.block {
+  display: block;
+}
+
 .flex {
   display: flex;
 }
@@ -858,6 +862,10 @@ video {
   align-items: center;
 }
 
+.justify-start {
+  justify-content: flex-start;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -876,6 +884,10 @@ video {
 
 .gap-2 {
   gap: 0.5rem;
+}
+
+.self-start {
+  align-self: flex-start;
 }
 
 .overflow-hidden {
@@ -1094,6 +1106,10 @@ video {
 
 .pt-16 {
   padding-top: 4rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {

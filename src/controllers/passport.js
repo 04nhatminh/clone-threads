@@ -39,7 +39,7 @@ passport.use(
         if (!req.user) {
           // Kiểm tra người dùng đã đăng nhập chưa
           let user = await models.User.findOne({
-            where: emailOrUsername.includes('@') 
+            where: emailOrUsername.includes("@")
               ? { email: emailOrUsername }
               : { username: emailOrUsername },
           });
@@ -52,17 +52,66 @@ passport.use(
           }
           // Kiểm tra mật khẩu có khớp không
           const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
+          if (!isMatch) {
             return done(
-                null,
-                false,
-                req.flash("loginMessage", "Invalid password")
+              null,
+              false,
+              req.flash("loginMessage", "Invalid password")
             );
-            }
+          }
 
           return done(null, user); // Xác thực thành công
         }
         done(null, req.user); // Nếu người dùng đã đăng nhập, trả về thông tin người dùng
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+
+passport.use(
+  "local-signup", new LocalStrategy({
+      usernameField: "email",
+      passwordField: "password",
+      passReqToCallback: true,
+    },
+    async (req, email, password, done) => {
+      // if (email) {
+      //   email = email.trim();
+      // }
+
+      try {
+        // // Kiểm tra tính hợp lệ của email
+        // if (!validator.isEmail(email)) {
+        //   return done(
+        //     null,
+        //     false,
+        //     req.flash("signupMessage", "Invalid email format!")
+        //   );
+        // }
+        let user = await models.User.findOne({
+          where: { email },
+        });
+        if (user) {
+          return done(
+            null,
+            false,
+            req.flash("signupMessage", "Email already exists!")
+          );
+        };
+        console.log("dangki");
+        user = await models.User.create({
+          email: email,
+          username: req.body.username,
+          password: await bcrypt.hash(password, 8),
+          
+          // password: bcrypt.hashSync(password, bcrypt.genSaltSync(8)),
+        });
+        console.log("Signup successfully!");
+        done(null, false, req.flash("signupMessage", "Signup successfully!"));
+        console.log("Signup successfully!");
+
       } catch (error) {
         done(error);
       }

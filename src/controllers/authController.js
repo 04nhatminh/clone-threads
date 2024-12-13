@@ -10,14 +10,18 @@ const { log, error } = require('console');
 
 class authController {
     logInShow(req, res) {
+        if(req.isAuthenticated()) {
+            return res.redirect('/');
+        }
         res.locals.title = 'Login';
         res.render('login', {loginMessage: req.flash('loginMessage')});
     }
     
     logIn(req, res, next) {
+        let reqUrl = req.body.reqUrl ? req.body.reqUrl : '/';
         passport.authenticate('local-login', (error,user) => {
             if(!user) {
-                return res.redirect('/login'); 
+                return res.redirect('/login?reqUrl=${reqUrl}'); 
             }
             if(error){
                 return next(error);
@@ -25,7 +29,7 @@ class authController {
             req.logIn(user, (error) =>{
                 if(error) {return next(error)};
                 req.session.cookie.maxAge = (20*60*1000);
-                return res.redirect('/');
+                return res.redirect(reqUrl);
             });
         })(req, res, next);
     }
@@ -37,12 +41,30 @@ class authController {
         });
     }
 
-    signUp(req, res) {
-        res.locals.title = 'Signup';
-        res.render('signup');
+    isLoggedIn(req, res, next) {
+        if(req.isAuthenticated()) {
+            return next();
+        }
+        res.redirect(`/login?returnUrl=${req.originalUrl}`);
     }
 
+    signUpShow(req, res) {
+        res.locals.title = 'Signup';
+        res.render('signup', {signupMessage: req.flash('signupMessage')});
+    }
 
+    signup(req, res, next) {
+        passport.authenticate('local-signup', (error, user) => {    
+            console.log('user', user);  
+            if(error) {
+                return next(error);
+            }      
+            if(user) {
+                return res.redirect('/signup');
+            }
+            return res.redirect('/login');
+        })(req, res, next);
+    }
 
     signUp2(req, res) {
         res.locals.title = 'Signup cont';

@@ -6,43 +6,35 @@
         <h1 class="mb-4 text-xl font-bold">Log in</h1>
 
         <!-- Form -->
-        <form action="/login" class="flex flex-col gap-2" id="login-from" method="POST" >
+        <form action="/login" class="flex flex-col gap-2" id="login-form" method="POST"
+            onsubmit="validateForm(event)">
             <!-- Email Input -->
             <div>
                 <label for="emailOrUsername" class="sr-only">Username or email</label>
-                <input 
-                    type="text" 
-                    id="emailOrUsername"
-                    class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" 
-                    name="emailOrUsername" 
-                    placeholder="Email or username" 
-                    required
-                >
+                <input type="text" id="emailOrUsername"
+                    class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" name="emailOrUsername"
+                    placeholder="Email or username">
+                <small id="email-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
             </div>
             <!-- Password Input -->
             <div>
                 <label for="password" class="sr-only">Password</label>
-                <input 
-                    type="text" 
-                    id="password"
-                    class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
-                    name="password" 
-                    placeholder="Password" 
-                    required
-                >
+                <input type="text" id="password" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                    name="password" placeholder="Password">
+                <small id="password-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
             </div>
 
+            {{#if loginMessage}}
+            <div class="flex justify-start">
+                <small class="text-left text-red-600" style="text-indent: 1rem;">{{loginMessage}}</small>
+            </div>   
+            {{/if}}
             <!-- Submit Button -->
             <button id="login-button" type="submit"
-                class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
-                >
+                class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl">
                 Log in
             </button>
-            {{#if loginMessage}}
-                <div>
-                    <div class="text-red-600">{{loginMessage}}</div>
-                </div>
-            {{/if}}
+            
         </form>
 
         <div class="my-2 text-center ">
@@ -55,23 +47,22 @@
             <small class="mx-2 opacity-40 ">or</small>
             <hr class="flex-grow">
         </div>
-        
+
 
         <!-- Login with Google -->
-        <button 
-            type="button" 
+        <button type="button"
             class="w-full p-4 mb-2 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-100"
             onclick="window.location.href='#'">
             <i class="fa-brands fa-google fa-xl me-2"></i>
             Continue with Google
         </button>
-
+        
+        <input type="hidden" name="reqUrl" value="{{reqUrl}}">
 
         <!-- Signup Redirect -->
-        <button id="signup-button" type="button"
-                class="w-full p-4 font-medium text-white bg-black rounded-2xl"
-                onclick="window.location.href='/signup'">
-                Sign up
+        <button id="signup-button" type="button" class="w-full p-4 font-medium text-white bg-black rounded-2xl"
+            onclick="window.location.href='/signup'">
+            Sign up
         </button>
     </div>
 </div>
@@ -97,10 +88,34 @@
         });
     });
 
-    function process(e){
-        e.preventDefault();
-        window.location.href = '/';
-        return false;
+async function validateForm(event) {
+        event.preventDefault();
+        // Lấy giá trị từ các input
+        const emailOrUsername = document.getElementById('emailOrUsername').value.trim();
+        const password = document.getElementById('password').value.trim();
+        // Lấy các phần tử thông báo lỗi
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        // Xóa thông báo lỗi cũ
+        emailError.classList.add('hidden');
+        emailError.textContent = '';
+        passwordError.classList.add('hidden');
+        passwordError.textContent = '';
+        // Kiểm tra trạng thái hợp lệ
+        let isValid = true;
+        if (!emailOrUsername) {
+            emailError.textContent = 'Email or username is required';
+            emailError.classList.remove('hidden');
+            isValid = false;
+        }
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.classList.remove('hidden');
+            isValid = false;
+        }
+        // Nếu không hợp lệ, dừng lại
+        if (!isValid) return;
+        // Tiến hành gửi dữ liệu bằng Fetch API
+        document.getElementById('login-form').submit();
     }
-
 </script>
