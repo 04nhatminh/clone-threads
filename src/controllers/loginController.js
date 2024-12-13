@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const apiController = require('./apiController');
 const models = require ('../models');
 const { Op } = require('sequelize');
+const { log, error } = require('console');
 
 class loginController {
     logInShow(req, res) {
@@ -15,18 +16,26 @@ class loginController {
     
     logIn(req, res, next) {
         passport.authenticate('local-login', (error,user) => {
-            if( error){
-                return next(error);
-            }
             if(!user) {
-                return res.redirect('/login');
+                return res.redirect('/login'); 
+            }
+            if(error){
+                return next(error);
             }
             req.logIn(user, (error) =>{
                 if(error) {return next(error)};
+                console.log("login success")
                 // req.session.cookie.maxAge = (20*60*1000);
                 return res.redirect('/');
             });
-        });(req, res, next);
+        })(req, res, next);
+    }
+
+    logOut(req, res, next) {
+        req.logOut((error) => {
+            if (error) {return next(error);}
+            res.redirect('/');
+        });
     }
 
     signUp(req, res) {
