@@ -32,9 +32,9 @@ passport.use(
       passReqToCallback: true,
     },
     async (req, emailOrUsername, password, done) => {
-      if (emailOrUsername) {
-        emailOrUsername = emailOrUsername.trim(); // Xóa khoảng trắng đầu , cuối
-      }
+      // if (emailOrUsername) {
+      //   emailOrUsername = emailOrUsername.trim(); // Xóa khoảng trắng đầu , cuối
+      // }
       try {
         if (!req.user) {
           // Kiểm tra người dùng đã đăng nhập chưa
