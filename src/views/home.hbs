@@ -14,7 +14,7 @@
 </div>
 
 {{!-- Main container --}}
-<div class="main-container mt-10 flex justify-center h-screen overflow-hidden">
+<div class="main-container mt-10 flex flex-col items-center h-screen overflow-hidden">
     <div id="feeds"
         class="shadow-lg bg-white dark:bg-eerie-black w-full h-full md:w-[640px] border-light-gray dark:border-charleston-green border rounded-t-3xl overflow-y-auto md:mt-6 mt-16 pb-36 md:pb-10"
         style="scrollbar-width: none;">
@@ -31,40 +31,9 @@
             </button>
         </div>
         {{/with}}
-        {{#each threads}}
-        <div class="p-4 pb-1 flex border-t border-light-gray dark:border-charleston-green">
-            <div class="basis-1/12 min-w-10" id="thread-avatar">
-                <a href="/@{{user.username}}"><img class="rounded-full" src="{{user.avatarUrl}}" alt="Avatar"></a>
-            </div>
-            <div class="basis-11/12 px-4">
-                <div class="flex gap-2">
-                    <div class="font-medium hover:underline">
-                        <a href="/@{{user.username}}">{{user.username}}</a>
-                    </div>
-                    <div class="opacity-40">
-                        {{getDifTime createdAt}}
-                    </div>
-                </div>
-                <a href="/thread?id={{id}}">
-                    <p>
-                        {{{breaklines content}}}
-                    </p>
-                </a>
-                <img src="{{imageUrl}}" alt="Image"
-                    class="rounded-xl max-h-[300px] my-2 {{#if imageUrl}} block {{else}} hidden {{/if}}">
-                <div class="flex gap-2 place-items-center">
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2 {{#if (includes ../likedThreadIds this.id)}} text-red-500 {{/if}}" data-thread-id="{{id}}">
-                        <i class="{{#if (includes ../likedThreadIds this.id)}} fa-solid {{else}} fa-regular {{/if}} fa-heart"></i>
-                        <span class="likes-count">{{likes.length}}</span>
-                    </div>
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="{{id}}">
-                        <i class="fa-regular fa-comment"></i>
-                        <span class="comments-count">{{comments.length}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{/each}}
+    </div>
+    <div id="loading-spinner" class="flex justify-center p-4 w-full bg-white">
+        <i class="fa-solid fa-spinner fa-spin fa-xl"></i>
     </div>
 </div>
 
@@ -101,57 +70,11 @@
 {{/with}}
 
 <script>
-    // React + Comment
-    document.querySelectorAll('.fa-heart').forEach(item => {
-        item.parentElement.addEventListener('click', async function () {
-            const threadId = item.parentElement.getAttribute('data-thread-id');
-            const likesCount = item.parentElement.querySelector('span');
-            const currentUser = '{{currentUser.id}}';
-            // console.log(currentUser, threadId );
-            try {
-                const res = await fetch('/toggleLikes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: currentUser, thread: threadId })
-                });
-                console.log("fetching")
-                const data = await res.json();
-
-                if (data.success) {
-                    likesCount.textContent = data.likesCount;
-                    if (data.liked) {
-                        item.classList.add('fa-solid');
-                        item.classList.remove('fa-regular');
-                        item.parentElement.classList.add('text-red-500');
-                    } else {
-                        item.classList.add('fa-regular');
-                        item.classList.remove('fa-solid');
-                        item.parentElement.classList.remove('text-red-500');
-                    }
-                } else {
-                    alert(data.message || "Something went wrong");
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert("Error occurred while liking/unliking!");
-            }
-        })
-    });
-
     function exitComment() {
         document.getElementById('comment-overlay').classList.remove('flex');
         document.getElementById('comment-overlay').classList.add('hidden');
         document.getElementById('comment').value = '';
     }
-
-    document.querySelectorAll('.fa-comment').forEach(item => {
-        item.parentElement.addEventListener('click', function () {
-            const threadId = item.parentElement.getAttribute('data-thread-id');
-            document.getElementById('comment-thread-id').value = threadId;
-            document.getElementById('comment-overlay').classList.remove('hidden');
-            document.getElementById('comment-overlay').classList.add('flex');
-        });
-    });
 
     document.getElementById('comment-overlay').addEventListener('click', function (e) {
         const commentContainer = document.getElementById('comment-container');
@@ -159,4 +82,122 @@
             exitComment();
         }
     });
+
+    // Load threads
+    let page = 1;
+    let loading = false;
+
+    function createThreadElement(thread) {
+        const threadDiv = document.createElement('div');
+        threadDiv.className = "p-4 pb-1 flex border-t border-light-gray dark:border-charleston-green";
+
+        threadDiv.innerHTML = `
+            <div class="basis-1/12 min-w-10" id="thread-avatar">
+                <a href="/@${thread.user.username}"><img class="rounded-full" src="${thread.user.avatarUrl}" alt="Avatar"></a>
+            </div>
+            <div class="basis-11/12 px-4">
+                <div class="flex gap-2">
+                    <div class="font-medium hover:underline">
+                        <a href="/@${thread.user.username}">${thread.user.username}</a>
+                    </div>
+                    <div class="opacity-40">
+                        ${thread.createdAt}
+                    </div>
+                </div>
+                <a href="/thread?id=${thread.id}">
+                    <p>${thread.content}</p>
+                </a>
+                <img src="${thread.imageUrl}" alt="Image"
+                    class="rounded-xl max-h-[300px] my-2 ${thread.imageUrl ? 'block' : 'hidden'}">
+                <div class="flex gap-2 place-items-center">
+                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2 ${thread.liked ? 'text-red-500' : ''}" data-thread-id="${thread.id}">
+                        <i class="${thread.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        <span class="likes-count">${thread.likes}</span>
+                    </div>
+                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="${thread.id}">
+                        <i class="fa-regular fa-comment"></i>
+                        <span class="comments-count">${thread.comments}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        return threadDiv;
+    }
+
+    function attachThreadEvents(threadElement) {
+        // Gắn sự kiện cho nút "like"
+        const likeButton = threadElement.querySelector('.fa-heart');
+        likeButton.parentElement.addEventListener('click', async function () {
+            const threadId = likeButton.parentElement.getAttribute('data-thread-id');
+            const currentUser = '{{currentUser.id}}';
+            const likesCount = likeButton.parentElement.querySelector('span');
+            try {
+                const res = await fetch('/toggleLikes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ thread: threadId, user: currentUser }),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    likesCount.textContent = data.likesCount;
+                    if (data.liked) {
+                        likeButton.classList.add('fa-solid');
+                        likeButton.classList.remove('fa-regular');
+                        likeButton.parentElement.classList.add('text-red-500');
+                    } else {
+                        likeButton.classList.add('fa-regular');
+                        likeButton.classList.remove('fa-solid');
+                        likeButton.parentElement.classList.remove('text-red-500');
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+                alert("Error occurred while liking/unliking!");
+            }
+        });
+
+        // Gắn sự kiện cho nút "comment"
+        const commentButton = threadElement.querySelector('.fa-comment');
+        commentButton.parentElement.addEventListener('click', function () {
+            const threadId = commentButton.parentElement.getAttribute('data-thread-id');
+            document.getElementById('comment-thread-id').value = threadId;
+            document.getElementById('comment-overlay').classList.remove('hidden');
+            document.getElementById('comment-overlay').classList.add('flex');
+        });
+    }
+
+    async function loadThreads() {
+        try {
+            if (loading) return;
+            loading = true;
+            document.getElementById('loading-spinner').classList.remove('hidden');
+
+            const res = await fetch(`/loadThreads?page=${page}`);
+            const threads = await res.json();
+
+            // Render threads mới vào giao diện
+            const feedsContainer = document.getElementById('feeds');
+            threads.forEach(thread => {
+                const threadElement = createThreadElement(thread);
+                feedsContainer.appendChild(threadElement);
+                attachThreadEvents(threadElement);
+            });
+
+            page++;
+        } catch (error) {
+            console.error('Error loading threads:', error);
+        } finally {
+            loading = false;
+            document.getElementById('loading-spinner').classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadThreads);
+    document.getElementById('feeds').addEventListener('scroll', function () {
+        if (this.scrollTop + this.clientHeight >= this.scrollHeight - 10) {
+            loadThreads();
+        }
+    });
+
 </script>

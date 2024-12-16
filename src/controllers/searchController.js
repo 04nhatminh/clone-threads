@@ -38,8 +38,6 @@ controller.loadUsers = async (req, res) => {
         });
 
         res.json(users.map(user => {
-            console.log(user.id);
-            console.log(user.follows);
             return {
                 id: user.id,
                 username: user.username,

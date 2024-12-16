@@ -7,10 +7,10 @@ const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
 controller.renderHome = async (req, res) => {
     const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
     const currentUser = await models.User.findOne({ where: { id: userId } });
-    const threads = await models.Thread.findAll({
-        include: ['user', 'likes', 'comments'],
-        order: [['createdAt', 'DESC']],
-    });
+    // const threads = await models.Thread.findAll({
+    //     include: ['user', 'likes', 'comments'],
+    //     order: [['createdAt', 'DESC']],
+    // });
 
     // Lấy danh sách các thread mà người dùng hiện tại đã like
     const likedThreads = await models.Like.findAll({
@@ -21,7 +21,7 @@ controller.renderHome = async (req, res) => {
     // Chuyển đổi danh sách likedThreads thành mảng các threadId
     const likedThreadIds = likedThreads.map(like => like.threadId);
 
-    res.locals.threads = threads;
+    // res.locals.threads = threads;
     res.locals.currentUser = currentUser;
     res.locals.likedThreadIds = likedThreadIds;
 
@@ -31,6 +31,34 @@ controller.renderHome = async (req, res) => {
         loggedIn: currentUser ? true : false,
         following: false,
     });
+}
+
+controller.loadThreads = async (req, res) => {
+    const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
+    const threads = await models.Thread.findAll({
+        include: ['user', 'likes', 'comments'],
+        order: [['updatedAt', 'DESC']],
+        limit: 10,
+        offset: (page - 1) * 10,
+    });
+
+    res.json(threads.map(thread => {
+        return {
+            id: thread.id,
+            content: thread.content,
+            imageUrl: thread.imageUrl,
+            user: {
+                id: thread.user.id,
+                username: thread.user.username,
+                avatarUrl: thread.user.avatarUrl,
+            },
+            likes: thread.likes.length,
+            comments: thread.comments.length,
+            createdAt: thread.createdAt,
+            liked: thread.likes.some(like => like.userId === userId),
+        }
+    }));    
 }
 
 controller.loadFollowingThreads = async (req, res) => {
