@@ -98,28 +98,28 @@ class authController {
             return res.render('forgotpassword', {message : 'Email is not exits!'});
         }
     }
-    // resetPasswordShow(req, res) {
-    //     res.locals.title = 'Reset password';
-    //     let email = req.query.email;
-    //     let token = req.query.token;
-    //     let { verify } = require('./jwt');
-    //     if (!token || !verify(token)) {
-    //         return res.render('resetpassword', {expired: true});
-    //     } else {
-    //         res.render('resetpassword', {email, token});
-    //     }
-    // }
+    resetPasswordShow(req, res) {
+        res.locals.title = 'Reset password';
+        let email = req.query.email;
+        let token = req.query.token;
+        let { verify } = require('./jwt');
+        if (!token || !verify(token)) {
+            return res.render('resetpassword', {expired: true});
+        } else {
+            res.render('resetpassword', {email, token});
+        }
+    }
 
-    // async resetPassword(req, res) {
-    //     let email = req.body.email;
-    //     let token = req.body.token;
-    //     let bcrypt = require('bcryptjs');
-    //     let password = bcrypt.hash(req.body.password, 8);
-    //     // let password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8));
+    async resetPassword(req, res) {
+        let email = req.body.email;
+        let token = req.body.token;
+        let bcrypt = require('bcryptjs');
+        let password = await bcrypt.hash(req.body.password, 8);
+        // let password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8));
 
-    //     await models.User.update({password}, {where: {email}});
-    //     res.render('resetpassword', {done: true});
-    // }
+        await models.User.update({password}, {where: {email}});
+        res.render('resetpassword', {done: true});
+    }
 }
 
 module.exports = new authController();

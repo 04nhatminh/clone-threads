@@ -24,11 +24,13 @@
             </div>
 
             <!-- Password Input -->
-            <div>
+            <div class="relative">
                 <label for="password" class="sr-only">Password</label>
                 <input type="password" id="password"
                     class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" name="password"
                     placeholder="Password" required>
+                    <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
+                        id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
                 <small id="password-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
             </div>
             {{#if signupMessage}}
@@ -79,4 +81,25 @@
             }
         });
     });
+
+    function togglePasswordVisibility(icon) {
+        // Lấy id của icon
+        const iconId = icon.id;
+        // Lấy id của input field
+        const inputId = iconId.replace('toggle', '');
+        const inputFieldId = inputId.charAt(0).toLowerCase() + inputId.slice(1); 
+
+        const inputField = document.querySelector(`#${inputFieldId}`);
+
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            inputField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
 </script>
