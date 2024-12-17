@@ -3,9 +3,12 @@ const app = express();
 const route = require('./routes');
 const path = require('path');
 const expressHbs = require('express-handlebars');
-const port = 3000;
+require('dotenv').config()
+const port = process.env.PORT || 3000;
+const bodyParser = require('body-parser')
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
 app.engine(
     'hbs',
@@ -50,6 +53,32 @@ app.engine(
             },
             includes: (array, value) => {
                 return array.includes(value);
+            },
+            extractDomain: (url) => {
+                try {
+                    const { hostname } = new URL(url);
+                    return hostname.split('.').slice(0, -1).join('.') + '.' + hostname.split('.').pop().substring(0, 3);
+                } catch (error) {
+                    return url; 
+                }
+            },
+            timeAgo: (date) => {
+                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                const intervals = {
+                    year: 31536000,
+                    month: 2592000,
+                    week: 604800,
+                    day: 86400,
+                    hour: 3600,
+                    minute: 60
+                };
+                for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                    const interval = Math.floor(seconds / secondsInUnit);
+                    if (interval >= 1) {
+                        return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+                    }
+                }
+                return 'Just now';
             }
         }
     })
@@ -61,7 +90,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Cau hinh doc du lieu gui theo phuong thuc POST
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Cau hinh doc ghi cookie
 const cookieParser = require('cookie-parser');
@@ -69,11 +98,13 @@ app.use(cookieParser());
 
 route(app);
 
-app.get("/profile", (req, res) => {
-    res.render("profile", {
-        title: "Profile",
-        isProfile: true,
-    });
+app.use((req, res) => {
+    res.status(404).send("Request NOT Found!");
+});
+
+app.use((error, req, res, next) => {
+    console.error(error);
+    res.status(500).send(`${error}`);
 });
 
 app.listen(port, () => {
