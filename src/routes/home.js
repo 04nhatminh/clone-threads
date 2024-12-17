@@ -35,8 +35,11 @@ router.post('/signup',
 
 // router.post('/signup', authController.signUpHandle);
 router.get('/signup2', authController.signUp2);
-router.get('/forgot-password', authController.forgotPassword);
-router.get('/reset-password', authController.resetPassword);
+router.get('/forgot', authController.forgotPasswordShow);
+router.post('/forgot', authController.forgotPassword);
+
+// router.get('/reset', authController.resetPasswordShow);
+// router.post('/reset', authController.resetPassword);
 router.use(authController.isLoggedIn);
 router.get('/', homeController.renderHome);
 router.post('/', homeController.renderHome);

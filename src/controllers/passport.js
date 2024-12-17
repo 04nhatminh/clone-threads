@@ -105,10 +105,7 @@ passport.use(
           email: email,
           username: req.body.username,
           password: await bcrypt.hash(password, 8),
-          
-          // password: bcrypt.hashSync(password, bcrypt.genSaltSync(8)),
         });
-        console.log("Signup successfully!");
         done(null, false, req.flash("signupMessage", "Signup successfully!"));
         console.log("Signup successfully!");
 

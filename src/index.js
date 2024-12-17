@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const route = require('./routes');
@@ -7,7 +8,7 @@ const session = require('express-session');
 const redisStore  = require('connect-redis').default;
 const { createClient } = require('redis');
 const bodyParser = require('body-parser');
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const redisClient = createClient({
     url: 'rediss://red-ct8uaq5ds78s73ch9d50:jsCk4S0kocDWyBVza0v97HBm72d0aMIl@singapore-redis.render.com:6379'

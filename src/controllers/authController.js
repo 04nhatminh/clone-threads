@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const passport = require('passport');
 const nodemailer = require('nodemailer');
-// const db = require('../db');
 const apiController = require('./apiController');
 const models = require ('../models');
 const { Op } = require('sequelize');
@@ -70,14 +69,57 @@ class authController {
         res.locals.title = 'Signup cont';
         res.render('signup2');
     }
-    forgotPassword(req, res) {
-        res.locals.title = 'Forgot assword';
+    forgotPasswordShow(req, res) {
+        res.locals.title = 'Forgot password';
         res.render('forgotpassword');
     }
-    resetPassword(req, res) {
-        res.locals.title = 'Reset password';
-        res.render('resetpassword');
+    async forgotPassword(req, res) {
+        let email = req.body.email;
+        //kiem tra neu email ton tai
+        //nguoc lai thong bao email khong ton tai
+        let user = await models.User.findOne({where: {email}});
+        if (user) {
+            //tao link
+            const { sign } = require('./jwt');
+            const host = req.header('host');
+            const resetLink = `${req.protocol}://${host}/reset?token=${sign(email)}&email=${email}`;
+            //gui email
+            const { sendForgotPasswordMail } = require('./mail');
+            sendForgotPasswordMail(user, host, resetLink)
+            .then((result) => {
+                console.log('email has been sent');
+                res.render('forgotpassword', {done: true});
+            })
+            .catch((error) => {
+                console.log(error.statusCode);
+                res.render('forgotpassword', {message: 'An error occurred while sending to your email. Please check your email!'});
+            });
+        } else {
+            return res.render('forgotpassword', {message : 'Email is not exits!'});
+        }
     }
+    // resetPasswordShow(req, res) {
+    //     res.locals.title = 'Reset password';
+    //     let email = req.query.email;
+    //     let token = req.query.token;
+    //     let { verify } = require('./jwt');
+    //     if (!token || !verify(token)) {
+    //         return res.render('resetpassword', {expired: true});
+    //     } else {
+    //         res.render('resetpassword', {email, token});
+    //     }
+    // }
+
+    // async resetPassword(req, res) {
+    //     let email = req.body.email;
+    //     let token = req.body.token;
+    //     let bcrypt = require('bcryptjs');
+    //     let password = bcrypt.hash(req.body.password, 8);
+    //     // let password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8));
+
+    //     await models.User.update({password}, {where: {email}});
+    //     res.render('resetpassword', {done: true});
+    // }
 }
 
 module.exports = new authController();
