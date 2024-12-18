@@ -4,6 +4,7 @@ const sequelize = require('sequelize');
 const models = require('../models');
 const { use } = require('../routes/home');
 const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
+const { uploadToCloudinary } = require('../middleware/upload');
 controller.renderHome = async (req, res) => {
     const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
     const currentUser = await models.User.findOne({ where: { id: userId } });
@@ -58,7 +59,7 @@ controller.loadThreads = async (req, res) => {
             createdAt: thread.createdAt,
             liked: thread.likes.some(like => like.userId === userId),
         }
-    }));    
+    }));
 }
 
 controller.loadFollowingThreads = async (req, res) => {
@@ -97,13 +98,26 @@ controller.loadFollowingThreads = async (req, res) => {
 
 controller.addNewThread = async (req, res) => {
     try {
+        console.log('Starting add new thread...');
+        let imageUrl = null;
+
+        if (req.file) {
+            console.log('Uploading image to Cloudinary...');
+            const uploadResult = await uploadToCloudinary(req.file.buffer, 'threads');
+            console.log('Upload result:', uploadResult); // Log kết quả upload
+            imageUrl = uploadResult.secure_url; // Lấy URL ảnh từ Cloudinary
+        }
+
+        console.log('Creating thread in database...');
         const newThread = await models.Thread.create({
             userId: isNaN(req.body.userId) ? null : parseInt(req.body.userId),
             content: req.body.content,
-            imageUrl: null,
+            imageUrl: imageUrl, // Lưu URL ảnh
             createdAt: new Date(),
             updatedAt: new Date(),
         });
+
+        console.log('Thread created:', newThread); // Log thông tin thread mới
         res.redirect('/');
     } catch (error) {
         console.error(error);

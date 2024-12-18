@@ -8,7 +8,7 @@
 {{#with currentUser}}
 <div id="new-thread-overlay"
     class="bg-vampire-black dark:bg-eerie-black dark:bg-opacity-10 bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
-    <form action="/" method="POST" class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+    <form action="/" method="POST" enctype="multipart/form-data" class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
         id="create-container">
         <input type="hidden" name="userId" value="{{id}}">
         <!-- Header -->
@@ -28,7 +28,7 @@
                     <textarea name="content"
                         class="post-input leading-5 outline-none resize-none pt-1 dark:bg-eerie-black placeholder:text-spanish-gray dark:placeholder:text-sonic-silver"
                         id="content" placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
-                    <input type="file" accept="image/*" id="image-upload" class="hidden" onchange="previewImage(event)">
+                    <input type="file" accept="image/*" name="image" id="image-upload" class="hidden" onchange="previewImage(event)">
                     <label for="image-upload" class="cursor-pointer">
                         <i class="fa-regular fa-image mt-2"></i>
                     </label>
