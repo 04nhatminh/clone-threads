@@ -1,431 +1,97 @@
-<body class="md:bg-[#fafafa] h-screen flex flex-col overflow-hidden">
-    <div id="mobile-logo" class="z-20 p-2 md fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
-        <a href="/">
-            <i class="fa-brands fa-threads fa-2xl"></i>
-        </a>
-    </div>
+{{> navbar}}
+{{> post-button}}
+{{> login-button}}
 
-    <div class="fixed bg-[#ffffff] border-[#d9d9d9] bottom-6 right-6 md:block hidden px-8 py-6 rounded-2xl border shadow-lg hover:scale-110 transition ease-in-out duration-200 cursor-pointer z-10"
-        onclick="createNewThread()">
-        <i class="fa-solid fa-plus fa-xl"></i>
-    </div>
+<div id="header"
+    class="fixed z-10 left-1/2 -translate-x-1/2 w-full md:w-[640px] text-center md:pt-5 pt-16 md:bg-[#fafafa] text-[15px] font-semibold md:block hidden">
+    <span>Notifications</span>
+</div>
 
-    <div id="mobile-more"
-        class="fixed z-20 top-2 left-2 p-2 opacity-40 hover:opacity-100 cursor-pointer rounded-xl md:hidden">
-        <i class="fa-solid fa-bars" onclick="showLogOutMobile()"></i>
-    </div>
-
-    {{!-- Sidebar --}}
-    <nav
-        class="fixed bottom-0 z-20 w-full md:w-20 h-20 md:h-screen flex md:flex-col md:justify-between md:bg-[#fafafa] bg-[#ffffff] text-center">
-        <div class="z-20 p-4 hidden md:block hover:scale-110 transition ease-in-out duration-200" id="pc-logo">
-            <a href="/">
-                <i class="fa-brands fa-threads fa-2xl"></i>
-            </a>
+<div class="main-container md:mt-[50px] mt-2 flex justify-center h-screen overflow-hidden">
+    <div id="notifications-list"
+        class="shadow-lg bg-[#ffffff] w-full h-full md:w-[640px] border-[#d6d6d6] border md:rounded-t-3xl overflow-y-auto md:mt-[10px] mt-12 pb-32 md:pb-10"
+        style="scrollbar-width: none;">
+        {{#each noti}}
+        <div class="p-4 flex relative" notiId="{{id}}">
+            <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
+                <a href="/@{{from.username}}"><img class="rounded-full" src="{{from.avatarUrl}}"
+                        alt="Avatar"></a>
+            </div>
+            <div class="basis-11/12 px-4 bg-white">
+                <div class="flex flex-col">
+                    <div class="flex gap-1">
+                        <a class="hover:underline" href="/@{{from.username}}"><span class="font-medium">{{from.username}}</span></a>
+                        <p>{{message}}</p>
+                    </div>
+                    <span class="{{#if isRead}}text-gray-400{{else}}text-[#74C0FC] font-bold {{/if}} text-sm time">
+                        {{getDifTime createdAt}}
+                    </span>
+                </div>
+            </div>
+            <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
+            {{#if isRead}} {{else}}
+            <i class="fa-solid fa-circle fa-sm absolute bottom-4 right-4 text-[#74C0FC]"></i>
+            {{/if}}
         </div>
-
-        <div class="flex md:flex-col w-full justify-around items-center gap-2 md:gap-4">
-            <a href="/">
-                <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] transition ease-in-out duration-200">
-                    <i class="fa-solid fa-house fa-xl text-[#b1b1b1]"></i>
-                </div>
-            </a>
-
-            <a href="/search">
-                <div
-                    class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200">
-                    <i class="fa-solid fa-magnifying-glass fa-xl text-[#b1b1b1]"></i>
-                </div>
-            </a>
-
-            <div class="p-4 md:px-5 md:py-3 rounded-2xl bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200 hidden md:block"
-                onclick="createNewThread()">
-                <i class="fa-solid fa-plus fa-xl text-[#b1b1b1] hover:text-black"></i>
-            </div>
-
-            <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200 md:hidden"
-                onclick="createNewThread()">
-                <i class="fa-regular fa-pen-to-square fa-xl text-[#b1b1b1]"></i>
-            </div>
-
-            <a href="/notifications">
-                <div class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] transition ease-in-out duration-200">
-                    <i class="fa-regular fa-bell fa-xl"></i>
-                </div>
-            </a>
-
-            <a href="/profile">
-                <div
-                    class="p-4 md:px-5 md:py-3 rounded-2xl hover:bg-[#f0f0f0] cursor-pointer transition ease-in-out duration-200">
-                    <i class="fa-regular fa-user fa-xl text-[#b1b1b1]"></i>
-                </div>
-            </a>
-        </div>
-
-        <div id="more" class="mb-9 rounded-2xl cursor-pointer hidden md:block transition ease-in-out duration-200">
-            <i class="fa-solid fa-bars fa-xl text-[#b1b1b1] hover:text-black" onclick="showLogOutPC()"></i>
-        </div>
-    </nav>
-
-    <div id="header"
-        class="fixed z-10 left-1/2 -translate-x-1/2 w-full md:w-1/2 text-center md:pt-5 pt-16 md:bg-[#fafafa] text-[15px] font-semibold md:block hidden">
-        <span>Notifications</span>
+        {{/each}}
     </div>
+</div>
 
-    <div class="main-container md:mt-[50px] mt-2 flex justify-center h-screen overflow-hidden">
-        <div id="notifications-list"
-            class="shadow-lg bg-[#ffffff] w-full h-full md:w-[640px] border-[#d6d6d6] border md:rounded-t-3xl overflow-y-auto md:mt-[10px] mt-12 pb-32 md:pb-10"
-            style="scrollbar-width: none;">
-            <div class="p-4 flex relative">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">nhatminh.22clc</span>
-                            <p> has followed you.</p>
-                        </div>
-                        <span class="text-[#74C0FC] font-bold text-sm time">
-                            2h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-                <i class="fa-solid fa-circle fa-sm absolute bottom-4 right-4" style="color: #74C0FC;"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6] relative">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-[#74C0FC] font-bold text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-                <i class="fa-solid fa-circle fa-sm absolute bottom-4 right-4" style="color: #74C0FC;"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-
-            <div class="p-4 flex border-t border-[#d6d6d6]">
-                <div class="basis-1/12 min-w-10 bg-white" id="thread-avatar">
-                    <a href="./other-profile.html?userId=1"><img class="rounded-full" src="/images/avatar.jpg"
-                            alt="Avatar"></a>
-                </div>
-                <div class="basis-11/12 px-4 bg-white">
-                    <div class="flex flex-col">
-                        <div class="flex gap-1">
-                            <span class="font-medium">ABC</span>
-                            <p> just liked your thread.</p>
-                        </div>
-                        <span class="text-gray-400 text-sm time">
-                            3h
-                        </span>
-                    </div>
-                </div>
-                <i class="noti-options-icon fa-solid fa-ellipsis cursor-pointer"></i>
-            </div>
-        </div>
-    </div>
-
-    {{!-- New Thread Overlay --}}
-    <div id="new-thread-overlay"
-        class="bg-[#030303] bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
-        <div class="w-full md:max-w-[600px] h-full md:max-h-[60vh] bg-white md:rounded-xl relative overflow-hidden flex flex-col"
-            id="create-container">
-            {{!-- Header --}}
-            <div class="text-center font-semibold p-4 border-b border-gray-300 relative">
-                New thread
-                <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate()">Cancel</button>
-            </div>
-
-            {{!-- Scrollable content area --}}
-            <div class="overflow-y-auto scrollable flex-1">
-                <div class="p-4 flex">
-                    <div class="basis-1/12 min-w-10 bg-white">
-                        <img class="rounded-full" src="/images/avatar.jpg" alt="Avatar">
-                    </div>
-                    <div class="basis-11/12 pl-4 bg-white flex flex-col">
-                        <div class="font-medium">nhatminh.22clc</div>
-                        <textarea name="content" class="post-input leading-5 outline-none resize-none pt-1" id="content"
-                            placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
-                        <input type="file" accept="image/*" id="image-upload" class="hidden"
-                            onchange="previewImage(event)">
-                        <label for="image-upload" class="cursor-pointer">
-                            <i class="fa-regular fa-image mt-2"></i>
-                        </label>
-                        <img class="max-w-2/3 h-fit mt-2 hidden" src="" alt="" id="attach-image">
-                    </div>
-                </div>
-            </div>
-
-            {{!-- Footer with post button --}}
-            <div class="p-4 bg-white">
-                <button id="post-button"
-                    class="float-right font-medium rounded-full px-4 py-3 bg-transparent border border-[#d9d9d9] text-gray-400 cursor-not-allowed leading-none">Post</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.querySelectorAll('.noti-options-icon').forEach((element) => {
-            element.addEventListener('click', (event) => {
-                document.querySelectorAll('.noti-options').forEach(popup => popup.remove());
-
-                const popup = document.createElement('div');
-                popup.classList.add('noti-options', 'absolute', 'bg-white', 'border');
-                popup.style.top = `${element.getBoundingClientRect().bottom + window.scrollY - 20}px`;
-                popup.style.left = `${element.getBoundingClientRect().left - 100}px`;
-
-                const markAsRead = document.createElement('div');
-                markAsRead.textContent = 'Mark as read';
-                markAsRead.classList.add('cursor-pointer', 'p-2', 'hover:bg-gray-200');
-                markAsRead.addEventListener('click', () => {
-                    popup.remove();
-                    element.parentElement.querySelector('.fa-circle').remove();
-                    element.parentElement.querySelector('.time').classList.remove('text-[#74C0FC]', 'font-bold');
-                    element.parentElement.querySelector('.time').classList.add('text-gray-400');
-                });
-
-                const deleteOption = document.createElement('div');
-                deleteOption.textContent = 'Delete';
-                deleteOption.classList.add('cursor-pointer', 'p-2', 'hover:bg-gray-200');
-                deleteOption.addEventListener('click', () => {
-                    element.parentElement.style.display = 'none';
-                    popup.remove();
-                });
-
-                popup.appendChild(markAsRead);
-                popup.appendChild(deleteOption);
-                document.body.appendChild(popup);
-
-                document.addEventListener('click', (event) => {
-                    if (!popup.contains(event.target) && event.target !== element) {
-                        popup.remove();
-                    }
-                }, { once: true });
-            });
-        });
-
-        const postInput = document.querySelector('.post-input');
-        const postButton = document.getElementById('post-button');
-
-        // Post button state
-        if (postInput && postButton) {
-            postInput.addEventListener('input', () => {
-                if (postInput.value.trim()) {
-                    postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                    postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
-                } else {
-                    postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                    postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
-                }
-            });
-        }
-
-        const createNewThread = () => {
-			document.getElementById('new-thread-overlay').classList.remove('hidden');
-			document.getElementById('new-thread-overlay').classList.add('flex');
-		}
-
-		const exitCreate = () => {
-            document.getElementById('new-thread-overlay').classList.add('hidden');
-
-            const textarea = document.getElementById('content');
-            textarea.value = '';
-            textarea.style.height = 'auto';
-
-            const image = document.getElementById('attach-image');
-            image.src = '';
-            image.classList.add('hidden');
-
-            const fileInput = document.getElementById('image-upload');
-            fileInput.value = '';
-
-            const postButton = document.getElementById('post-button');
-            postButton.classList.add('text-gray-400', 'cursor-not-allowed');
-            postButton.classList.remove('text-blue-500', 'cursor-pointer');
-
-            if (image.src.startsWith('blob:')) {
-                URL.revokeObjectURL(image.src);
-            }
-        }
-
-		document.getElementById('new-thread-overlay').addEventListener('click', (e) => {
-			const createContainer = document.getElementById('create-container');
-			if (!createContainer.contains(e.target)) {
-				exitCreate();
-			}
-		});
-
-        const previewImage = (event) => {
-            const image = document.getElementById('attach-image');
-
-            image.src = URL.createObjectURL(event.target.files[0]);
-            image.classList.remove('hidden');
-
-            image.onload = () => {
-                URL.revokeObjectURL(image.src);
-            };
-        }
-
-        document.getElementById('content').addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-        // Logout
-        function showLogOutPC() {
-            document.querySelectorAll('.logout-popup').forEach(popup => popup.remove());
+<script>
+    document.querySelectorAll('.noti-options-icon').forEach((element) => {
+        element.addEventListener('click', (event) => {
+            document.querySelectorAll('.noti-options').forEach(popup => popup.remove());
 
             const popup = document.createElement('div');
-            popup.classList.add('logout-popup', 'absolute', 'z-20', 'bg-white', 'border', 'rounded-xl', 'shadow-lg', 'p-2');
-            popup.style.top = `${document.getElementById('more').getBoundingClientRect().top - popup.offsetHeight - 20}px`;
-            popup.style.left = `${document.getElementById('more').getBoundingClientRect().left + document.getElementById('more').offsetWidth}px`;
+            popup.classList.add('noti-options', 'absolute', 'bg-white', 'border');
+            popup.style.top = `${element.getBoundingClientRect().bottom + window.scrollY - 20}px`;
+            popup.style.left = `${element.getBoundingClientRect().left - 100}px`;
 
-            const logoutButton = document.createElement('button');
-            logoutButton.textContent = 'Log out';
-            logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]');
-            logoutButton.onclick = function () {
-                window.location.href = '/login';
-            };
+            const markAsRead = document.createElement('div');
+            markAsRead.textContent = 'Mark as read';
+            markAsRead.classList.add('cursor-pointer', 'p-2', 'hover:bg-gray-200');
+            markAsRead.addEventListener('click', () => {
+                popup.remove();
+                element.parentElement.querySelector('.fa-circle').remove();
+                element.parentElement.querySelector('.time').classList.remove('text-[#74C0FC]', 'font-bold');
+                element.parentElement.querySelector('.time').classList.add('text-gray-400');
+                fetch('/notifications/mark-as-read', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        notiId: element.parentElement.getAttribute('notiId'),
+                    }),
+                });
+            });
 
-            popup.appendChild(logoutButton);
+            const deleteOption = document.createElement('div');
+            deleteOption.textContent = 'Delete';
+            deleteOption.classList.add('cursor-pointer', 'p-2', 'hover:bg-gray-200');
+            deleteOption.addEventListener('click', () => {
+                element.parentElement.style.display = 'none';
+                popup.remove();
+                fetch('/notifications/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        notiId: element.parentElement.getAttribute('notiId'),
+                    }),
+                });
+            });
+
+            popup.appendChild(markAsRead);
+            popup.appendChild(deleteOption);
             document.body.appendChild(popup);
 
-            document.addEventListener('click', function (e) {
-                if (!popup.contains(e.target) && !document.getElementById('more').contains(e.target)) {
+            document.addEventListener('click', (event) => {
+                if (!popup.contains(event.target) && event.target !== element) {
                     popup.remove();
                 }
             });
-        }
-
-        function showLogOutMobile() {
-            document.querySelectorAll('.logout-popup').forEach(popup => popup.remove());
-
-            const popup = document.createElement('div');
-            popup.classList.add('logout-popup', 'absolute', 'top-12', 'left-0', 'z-50', 'bg-white', 'border', 'rounded-xl', 'shadow-lg', 'p-2');
-
-            const logoutButton = document.createElement('button');
-            logoutButton.textContent = 'Log out';
-            logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]');
-            logoutButton.onclick = function () {
-                window.location.href = '/login';
-            };
-
-            popup.appendChild(logoutButton);
-            document.body.appendChild(popup);
-
-            document.addEventListener('click', function (e) {
-                if (!popup.contains(e.target) && !document.getElementById('mobile-more').contains(e.target)) {
-                    popup.remove();
-                }
-            });
-        }
-
-    </script>
-
-</body>
+        });
+    });
+</script>

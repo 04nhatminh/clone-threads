@@ -1,0 +1,33 @@
+1. Lệnh tạo bảng (không cần gõ lại)
+"""
+    sequelize model:generate --name User --attributes id:integer,email:string,username:string,password:string,avatarUrl:string,description:string,createdAt:date,updatedAt:date --force
+    sequelize model:generate --name Notification --attributes id:integer,userId:integer,type:string,isRead:boolean,createdAt:date,updatedAt:date --force
+    sequelize model:generate --name Thread --attributes id:integer,userId:integer,content:text,imageUrl:string,createdAt:date,updatedAt:date --force
+    sequelize model:generate --name Like --attributes id:integer,userId:integer,threadId:integer,createdAt:date,updatedAt:date --force
+    sequelize model:generate --name Comment --attributes id:integer,userId:integer,threadId:integer,content:text,createdAt:date,updatedAt:date --force
+    sequelize model:generate --name Follow --attributes userId:integer,followerId:integer,createdAt:date,updatedAt:date --force
+
+    sequelize seed:generate --name User
+    sequelize seed:generate --name Notification
+    sequelize seed:generate --name Thread
+    sequelize seed:generate --name Like
+    sequelize seed:generate --name Comment
+    sequelize seed:generate --name Follow
+"""
+
+2. Thao tác với database
+"""
+    sequelize db:drop // Xóa database nếu cần tạo lại
+    sequelize db:drop // Tạo database nếu chưa có (không cần viết script tạo bảng trong sql)
+    node db.js // Tạo bảng trong database
+    sequelize db:migrate // Không cần chạy lệnh này
+    sequelize db:seed:all // Tạo dữ liệu mẫu
+"""
+
+3. Xóa dữ liệu trong database
+"""
+    sequelize db:seed:undo:all // Xóa dữ liệu mẫu nếu muốn tạo lại
+    sequelize db:seed:undo --seed name-of-seed // Xóa dữ liệu mẫu theo tên
+"""
+
+4. Nhìn các alias (as) trong thư mục models để xem cách đặt tên của các relation.

@@ -1,0 +1,123 @@
+<!-- Post Button -->
+<div class="hidden fixed md:flex bg-white dark:bg-eerie-black items-center justify-center border-light-gray dark:border-charleston-green cursor-pointer border bottom-6 right-6 px-8 py-5 rounded-2xl hover:scale-110 transition-all duration-300 shadow-lg"
+    id="new-thread-button" onclick="createNewThread()">
+    <i class="fa-solid fa-plus text-2xl text-black dark:text-white"></i>
+</div>
+
+<!-- New Thread Overlay -->
+{{#with currentUser}}
+<div id="new-thread-overlay"
+    class="bg-vampire-black dark:bg-eerie-black dark:bg-opacity-10 bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
+    <form action="/" method="POST" enctype="multipart/form-data" class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+        id="create-container">
+        <input type="hidden" name="userId" value="{{id}}">
+        <!-- Header -->
+        <div class="text-center font-semibold p-4 border-b border-gray-300 relative">
+            New thread
+            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate()">Cancel</button>
+        </div>
+
+        <!-- Scrollable content area -->
+        <div class="overflow-y-auto scrollable flex-1" id="scrollable-content">
+            <div class="p-4 flex">
+                <div class="basis-1/12 min-w-10 bg-white dark:bg-eerie-black">
+                    <img class="rounded-full" src="{{avatarUrl}}" alt="Avatar">
+                </div>
+                <div class="basis-11/12 pl-4 bg-white dark:bg-eerie-black flex flex-col">
+                    <div class="font-medium">{{username}}</div>
+                    <textarea name="content"
+                        class="post-input leading-5 outline-none resize-none pt-1 dark:bg-eerie-black placeholder:text-spanish-gray dark:placeholder:text-sonic-silver"
+                        id="content" placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
+                    <input type="file" accept="image/*" name="image" id="image-upload" class="hidden" onchange="previewImage(event)">
+                    <label for="image-upload" class="cursor-pointer">
+                        <i class="fa-regular fa-image mt-2"></i>
+                    </label>
+                    <img class="max-w-2/3 h-fit mt-2 hidden" src="" alt="" id="attach-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with post button -->
+        <div class="p-4 bg-white dark:bg-eerie-black">
+            <button id="post-button" type="button"
+                class="float-right font-medium rounded-full px-4 py-3 bg-transparent border border-[#d9d9d9] text-gray-400 cursor-not-allowed leading-none">Post</button>
+        </div>
+    </form>
+</div>
+{{/with}}
+
+<script>
+    // Create new thread + close
+    const postInput = document.querySelector('.post-input');
+    const postButton = document.getElementById('post-button');
+
+    // Post button state
+    if (postInput && postButton) {
+        postInput.addEventListener('input', () => {
+            if (postInput.value.trim()) {
+                postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
+                postButton.type = 'submit';
+            } else {
+                postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
+                postButton.type = 'button';
+            }
+        });
+    }
+
+    const createNewThread = () => {
+        document.getElementById('new-thread-overlay').classList.remove('hidden');
+        document.getElementById('new-thread-overlay').classList.add('flex');
+        const createContainer = document.getElementById('create-container');
+        setTimeout(() => {
+            const createContainer = document.getElementById('create-container');
+            createContainer.classList.remove('scale-95', 'opacity-0');
+            createContainer.classList.add('scale-100', 'opacity-100');
+        }, 100);
+    }
+
+    const exitCreate = () => {
+        document.getElementById('new-thread-overlay').classList.add('hidden');
+        const createContainer = document.getElementById('create-container');
+        createContainer.classList.remove('scale-100', 'opacity-100');
+        createContainer.classList.add('scale-95', 'opacity-0');
+
+        const textarea = document.getElementById('content');
+        textarea.value = '';
+        textarea.style.height = 'auto';
+
+        const image = document.getElementById('attach-image');
+        image.src = '';
+        image.classList.add('hidden');
+
+        const fileInput = document.getElementById('image-upload');
+        fileInput.value = '';
+
+        const postButton = document.getElementById('post-button');
+        postButton.classList.add('text-gray-400', 'cursor-not-allowed');
+        postButton.classList.remove('text-blue-500', 'cursor-pointer');
+
+        if (image.src.startsWith('blob:')) {
+            URL.revokeObjectURL(image.src);
+        }
+    }
+
+    document.getElementById('new-thread-overlay').addEventListener('click', (e) => {
+        const createContainer = document.getElementById('create-container');
+        if (!createContainer.contains(e.target)) {
+            exitCreate();
+        }
+    });
+
+    const previewImage = (event) => {
+        const image = document.getElementById('attach-image');
+
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.classList.remove('hidden');
+
+        image.onload = () => {
+            URL.revokeObjectURL(image.src);
+        };
+    }
+</script>
