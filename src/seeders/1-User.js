@@ -26,6 +26,7 @@ module.exports = {
         email: faker.internet.email(),
         username: username,
         password: await hashPassword("123456789"),
+        fullName: faker.person.fullName(),
         avatarUrl: faker.image.avatar(),
         description: faker.person.bio(),
         website: faker.internet.url(),

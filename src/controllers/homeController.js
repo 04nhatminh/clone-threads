@@ -5,6 +5,7 @@ const models = require('../models');
 const { use } = require('../routes/home');
 const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
 const { uploadToCloudinary } = require('../middleware/upload');
+
 controller.renderHome = async (req, res) => {
     const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
     const currentUser = await models.User.findOne({ where: { id: userId } });
