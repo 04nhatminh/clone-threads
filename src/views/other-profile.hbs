@@ -1,0 +1,626 @@
+{{> navbar }}
+{{> post-button }}
+{{> toast }}
+
+<link rel="stylesheet" href="/css/profile.css">
+
+<!-- Header -->
+<header
+    class="flex justify-center items-center bg-transparent fixed inset-x-0 top-0 z-[2000] bg-[#fafafa] p-5 max-w-[640px] mx-auto">
+    <h1 class="font-semibold title text-[15px] text-black cursor-pointer">Profile</h1>
+    <a href=""><i class="fa-brands fa-threads mt-3 fa-2xl logo hidden cursor-pointer"></i></a>
+</header>
+
+<div class="avatar-dialog-overlay fixed inset-0 bg-[#fefefe] z-[2000] justify-center items-center hidden opacity-0 transition-opacity duration-500 ease-in-out"
+    id="avatar-dialog">
+    <div
+        class="avatar-dialog flex justify-center items-center w-full h-full relative transform scale-95 transition-transform duration-500 ease-in-out">
+        <div class="absolute top-[16px] left-[16px] text-[#999999] cursor-pointer z-[2001] bg-[#f5f5f5] rounded-full hover:scale-110"
+            onclick="closeAvatarDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+        <img src="{{user.avatarUrl}}" alt="Profile"
+            class="large-avatar w-[300px] h-[300px] rounded-full object-cover user-avatarUrl" />
+    </div>
+</div>
+
+<!-- Avatar Dialog -->
+<div class="avatar-dialog-overlay fixed inset-0 bg-[#fefefe]  z-[2000] justify-center items-center hidden opacity-0 transition-opacity duration-500 ease-in-out"
+    id="avatar-dialog">
+    <div
+        class="avatar-dialog flex justify-center items-center w-full h-full relative transform scale-95 transition-transform duration-500 ease-in-out">
+        <div class="absolute top-[16px] left-[16px] text-[#999999] cursor-pointer z-[2001] bg-[#f5f5f5] rounded-full hover:scale-110"
+            onclick="closeAvatarDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+        <img src="{{user.avatarUrl}}" alt="Profile"
+            class="large-avatar w-[300px] h-[300px] rounded-full object-cover user-avatarUrl" />
+    </div>
+</div>
+
+<!-- Profile Dialog -->
+<div class="hidden fixed inset-0 justify-center items-center bg-[#030303] bg-opacity-50 backdrop-blur-[0.1px] z-[1000] active:flex active:justify-center active:items-center"
+    id="profile-dialog-overlay">
+    <div
+        class="profile-dialog fixed shadow-lg bg-[#ffffff] rounded-xl w-[90%] max-w-[400px] p-[5px] top-1/2 left-1/2 z-[1001] opacity-0">
+        <div class="flex flex-col gap-2">
+            <div class="flex justify-between items-start">
+                <div class="grow">
+                    <div class="flex flex-col gap-0 pt-[13px] pl-[26px] pr-[26px]">
+                        <div class="text-[15px] font-semibold text-black">Name</div>
+                        <div class="text-black font-normal text-[14px] user-fullname-username" id="fullname-username">
+                            {{user.fullName}} (@{{user.username}})
+                        </div>
+                    </div>
+                </div>
+                <img src="{{user.avatarUrl}}" alt="Profile"
+                    class="w-12 h-auto absolute rounded-full object-cover top-6 right-6 z-[2001] border border-[#e0e0e0] user-avatarUrl" />
+            </div>
+            <hr class="mx-auto h-[0.5px] bg-[#d9d9d9] ml-[26px] mr-[10px] mt-3">
+            <div class="flex flex-col gap-0 pb-[14px] pl-[26px] pr-[26px]">
+                <div class="text-[15px] font-semibold text-black">Joined</div>
+                <div class="text-black font-normal text-[14px]">July 2023 · #{{user.id}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Follow Dialog -->
+<div id="follow-dialog"
+    class="follow-dialog-overlay fixed inset-0 bg-[#030303] bg-opacity-50 backdrop-blur-[0.1px] z-[3001] hidden opacity-0 transition-opacity duration-500 ease-in-out"
+    onclick="closeFollowDialog()">
+    <div class="follow-dialog flex flex-col max-h-[630px] fixed bg-white rounded-xl w-full h-full sm:max-w-[520px] sm:h-auto border border-gray-300 sm:top-1/2 sm:left-1/2 shadow-xl transition-transform duration-500 ease-in-out -translate-x-1/2 -translate-y-1/2 scale-80"
+        onclick="event.stopPropagation()">
+        <div class="border-b border-gray-300">
+            <div class="flex w-full">
+                <button onclick="switchTab('followers')" id="followersTab"
+                    class="active text-black w-1/2 py-3 text-center cursor-pointer relative">
+                    <div class="flex flex-col items-center">
+                        <span>Followers</span>
+                        <span id="followersCount" class="text-[12px] text-black font-normal">{{followerCount}}</span>
+                    </div>
+                </button>
+                <button onclick="switchTab('following')" id="followingTab"
+                    class="inactive text-gray-600 w-1/2 py-3 text-center cursor-pointer relative">
+                    <div class="flex flex-col items-center">
+                        <span>Following</span>
+                        <span id="followingCount" class="text-[12px] text-black font-normal">{{followingCount}}</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div id="followersContent" class="flex-1 overflow-y-auto p-2 max-h-96 active">
+            {{#each followers}}
+            <div class="flex items-center justify-between px-4 py-2">
+                <div class="flex items-center space-x-3 cursor-pointer">
+                    <img src="{{avatarUrl}}" alt="avatar" class="w-10 h-auto rounded-full object-cover" />
+                    <div>
+                        <div class="font-semibold text-black hover:underline">
+                            <a href="/@{{username}}">{{username}}</a>
+                        </div>
+                        <div class="text-[#999999] text-sm">{{fullName}}</div>
+                    </div>
+                </div>
+                <button onclick="handleFollowAction({{id}}, {{../currentUser.id}}, this)"
+                    class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollowBack}}following{{/if}}">
+                    {{#if isFollowBack}}Following{{else}}Follow back{{/if}}
+                </button>
+            </div>
+            {{/each}}
+        </div>
+        <div id="followingContent" class="flex-1 overflow-y-auto p-2 max-h-96 hidden">
+            {{#each follows}}
+            <div class="flex items-center justify-between px-4 py-2">
+                <div class="flex items-center space-x-3 cursor-pointer">
+                    <img src="{{avatarUrl}}" alt="avatar" class="w-10 h-auto rounded-full object-cover" />
+                    <div>
+                        <div class="font-semibold text-black hover:underline">
+                            <a href="/@{{username}}">{{username}}</a>
+                        </div>
+                        <div class="text-[#999999] text-sm">{{fullName}}</div>
+                    </div>
+                </div>
+                <button onclick="handleFollowAction({{id}}, {{../currentUser.id}}, this)"
+                    class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollow}}following{{else}}Follow{{/if}}">
+                    {{#if isFollow}}Following{{else}}Follow{{/if}}
+                </button>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-container mt-[50px] phone:mt-[60px] h-[calc(100vh - 60px)] flex justify-center overflow-hidden">
+    <div
+        class="profile-card shadow-lg bg-[#ffffff] w-full h-full max-w-[640px] border-[#d5d5d5] border-[0.5px] rounded-t-[22px] overflow-y-auto">
+        <!-- Profile Info -->
+        <div class="grid grid-cols-5 grid-rows-1 gap-0 pb-0 text-black" id="padding" style="padding-top: 24px;">
+            <div class="col-span-4 ">
+                <div id="profile-name" class="text-2xl font-bold cursor-pointer pt-[11px] user-fullname">
+                    {{user.fullName}}
+                </div>
+                <div class="text-[15px] mt-[2px] user-username">
+                    @{{user.username}}
+                </div>
+            </div>
+            <div class="col-start-5 justify-self-end mt-2" id="avatar">
+                <img src="{{user.avatarUrl}}" alt="Avatar"
+                    class="w-20 h-auto rounded-full object-cover cursor-pointer user-avatarUrl" />
+            </div>
+            <div class="col-span-5 row-start-2 text-[14px] pt-[10px] user-description">
+                {{user.description}}
+            </div>
+            <div class="row-start-3 col-span-3 my-6 text-[#777777] text-[15px]">
+                <button class="cursor-pointer hover:underline" id="followers"
+                    onclick="openFollowDialog()">{{followerCount}} Followers</button>
+                {{#if user.website}}
+                &middot;
+                <a href="{{user.website}}" class="cursor-pointer hover:underline user-website" target="_blank">
+                    {{extractDomain user.website}}
+                </a>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="flex justify-center gap-2 py-0 px-6" id="padding">
+            <button class="font-semibold px-1 py-1 flex-grow rounded-md 
+                {{#if isFollow}}  bg-white text-black border border-[#d9d9d9] {{else}} bg-black text-white {{/if}}"
+                id="followButton" onclick="handleFollowButton({{user.id}}, {{currentUser.id}}, this)">
+                {{#if isFollow}}Following{{else}}Follow{{/if}}
+            </button>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="grid grid-cols-2 gap-0 mt-4" id="tabs">
+            <div class="col-span-1 text-center tab active" data-tab="threads">
+                <div class="mb-1">Threads</div>
+            </div>
+            <div class="col-span-1 text-center tab inactive" data-tab="replies">
+                <div class="mb-1">Replies</div>
+            </div>
+        </div>
+
+        <!-- Thread Sections -->
+        <div id="threads-content" class="content-section active">
+            <div id="threads-container" class="space-y-4 bg-white">
+                {{#if threads.length}}
+                <!-- Loop through threads -->
+                {{#each threads}}
+                <div class="bg-white px-6 py-0 flex border-b border-[#d9d9d9]" id="post-{{id}}">
+                    <div class="mr-4">
+                        <img src="{{../user.avatarUrl}}" alt="User Avatar"
+                            class="w-10 h-auto rounded-full object-cover cursor-pointer mt-4 user-avatarUrl" />
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center mb-0 pt-3">
+                            <div class="font-semibold text-black hover:underline cursor-pointer user-username">
+                                <a href='/@{{../user.username}}'> {{../user.username}} </a>
+                            </div>
+                            <div class="text-[#999999] text-sm ml-2 font-normal cursor-pointer">
+                                {{timeAgo createdAt}}
+                            </div>
+                        </div>
+                        <h3 class="text-base font-normal mb-2 text-[#121212] cursor-pointer">
+                            <a href="/thread/{{id}}">{{content}}</a>
+                        </h3>
+                        {{#if imageUrl}}
+                        <div class="mb-3">
+                            <img src="{{imageUrl}}" alt="Thread Image"
+                                class="w-3/5 h-full max-h-96 rounded-lg object-cover cursor-pointer">
+                        </div>
+                        {{/if}}
+                        <div class="flex items-center space-x-1 text-[#424242] mb-3">
+                            <div
+                                class="flex items-center space-x-1 font-normal hover:bg-[#f5f5f5] cursor-pointer px-3 py-2 rounded-3xl">
+                                <i class="fa-heart {{#if isLike}}fa-solid text-red-500{{else}}fa-regular{{/if}}"></i>
+                                <span>{{likes.length}}</span>
+                            </div>
+                            <div
+                                class="flex items-center space-x-1 font-normal hover:bg-[#f5f5f5] cursor-pointer px-3 py-2 rounded-3xl">
+                                <i class="fa-regular fa-comment"></i>
+                                <span>{{comments.length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{else}}
+                <!-- Display message when no threads are available -->
+                <div class="flex items-center justify-center text-[#6d6d6d] h-[calc(100vh-350px)]">
+                    No threads yet.
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <!-- Replies Content -->
+        <div id="replies-content" class="content-section hidden">
+            <div class="flex items-center justify-center text-[#6d6d6d] h-[calc(100vh-350px)]">
+                No replies yet.
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Comment Overlay --}}
+<div id="comment-overlay"
+    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
+    <div class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
+        <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
+            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
+        </div>
+
+        <div class="p-4 flex h-3/4">
+            <div class="basis-1/12 min-w-10 bg-white">
+                <img src="{{currentUser.avatarUrl}}" alt="Avatar" class="rounded-full user-avatarUrl" />
+            </div>
+
+            <div class="basis-11/12 pl-4 bg-white flex flex-col">
+                <div class="font-medium user-username">
+                    {{currentUser.username}}
+                </div>
+                <textarea name="comment" class="leading-5 outline-none resize-none" id="comment"
+                    placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
+            </div>
+        </div>
+
+        <button
+            class="post-comment-button absolute right-6 bottom-4 bg-black text-white text-center font-medium rounded-xl px-6 py-2 hover:scale-95 border border-gray-300 leading-none"
+            id="post-comment-button">
+            Post
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const showToast = (toastId, message) => {
+            const toast = document.getElementById(toastId);
+            toast.classList.remove('hidden');
+            if (toastId === 'toast-success') {
+                const successMessage = document.querySelector('.success-toast-message');
+                successMessage.innerText = message;
+            } else {
+                const errorMessage = document.querySelector('.error-toast-message');
+                errorMessage.innerText = message;
+            }
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('fade-out');
+                }, 1000);
+            }, 3000);
+        }
+
+        const closeToast = (toastId) => {
+            const toast = document.getElementById(toastId);
+            toast.classList.add('fade-out');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('fade-out');
+            }, 1000);
+        }
+
+        // Tabs
+        const tabs = document.querySelectorAll('.tab');
+        const contentSections = document.querySelectorAll('.content-section');
+        const threadsContainer = document.getElementById('threads-container');
+
+        contentSections.forEach((section, index) => {
+            if (index !== 0) {
+                section.style.display = 'none';
+            }
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.classList.add('inactive');
+                });
+
+                tab.classList.remove('inactive');
+                tab.classList.add('active');
+
+                contentSections.forEach(section => {
+                    section.style.display = 'none';
+                    section.classList.remove('active');
+                });
+
+                const tabName = tab.getAttribute('data-tab');
+                const contentSection = document.getElementById(`${tabName}-content`);
+                if (contentSection) {
+                    contentSection.style.display = 'block';
+                    contentSection.classList.add('active');
+                }
+            });
+        });
+
+        // Profile Dialog
+        const profileName = document.getElementById('profile-name');
+        const profileDialogOverlay = document.getElementById('profile-dialog-overlay');
+        const profileDialog = document.querySelector('.profile-dialog');
+
+        profileName.addEventListener('click', () => {
+            profileDialogOverlay.style.display = 'flex';
+            setTimeout(() => {
+                profileDialog.classList.add('active');
+            }, 10);
+        });
+
+        profileDialogOverlay.addEventListener('click', (event) => {
+            if (event.target === profileDialogOverlay) {
+                profileDialog.classList.remove('active');
+                setTimeout(() => {
+                    profileDialogOverlay.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && profileDialogOverlay.style.display === 'flex') {
+                profileDialog.classList.remove('active');
+                setTimeout(() => {
+                    profileDialogOverlay.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        // Avatar Dialog
+        const avatarImg = document.querySelector('#avatar img');
+        const avatarDialog = document.getElementById('avatar-dialog');
+        const largeAvatar = document.querySelector('.large-avatar');
+
+        const openAvatarDialog = () => {
+            avatarDialog.classList.remove('hidden');
+            setTimeout(() => {
+                avatarDialog.classList.add('active');
+            }, 10);
+
+            avatarImg.classList.add('clicked');
+            setTimeout(() => {
+                avatarImg.classList.remove('clicked');
+            }, 200);
+        };
+
+        const closeAvatarDialog = () => {
+            avatarDialog.classList.remove('active');
+            setTimeout(() => {
+                avatarDialog.classList.add('hidden');
+            }, 500);
+        };
+
+        if (avatarImg) {
+            avatarImg.addEventListener('click', openAvatarDialog);
+        }
+
+        if (largeAvatar) {
+            largeAvatar.addEventListener('click', (e) => e.stopPropagation());
+        }
+
+        avatarDialog.addEventListener('click', closeAvatarDialog);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && avatarDialog.classList.contains('active')) {
+                closeAvatarDialog();
+            }
+        });
+
+        // Follow Dialog
+        window.openFollowDialog = async () => {
+            const followDialogOverlay = document.getElementById('follow-dialog');
+            followDialogOverlay.style.display = 'flex';
+            setTimeout(() => {
+                followDialogOverlay.classList.add('active');
+            }, 10);
+        };
+
+        const closeFollowDialog = () => {
+            const followDialogOverlay = document.getElementById('follow-dialog');
+            followDialogOverlay.classList.remove('active');
+            setTimeout(() => {
+                followDialogOverlay.style.display = 'none';
+            }, 300);
+        };
+
+        window.switchTab = (tab) => {
+            const followersTab = document.getElementById('followersTab');
+            const followingTab = document.getElementById('followingTab');
+            const followersContent = document.getElementById('followersContent');
+            const followingContent = document.getElementById('followingContent');
+
+            if (tab === 'followers') {
+                followersTab.classList.add('active');
+                followersTab.classList.remove('inactive');
+                followingTab.classList.remove('active');
+                followingTab.classList.add('inactive');
+                followersContent.classList.add('active');
+                followingContent.classList.remove('active');
+            } else {
+                followersTab.classList.remove('active');
+                followersTab.classList.add('inactive');
+                followingTab.classList.add('active');
+                followingTab.classList.remove('inactive');
+                followersContent.classList.remove('active');
+                followingContent.classList.add('active');
+            }
+        };
+
+        window.onclick = function (event) {
+            if (event.target === document.getElementById('follow-dialog')) {
+                closeFollowDialog();
+            }
+        };
+
+        window.handleFollowAction = async (targetUserId, currentUserId, buttonElement) => {
+            try {
+                const response = await fetch('/follow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        targetUserId,
+                        currentUserId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.followed) {
+                        buttonElement.textContent = 'Following';
+                        buttonElement.classList.add('following');
+                    } else {
+                        buttonElement.textContent = 'Follow back';
+                        buttonElement.classList.remove('following');
+                    }
+                } else {
+                    console.error('Follow action failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        window.handleFollowButton = async (targetUserId, currentUserId, buttonElement) => {
+            try {
+                const response = await fetch('/follow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        targetUserId,
+                        currentUserId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.followed) {
+                        buttonElement.textContent = 'Following';
+                        buttonElement.classList.add('bg-white', 'text-black', 'border', 'border-[#d9d9d9]');
+                        buttonElement.classList.remove('bg-black', 'text-white');
+                    } else {
+                        buttonElement.textContent = 'Follow';
+                        buttonElement.classList.add('bg-black', 'text-white');
+                        buttonElement.classList.remove('bg-white', 'text-black', 'border', 'border-[#d9d9d9]');
+                    }
+                } else {
+                    console.error('Follow action failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+
+        // Like + Comment
+        document.querySelectorAll('.fa-heart').forEach(item => {
+            item.parentElement.addEventListener('click', async function () {
+                const threadId = item.closest('.bg-white').id.split('-')[1];
+                const likeCountElement = item.parentElement.querySelector('span');
+                const currentLikes = parseInt(likeCountElement.innerText);
+
+                const response = await fetch('/like', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: '1',
+                        thread: threadId
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    if (result.liked) {
+                        item.classList.remove('fa-regular');
+                        item.classList.add('fa-solid', 'text-red-500');
+                        likeCountElement.innerText = currentLikes + 1;
+                        likeCountElement.classList.add('text-red-500');
+                    } else {
+                        item.classList.remove('fa-solid', 'text-red-500');
+                        item.classList.add('fa-regular');
+                        likeCountElement.innerText = currentLikes - 1;
+                        likeCountElement.classList.remove('text-red-500');
+                    }
+                } else {
+                    console.error(result.message);
+                }
+            });
+        });
+
+        const exitComment = () => {
+            document.getElementById('comment-overlay').classList.remove('flex');
+            document.getElementById('comment-overlay').classList.add('hidden');
+            document.getElementById('comment').value = '';
+        }
+
+        document.querySelectorAll('.fa-comment').forEach(item => {
+            item.parentElement.addEventListener('click', function () {
+                document.getElementById('comment-overlay').classList.remove('hidden');
+                document.getElementById('comment-overlay').classList.add('flex');
+
+                const threadId = item.closest('.bg-white').id.split('-')[1];
+                document.getElementById('post-comment-button').dataset.threadId = threadId;
+            });
+        });
+
+        document.getElementById('comment-overlay').addEventListener('click', function (e) {
+            const commentContainer = document.getElementById('comment-container');
+            if (!commentContainer.contains(e.target)) {
+                exitComment();
+            }
+        });
+
+        document.getElementById('post-comment-button').addEventListener('click', async function () {
+            const commentContent = document.getElementById('comment').value.trim();
+            if (commentContent === '') return;
+
+            exitComment();
+
+            const threadId = this.dataset.threadId;
+            const userId = '1';
+            const response = await fetch('/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId,
+                    thread: threadId,
+                    comment: commentContent
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                const threadElement = document.getElementById(`post-${threadId}`);
+                const repliesContainer = threadElement.querySelector('.replies-container');
+
+                const commentCountElement = threadElement.querySelector('.fa-comment').nextElementSibling;
+                commentCountElement.innerText = parseInt(commentCountElement.innerText) + 1;
+
+                showToast('toast-success', result.message || 'Comment posted successfully!');
+            } else {
+                showToast('toast-error', result.message || 'An error occurred while posting your comment.');
+            }
+        });
+    });
+</script>

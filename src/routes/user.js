@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
-    init, profilePage, selfComment, selfLike, follow
+    init, profilePage, Comment, Like, follow, otherUserProfile
 } = require('../controllers/userController');
 
 // Middleware
@@ -9,8 +9,9 @@ const {
 
 // Routes
 router.get('/profile', profilePage);
-router.post('/self-comment', selfComment);
-router.post('/self-like', selfLike);
+router.get('/@:username', otherUserProfile);
+router.post('/comment', Comment);
+router.post('/like', Like);
 router.post('/follow', follow);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 {{> navbar}}
-{{> post-button avatarUrl=user.avatarUrl}}
+{{> post-button }}
 {{> toast }}
 
 <link rel="stylesheet" href="/css/profile.css">
@@ -103,8 +103,10 @@
                 <div class="flex items-center space-x-3 cursor-pointer">
                     <img src="{{avatarUrl}}" alt="avatar" class="w-10 h-auto rounded-full object-cover" />
                     <div>
-                        <div class="font-semibold text-black hover:underline">{{fullName}}</div>
-                        <div class="text-[#999999] text-sm">{{username}}</div>
+                        <div class="font-semibold text-black hover:underline">
+                            <a href="/@{{username}}">{{username}}</a>
+                        </div>
+                        <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
                 <button onclick="handleFollowAction({{id}}, {{../user.id}}, this)"
@@ -120,8 +122,10 @@
                 <div class="flex items-center space-x-3 cursor-pointer">
                     <img src="{{avatarUrl}}" alt="avatar" class="w-10 h-auto rounded-full object-cover" />
                     <div>
-                        <div class="font-semibold text-black hover:underline">{{fullName}}</div>
-                        <div class="text-[#999999] text-sm">{{username}}</div>
+                        <div class="font-semibold text-black hover:underline">
+                            <a href="/@{{username}}">{{username}}</a>
+                        </div>
+                        <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
                 <button onclick="handleFollowAction({{id}}, {{../user.id}}, this)"
@@ -600,14 +604,18 @@
                     <div class="flex-1">
                         <div class="flex items-center mb-0 pt-3">
                             <div class="font-semibold text-black hover:underline cursor-pointer user-username">
-                                {{../user.username}}
+                                <a href="/profile">{{../user.username}}</a>
                             </div>
                             <div class="text-[#999999] text-sm ml-2 font-normal cursor-pointer">
-                                {{timeAgo createdAt}}
+                                <a href="/thread/{{id}}" class="cursor-pointer">
+                                    {{timeAgo createdAt}}
+                                </a>
                             </div>
                         </div>
                         <h3 class="text-base font-normal mb-2 text-[#121212] cursor-pointer">
-                            {{content}}
+                            <a href="/thread/{{id}}" class="cursor-pointer">
+                                {{content}}
+                            </a>
                         </h3>
                         {{#if imageUrl}}
                         <div class="mb-3">
@@ -698,9 +706,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        /*
-            Tabs
-        */
+        // Tabs
         const tabs = document.querySelectorAll('.tab');
         const contentSections = document.querySelectorAll('.content-section');
         const threadsContainer = document.getElementById('threads-container');
@@ -713,23 +719,19 @@
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                // Remove active class from all tabs
                 tabs.forEach(t => {
                     t.classList.remove('active');
                     t.classList.add('inactive');
                 });
 
-                // Add active class to clicked tab
                 tab.classList.remove('inactive');
                 tab.classList.add('active');
 
-                // Hide all content sections
                 contentSections.forEach(section => {
                     section.style.display = 'none';
                     section.classList.remove('active');
                 });
 
-                // Show selected content section
                 const tabName = tab.getAttribute('data-tab');
                 const contentSection = document.getElementById(`${tabName}-content`);
                 if (contentSection) {
@@ -739,26 +741,24 @@
             });
         });
 
-        /*
-            Profile Dialog
-        */
+        // Profile Dialog
         const profileName = document.getElementById('profile-name');
         const profileDialogOverlay = document.getElementById('profile-dialog-overlay');
         const profileDialog = document.querySelector('.profile-dialog');
 
         profileName.addEventListener('click', () => {
-            profileDialogOverlay.style.display = 'flex'; // Show the overlay
+            profileDialogOverlay.style.display = 'flex';
             setTimeout(() => {
-                profileDialog.classList.add('active'); // Activate the dialog with a delay
-            }, 10); // Small delay to ensure the overlay is visible first
+                profileDialog.classList.add('active');
+            }, 10);
         });
 
         profileDialogOverlay.addEventListener('click', (event) => {
             if (event.target === profileDialogOverlay) {
-                profileDialog.classList.remove('active'); // Remove active class for fade-out
+                profileDialog.classList.remove('active');
                 setTimeout(() => {
-                    profileDialogOverlay.style.display = 'none'; // Hide the overlay after fade-out
-                }, 300); // Match the transition duration
+                    profileDialogOverlay.style.display = 'none';
+                }, 300);
             }
         });
 
@@ -771,34 +771,30 @@
             }
         });
 
-        /*
-            Avatar Dialog
-        */
+        // Avatar Dialog
         const avatarImg = document.querySelector('#avatar img');
         const avatarDialog = document.getElementById('avatar-dialog');
         const largeAvatar = document.querySelector('.large-avatar');
 
         const openAvatarDialog = () => {
-            avatarDialog.classList.remove('hidden'); // Show dialog initially with hidden state
+            avatarDialog.classList.remove('hidden');
             setTimeout(() => {
-                avatarDialog.classList.add('active'); // Start transition
-            }, 10); // Slight delay to allow transition
+                avatarDialog.classList.add('active');
+            }, 10);
 
-            // Add scale-down effect to avatar image when clicked
             avatarImg.classList.add('clicked');
             setTimeout(() => {
                 avatarImg.classList.remove('clicked');
-            }, 200); // Match with CSS transition
+            }, 200);
         };
 
         const closeAvatarDialog = () => {
-            avatarDialog.classList.remove('active'); // Start closing transition
+            avatarDialog.classList.remove('active');
             setTimeout(() => {
-                avatarDialog.classList.add('hidden'); // Hide completely after transition
-            }, 500); // Match delay with CSS transition duration
+                avatarDialog.classList.add('hidden');
+            }, 500);
         };
 
-        // Set up event listeners
         if (avatarImg) {
             avatarImg.addEventListener('click', openAvatarDialog);
         }
@@ -809,16 +805,13 @@
 
         avatarDialog.addEventListener('click', closeAvatarDialog);
 
-        // Close dialog with 'Escape' key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && avatarDialog.classList.contains('active')) {
                 closeAvatarDialog();
             }
         });
 
-        /*
-            Edit Profile Dialog
-        */
+        // Edit Profile Dialog
         const editProfileDialogOverlay = document.getElementById('edit-profile-dialog-overlay');
 
         window.openEditProfileDialog = () => {
@@ -929,9 +922,7 @@
             }, 1000);
         }
 
-        /*
-            Follow Dialog
-        */
+        // Follow Dialog
         window.openFollowDialog = async () => {
             const followDialogOverlay = document.getElementById('follow-dialog');
             followDialogOverlay.style.display = 'flex';
@@ -1015,7 +1006,7 @@
                 const likeCountElement = item.parentElement.querySelector('span');
                 const currentLikes = parseInt(likeCountElement.innerText);
 
-                const response = await fetch('/self-like', {
+                const response = await fetch('/like', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1054,7 +1045,6 @@
 
         document.querySelectorAll('.fa-comment').forEach(item => {
             item.parentElement.addEventListener('click', function () {
-                // Open the comment overlay
                 document.getElementById('comment-overlay').classList.remove('hidden');
                 document.getElementById('comment-overlay').classList.add('flex');
 
@@ -1078,7 +1068,7 @@
 
             const threadId = this.dataset.threadId;
             const userId = '1';
-            const response = await fetch('/self-comment', {
+            const response = await fetch('/comment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

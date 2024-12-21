@@ -124,9 +124,138 @@ userController.profilePage = async (req, res) => {
     }
 };
 
-userController.selfLike = async (req, res) => {
-    const threadId = parseInt(req.body.thread);
+userController.otherUserProfile = async (req, res) => {
+    const { username } = req.params; 
+
+    const userId = 1;
+    const currentUser = await models.User.findOne({
+        where: { id: userId },
+    });
+
+    if (currentUser.username === username) {
+        return res.redirect("/profile");
+    }
+
+    try {
+        const user = await models.User.findOne({
+            where: { username: username },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const threads = await models.Thread.findAll({
+            where: { userId: user.id },
+            attributes: ['id', 'content', 'imageUrl', 'createdAt'],
+            order: [['createdAt', 'DESC']],
+        });
+
+        const threadIds = threads.map(thread => thread.id);
+
+        const likes = await models.Like.findAll({
+            where: { threadId: threadIds },
+            attributes: ['userId', 'threadId'],
+        });
+
+        const comments = await models.Comment.findAll({
+            where: { threadId: threadIds },
+            attributes: ['userId', 'threadId', 'content', 'createdAt'],
+            order: [['createdAt', 'ASC']],
+        });
+
+        threads.forEach(thread => {
+            thread.likes = likes.filter(like => like.threadId === thread.id);
+            thread.comments = comments.filter(comment => comment.threadId === thread.id);
+            thread.isLike = likes.some(like => like.threadId === thread.id && like.userId === currentUser.id);
+        });
+
+        const [followers, follows] = await Promise.all([
+            models.Follow.findAll({
+                where: { userId: user.id },
+                attributes: ['followerId'],
+                include: [{
+                    model: models.User,
+                    as: 'follower',
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'],
+                }]
+            }),
+            models.Follow.findAll({
+                where: { followerId: user.id },
+                attributes: ['userId'],
+                include: [{
+                    model: models.User,
+                    as: 'user',
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'],
+                }]
+            })
+        ]);
+
+        const followersWithFollowBackStatus = await Promise.all(
+            followers.map(async (follower) => {
+                const followBack = await models.Follow.findOne({
+                    where: {
+                        userId: follower.followerId,
+                        followerId: currentUser.id
+                    }
+                });
+
+                return {
+                    ...follower.follower.dataValues,
+                    isFollowBack: !!followBack
+                };
+            })
+        );
+
+        const followsWithFollowStatus = await Promise.all(
+            follows.map(async (follow) => {
+                const isFollow = await models.Follow.findOne({
+                    where: {
+                        userId: follow.userId,
+                        followerId: currentUser.id
+                    }
+                });
+
+                return {
+                    ...follow.user.dataValues,
+                    isFollow: !!isFollow
+                };
+            })
+        );
+
+        const followerCount = followers.length;
+        const followingCount = follows.length;
+
+        const isFollow = await models.Follow.findOne({
+            where: {
+                userId: user.id,
+                followerId: currentUser.id
+            }
+        });
+
+        res.render("other-profile", {
+            title: `${user.fullName} (@${user.username})`,
+            isProfile: false,  
+            user: user,
+            threads: threads,
+            followers: followersWithFollowBackStatus,
+            follows: followsWithFollowStatus,
+            followerCount,
+            followingCount,
+            currentUser,
+            isFollow: !!isFollow,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
+userController.Like = async (req, res) => {
     const userId = parseInt(req.body.userId);
+    const threadId = parseInt(req.body.thread);
+    const currentUser = await models.User.findOne({ where: { id: userId } });
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
@@ -150,6 +279,17 @@ userController.selfLike = async (req, res) => {
 
         const likesCount = await models.Like.count({ where: { threadId } });
 
+        if (currentUser.id !== thread.userId) {
+            await models.Notification.create({
+                userId: thread.userId,
+                fromId: userId,
+                type: 'like',
+                isRead: false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
+
         res.json({ success: true, liked: !existingLike, likesCount, message: 'Like updated successfully' });
     } catch (error) {
         console.error(error);
@@ -157,10 +297,11 @@ userController.selfLike = async (req, res) => {
     }
 };
 
-userController.selfComment = async (req, res) => {
-    const threadId = parseInt(req.body.thread);
+userController.Comment = async (req, res) => {
     const userId = parseInt(req.body.userId);
+    const threadId = parseInt(req.body.thread);
     const content = req.body.comment;
+    const currentUser = await models.User.findOne({ where: { id: userId } });
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
@@ -175,6 +316,17 @@ userController.selfComment = async (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date(),
         });
+
+        if (currentUser.id !== thread.userId) {
+            await models.Notification.create({
+                userId: thread.userId,
+                fromId: userId,
+                type: 'comment',
+                isRead: false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
 
         return res.json({ success: true, comment: newComment, message: 'Comment posted successfully!' });
     } catch (error) {
