@@ -17,12 +17,14 @@
                 <small id="email-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
             </div>
             <!-- Password Input -->
-            <div class="relative">
-                <label for="password" class="sr-only">Password</label>
-                <input type="password" id="password" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
-                    name="password" placeholder="Password">
-                    <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
-                        id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
+            <div>
+                <div  class="relative">
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" id="password" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                        name="password" placeholder="Password">
+                        <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
+                            id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
+                </div>
                 <small id="password-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
             </div>
 
@@ -111,7 +113,7 @@
     }
 
 
-async function validateForm(event) {
+    function validateForm(event) {
         event.preventDefault();
         // Lấy giá trị từ các input
         const emailOrUsername = document.getElementById('emailOrUsername').value.trim();
