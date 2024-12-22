@@ -10,7 +10,6 @@ passport.serializeUser((user, done) => {
 });
 // ham duoc goi boi passport.session de lay thong tin nguoi dung tu csdl dưa vào req.user
 passport.deserializeUser(async (id, done) => {
-  console.log("Call hehe");
   try {
     let user = await models.User.findOne({
       attributes: ["id", "email", "username"],
@@ -32,9 +31,6 @@ passport.use(
       passReqToCallback: true,
     },
     async (req, emailOrUsername, password, done) => {
-      // if (emailOrUsername) {
-      //   emailOrUsername = emailOrUsername.trim(); // Xóa khoảng trắng đầu , cuối
-      // }
       try {
         if (!req.user) {
           // Kiểm tra người dùng đã đăng nhập chưa
@@ -44,22 +40,15 @@ passport.use(
               : { username: emailOrUsername },
           });
           if (!user) {
-            return done(
-              null,
-              false,
-              req.flash("loginMessage", "Email or Username does not exist!")
+            return done(null, false, req.flash("loginMessage", "Email or Username does not exist!")
             );
           }
           // Kiểm tra mật khẩu có khớp không
           const isMatch = await bcrypt.compare(password, user.password);
           if (!isMatch) {
-            return done(
-              null,
-              false,
-              req.flash("loginMessage", "Invalid password")
+            return done(null, false, req.flash("loginMessage", "Invalid password")
             );
           }
-
           return done(null, user); // Xác thực thành công
         }
         done(null, req.user); // Nếu người dùng đã đăng nhập, trả về thông tin người dùng
@@ -71,49 +60,46 @@ passport.use(
 );
 
 passport.use(
-  "local-signup", new LocalStrategy({
+  "local-signup",
+  new LocalStrategy(
+    {
       usernameField: "email",
       passwordField: "password",
       passReqToCallback: true,
     },
     async (req, email, password, done) => {
-      // if (email) {
-      //   email = email.trim();
-      // }
-
       try {
-        // // Kiểm tra tính hợp lệ của email
-        // if (!validator.isEmail(email)) {
-        //   return done(
-        //     null,
-        //     false,
-        //     req.flash("signupMessage", "Invalid email format!")
-        //   );
-        // }
-        let user = await models.User.findOne({
-          where: { email },
-        });
+        // Kiểm tra email
+        let user = await models.User.findOne({ where: { email } });
         if (user) {
-          return done(
-            null,
-            false,
-            req.flash("signupMessage", "Email already exists!")
-          );
-        };
-        console.log("dangki");
-        user = await models.User.create({
-          email: email,
-          username: req.body.username,
-          password: await bcrypt.hash(password, 8),
-        });
-        done(null, false, req.flash("signupMessage", "Signup successfully!"));
-        console.log("Signup successfully!");
+          return done(null, false, req.flash("signupMessage", "Email already exists!"));
+        }
 
+        // Kiểm tra username
+        user = await models.User.findOne({ where: { username: req.body.username } });
+        if (user) {
+          return done(null, false, req.flash("signupMessage", "Username already exists!"));
+        }
+
+        // Tạo thông tin người dùng tạm thời
+        const tempUser = { email, username: req.body.username, password };
+
+        // Trả về thông tin để xử lý gửi mail
+        done(null, tempUser);
       } catch (error) {
         done(error);
       }
     }
   )
 );
+
+
+
+
+// user = await models.User.create({
+        //   email: email,
+        //   username: req.body.username,
+        //   password: await bcrypt.hash(password, 8),
+        // });
 
 module.exports = passport;

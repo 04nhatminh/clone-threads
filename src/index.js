@@ -6,16 +6,17 @@ const path = require('path');
 const expressHbs = require('express-handlebars');
 const session = require('express-session');
 const redisStore  = require('connect-redis').default;
-const { createClient } = require('redis');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
-
-const redisClient = createClient({
-    url: 'rediss://red-ct8uaq5ds78s73ch9d50:jsCk4S0kocDWyBVza0v97HBm72d0aMIl@singapore-redis.render.com:6379'
-});
-redisClient.connect().catch(console.error);
-
 const passport = require('./controllers/passport');
+const redisClient = require('./controllers/redisConfig');
+redisClient.on('connect', () => {
+    console.log('Redis connected!');
+});
+
+redisClient.on('error', (err) => {
+    console.error('Redis connection error:', err);
+});
 const flash = require('connect-flash');
 
 app.use(express.static(path.join(__dirname, 'public')));

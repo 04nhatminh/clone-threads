@@ -4,6 +4,12 @@
     <div class="text-center w-full max-w-[386px] sm-custom:max-w-[418px] p-6 gap-0 mb-2">
         <!-- Heading -->
         <h1 class="mb-4 text-xl font-bold">Sign up</h1>
+        {{#if done}}
+        <p class="mb-4 opacity-40">An email has been sent to your email. Please follow the instructtion in that email to verify and continue signup. </p>
+        {{/if}}
+
+        {{#unless done}}
+
         <!-- Form -->
         <form id="signup-form" class="flex flex-col gap-2" action="/signup" method="POST" onsubmit="validateSignupForm(event)">
             <!-- Email input -->
@@ -59,12 +65,14 @@
             onclick="window.location.href='/login'">
             Log in
         </button>
+        {{/unless}}
     </div>
 </div>
 
 <script>
     // Định nghĩa regex bên ngoài hàm
-    const regexUsername = /^[a-z_]+$/;
+    
+    const regexUsername = /^[a-z0-9._]{3,20}$/;
     const regexEmail = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
     const regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
 
@@ -146,7 +154,7 @@
             usernameError.classList.remove('hidden');
             isValid = false;
         } else if (!regexUsername.test(username)) {
-            usernameError.textContent = 'Username must contain only lowercase letters and underscores';
+            usernameError.textContent = 'Username must be 3-20 chars, only lowercase, numbers, dots, and underscores.';
             usernameError.classList.remove('hidden');
             isValid = false;
         }

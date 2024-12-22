@@ -1,8 +1,10 @@
 class homeController {
     renderHome(req, res) {
+        console.log('user', req.user);
         res.render("home", {
             title: "Home • Threads",
             isHome: true,
+            user: req.user,
         });
     }
 

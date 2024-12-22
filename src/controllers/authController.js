@@ -1,16 +1,20 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const passport = require('passport');
-const nodemailer = require('nodemailer');
-const apiController = require('./apiController');
+const redisClient = require('./redisConfig');
+
+// const nodemailer = require('nodemailer');
+// const apiController = require('./apiController');
 const models = require ('../models');
-const { Op } = require('sequelize');
-const { log, error } = require('console');
+
+// const { Op } = require('sequelize');
+// const { log, error } = require('console');
 
 class authController {
     logInShow(req, res) {
+        console.log('user', req.user);
         if(req.isAuthenticated()) {
-            return res.redirect('/');
+            return res.redirect('/');//truyen them eeq.user
         }
         res.locals.title = 'Login';
         res.render('login', {loginMessage: req.flash('loginMessage')});
@@ -53,22 +57,92 @@ class authController {
     }
 
     signup(req, res, next) {
-        passport.authenticate('local-signup', (error, user) => {    
-            console.log('user', user);  
-            if(error) {
+        passport.authenticate('local-signup', async (error, user) => {
+            if (error) {
                 return next(error);
-            }      
-            if(user) {
+            }
+            if (!user) {
                 return res.redirect('/signup');
             }
-            return res.redirect('/login');
+            // save user data to redis
+            const { email, username, password } = user;
+            const tempUserKey = `signup:${email}`;
+            // hash password
+            const bcrypt = require('bcryptjs');
+            const hashedPassword = await bcrypt.hash(password, 8);
+            try {
+                await redisClient.set(tempUserKey, JSON.stringify({ username, password: hashedPassword }), {
+                    EX: 30 * 60, // expire in 30 minutes
+                });
+
+                console.log('data saved in redis:', { username, username });
+    
+                // create verify link
+                const { sign } = require('./jwt');
+                const host = req.header('host');
+                const verificationLink = `${req.protocol}://${host}/signup2?token=${sign(email)}&email=${email}`;
+                // send verify email
+                const mail = require('./mail');
+                await mail.sendVerificationMail(user, host, verificationLink);
+
+                return res.render('signup', { done: true });
+            } catch (error) {
+                return res.render('signup', { message: 'An error when we send verify email for you. Try again please!' });
+            }
         })(req, res, next);
     }
+    
+    signUp2Show(req, res) {
+        res.locals.title = 'Signup continued';
+        const { email, token } = req.query;
+        console.log('email:', email, 'token:', token);
+        const { verify } = require('./jwt');
+    
+        if (!token || !verify(token)) {
+            return res.render('signup2', { expired: true });
+        }
 
-    signUp2(req, res) {
-        res.locals.title = 'Signup cont';
-        res.render('signup2');
+        res.render('signup2', { email, token });
     }
+    
+    
+    async signUp2(req, res) {
+        const { email, token, displayname } = req.body; // get email, token, displayname from form
+        if (!token) {
+            return res.render('signup2', { message: 'Token .' });
+        }
+            // get session data
+            const tempUserKey = `signup:${email}`;
+            try {
+                const tempUserData = await redisClient.get(tempUserKey);
+                console.log('tempUserKey:', tempUserKey);
+                console.log('Session data:', tempUserData);
+                
+                if (!tempUserData) {
+                    return res.render('signup2', { message: 'session is expired. Please sign up again!' });
+                }
+                // get username, password from session data
+                const { username, password } = JSON.parse(tempUserData);
+                console.log('user', username, password, displayname, email);
+                // register user
+                await models.User.create({
+                    email,
+                    username,
+                    password,
+                    description: (displayname && displayname.trim() !== '') 
+                        ? displayname 
+                        : username,
+                });
+                // delete session
+                await redisClient.del(tempUserKey);
+        
+                res.render('signup2', { done: true });
+            } catch (error) {
+                res.render('signup2', { message: 'Have a error, please try signup again!' });
+        }
+    }
+        
+    
     forgotPasswordShow(req, res) {
         res.locals.title = 'Forgot password';
         res.render('forgotpassword');
@@ -84,8 +158,8 @@ class authController {
             const host = req.header('host');
             const resetLink = `${req.protocol}://${host}/reset?token=${sign(email)}&email=${email}`;
             //gui email
-            const { sendForgotPasswordMail } = require('./mail');
-            sendForgotPasswordMail(user, host, resetLink)
+            const mail = require('./mail');
+            mail.sendForgotPasswordMail(user, host, resetLink)
             .then((result) => {
                 console.log('email has been sent');
                 res.render('forgotpassword', {done: true});
