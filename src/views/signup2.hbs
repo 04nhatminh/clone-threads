@@ -28,7 +28,7 @@
                 name="displayname" placeholder="Display name"
                 >
             </div>
-            
+            {{!-- send email, token --}}
             <input type="hidden" name="email" value="{{email}}">
             <input type="hidden" name="token" value="{{token}}">
             
@@ -37,25 +37,19 @@
                 <small class="text-left text-red-600" style="text-indent: 1rem;">{{{message}}}</small>
             </div>
             {{/if}}
-
             <!-- Submit Button -->
             <button id="updateBtn" type="submit"
                 class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
                 >
                 Update
             </button>
-        
         </form>
-
-
         <!-- Or divider -->
         <div class="flex items-center py-5 mt-4">
             <hr class="flex-grow">
             <small class="mx-2 opacity-40 ">Remembered password</small>
             <hr class="flex-grow">
         </div>
-
-
         <!-- Signup Redirect -->
         <button id="loginBtn" type="button"
                 class="w-full p-4 font-medium text-white bg-black rounded-2xl"

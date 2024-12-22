@@ -21,7 +21,7 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-//ham xac thuc nguoi dung khi dang nhap
+// xac thuc nguoi dung khi login
 passport.use(
   "local-login",
   new LocalStrategy(
@@ -33,7 +33,7 @@ passport.use(
     async (req, emailOrUsername, password, done) => {
       try {
         if (!req.user) {
-          // Kiểm tra người dùng đã đăng nhập chưa
+          //check email hoac username
           let user = await models.User.findOne({
             where: emailOrUsername.includes("@")
               ? { email: emailOrUsername }
@@ -43,15 +43,15 @@ passport.use(
             return done(null, false, req.flash("loginMessage", "Email or Username does not exist!")
             );
           }
-          // Kiểm tra mật khẩu có khớp không
+          //check password
           const isMatch = await bcrypt.compare(password, user.password);
           if (!isMatch) {
             return done(null, false, req.flash("loginMessage", "Invalid password")
             );
           }
-          return done(null, user); // Xác thực thành công
+          return done(null, user); // check ok
         }
-        done(null, req.user); // Nếu người dùng đã đăng nhập, trả về thông tin người dùng
+        done(null, req.user); // if user is authenticated
       } catch (error) {
         done(error);
       }
@@ -69,22 +69,19 @@ passport.use(
     },
     async (req, email, password, done) => {
       try {
-        // Kiểm tra email
+        // check email
         let user = await models.User.findOne({ where: { email } });
         if (user) {
           return done(null, false, req.flash("signupMessage", "Email already exists!"));
         }
-
-        // Kiểm tra username
+        // check username
         user = await models.User.findOne({ where: { username: req.body.username } });
         if (user) {
           return done(null, false, req.flash("signupMessage", "Username already exists!"));
         }
-
-        // Tạo thông tin người dùng tạm thời
+        //  create new tmpUser
         const tempUser = { email, username: req.body.username, password };
-
-        // Trả về thông tin để xử lý gửi mail
+        // return tempUser
         done(null, tempUser);
       } catch (error) {
         done(error);
@@ -92,14 +89,5 @@ passport.use(
     }
   )
 );
-
-
-
-
-// user = await models.User.create({
-        //   email: email,
-        //   username: req.body.username,
-        //   password: await bcrypt.hash(password, 8),
-        // });
 
 module.exports = passport;

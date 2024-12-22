@@ -1,20 +1,12 @@
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const passport = require('passport');
 const redisClient = require('./redisConfig');
-
-// const nodemailer = require('nodemailer');
-// const apiController = require('./apiController');
 const models = require ('../models');
-
-// const { Op } = require('sequelize');
-// const { log, error } = require('console');
 
 class authController {
     logInShow(req, res) {
         console.log('user', req.user);
         if(req.isAuthenticated()) {
-            return res.redirect('/');//truyen them eeq.user
+            return res.redirect('/');//truyen them req.user
         }
         res.locals.title = 'Login';
         res.render('login', {loginMessage: req.flash('loginMessage')});
@@ -23,12 +15,16 @@ class authController {
     logIn(req, res, next) {
         let reqUrl = req.body.reqUrl ? req.body.reqUrl : '/';
         passport.authenticate('local-login', (error,user) => {
-            if(!user) {
-                return res.redirect('/login?reqUrl=${reqUrl}'); 
-            }
             if(error){
                 return next(error);
             }
+            if(!user) {
+                return res.render('login', { 
+                    loginMessage: 'Email or Username or Password is incorrect',
+                    emailOrUsername: req.body.emailOrUsername, // keep emailOrUsername
+                    password: req.body.password, // keep password
+                    reqUrl // keep reqUrl
+                });            }
             req.logIn(user, (error) =>{
                 if(error) {return next(error)};
                 req.session.cookie.maxAge = (20*60*1000);
@@ -190,7 +186,6 @@ class authController {
         let bcrypt = require('bcryptjs');
         let password = await bcrypt.hash(req.body.password, 8);
         // let password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8));
-
         await models.User.update({password}, {where: {email}});
         res.render('resetpassword', {done: true});
     }
