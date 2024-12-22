@@ -1,20 +1,6 @@
 const models = require("../models");
-const { QueryTypes } = require("sequelize");
-const { comparePassword } = require("../utils/bcryptUtils");
 
 let userController = {};
-
-userController.init = (req, res, next) => {
-    res.locals.email = req.cookies.email;
-    res.locals.password = req.cookies.password;
-    res.locals.isLoggedIn = req.session.isLoggedIn ? req.session.isLoggedIn : false;
-    // console.log('Request Body:', req.body);
-    console.log('Log in Session:', req.session.isLoggedIn);
-    console.log('Email Cookies:', req.cookies.email);
-    console.log('Password Cookies:', req.cookies.password);
-
-    next();
-}
 
 userController.profilePage = async (req, res) => {
     try {
