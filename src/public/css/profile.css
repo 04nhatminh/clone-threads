@@ -1,0 +1,332 @@
+.profile-card {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.profile-card::-webkit-scrollbar {
+    display: none;
+}
+
+#padding {
+    padding: 0 24px;
+}
+
+@media (max-width: 700px) {
+    .title {
+        display: none;
+    }
+
+    .logo {
+        display: block;
+    }
+
+    #padding {
+        padding: 10 10px;
+    }
+
+    header {
+        background-color: #ffffff !important;
+    }
+
+    .back-button {
+        border: none;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+
+    .profile-card {
+        background-color: #ffffff;
+        border-width: 0;
+    }
+
+    .follow-dialog {
+        position: fixed;
+        top: 62px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        transform: none !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .follow-dialog-overlay.active .follow-dialog {
+        transform: none !important;
+    }
+
+    /* Adjust the content areas for mobile */
+    #followersContent,
+    #followingContent {
+        flex: 1 !important;
+        max-height: none !important;
+        height: calc(100vh - 56px) !important;
+        /* 56px is the header height */
+        overflow-y: auto !important;
+    }
+
+    /* Add slide-up animation for mobile */
+    @keyframes slideUpMobile {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .follow-dialog-overlay.active .follow-dialog {
+        animation: slideUpMobile 0.3s ease-out;
+    }
+
+    .edit-profile-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        transform: none;
+        max-width: none;
+        border-radius: 0;
+        border: none;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .edit-profile-dialog-header {
+        display: flex;
+    }
+
+    .edit-avatar {
+        top: 6rem;
+    }
+}
+
+@media (min-width: 701px) {
+    .logo {
+        display: none;
+    }
+}
+
+.active {
+    color: black;
+    font-weight: 700;
+}
+
+.inactive {
+    color: #999999;
+    background-color: transparent;
+    font-weight: 600;
+}
+
+.tab {
+    position: relative;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.tab.active::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: black;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.tab.inactive::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: #d9d9d9;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+/* Profile Dialog CSS */
+.profile-dialog {
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.profile-dialog.active {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Avatar Dialog CSS */
+@media (max-width: 640px) {
+    .large-avatar {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Follow Dialog CSS */
+.follow-dialog-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.follow-dialog-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.follow-dialog {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transform: translate(-50%, -50%);
+}
+
+.tab-follow {
+    transition: color 0.2s ease;
+}
+
+.tab-follow.active {
+    color: #f3f5f7 !important;
+}
+
+.tab-follow.inactive {
+    color: #888 !important;
+}
+
+.tab-follow.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 0.5px;
+    background-color: #f3f5f7;
+}
+
+/* #followersContent::-webkit-scrollbar,
+#followingContent::-webkit-scrollbar {
+display: none;
+}
+
+#followersContent,
+#followingContent {
+-ms-overflow-style: none;
+scrollbar-width: none;
+} */
+/* Target the specific dialog container */
+/* Dialog content area */
+#followersContent,
+#followingContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    /* Tailwind uses p-2 for padding, but this is for the scroll area */
+}
+
+/* Custom scrollbar for the content areas */
+#followersContent::-webkit-scrollbar,
+#followingContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+#followersContent::-webkit-scrollbar-track,
+#followingContent::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    /* Add rounded corners */
+}
+
+#followersContent::-webkit-scrollbar-thumb,
+#followingContent::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    /* Add rounded corners */
+}
+
+#followersContent::-webkit-scrollbar-thumb:hover,
+#followingContent::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Firefox scrollbar styles */
+#followersContent,
+#followingContent {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* For Firefox, the rounded corners cannot be achieved directly,
+but you can style the thumb and track color as a workaround */
+#followersContent::-moz-scrollbar-thumb,
+#followingContent::-moz-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    /* Add rounded corners */
+}
+
+#followersContent::-moz-scrollbar-track,
+#followingContent::-moz-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    /* Add rounded corners */
+}
+
+/* Ensure the dialog content is properly contained */
+.follow-dialog>div {
+    max-height: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+#followersContent.active,
+#followingContent.active {
+    display: block;
+}
+
+#followersContent,
+#followingContent {
+    display: none;
+}
+
+#followersTab.active,
+#followingTab.active {
+    border-bottom: 0.5px solid black;
+}
+
+/*  New Thread Dialog CSS */
+.new-thread-dialog.show {
+    animation: slideUp 0.3s ease-out;
+}
+
+#avatar-dialog.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Apply the fade-out effect */
+.fade-out {
+    animation: fadeOut 1s forwards;
+}
