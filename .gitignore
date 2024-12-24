@@ -1,5 +1,4 @@
 ./vscode
-
+pnpm-lock.json
 /node_modules
 
-.env

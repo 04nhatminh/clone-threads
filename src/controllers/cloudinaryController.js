@@ -3,7 +3,6 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const models = require("../models");
 const dotenv = require('dotenv');
-const e = require('express');
 dotenv.config();
 
 cloudinary.config({
@@ -26,6 +25,10 @@ const upload = multer({ storage });
 let cloudinaryController = {};
 
 cloudinaryController.updateProfile = async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const userId = req.user.id;
     await upload.single('avatar')(req, res, async (err) => {
         if (err) {
             return res.status(400).json({ success: false, message: 'File upload failed', error: err });
@@ -34,11 +37,11 @@ cloudinaryController.updateProfile = async (req, res) => {
         try {
             const { description, website, fullName, username } = req.body;
             let avatarUrl = req.body.avatarUrl;
-            const existingUser = await models.User.findOne({ where: { id: 1 } });
+            const existingUser = await models.User.findOne({ where: { id: userId } });
 
             if (req.file) {
                 const uploadedImage = await cloudinary.uploader.upload(req.file.path, {
-                    folder: 'threads/uploads',
+                    folder: 'threads',
                     transformation: [{ width: 500, height: 500, crop: 'fill' }],
                 });
                 avatarUrl = uploadedImage.secure_url;
@@ -48,7 +51,7 @@ cloudinaryController.updateProfile = async (req, res) => {
 
             // Check if the username is already taken
             const existingUsername = await models.User.findOne({ where: { username } });
-            if (existingUsername && existingUsername.id !== 1) {
+            if (existingUsername && existingUsername.id !== userId) {
                 return res.status(400).json({ success: false, message: 'Username already taken' });
             }
 
@@ -61,7 +64,7 @@ cloudinaryController.updateProfile = async (req, res) => {
                     username,
                 },
                 {
-                    where: { id: 1 },
+                    where: { id: userId },
                 }
             );
 

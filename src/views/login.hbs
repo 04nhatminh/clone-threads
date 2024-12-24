@@ -1,55 +1,76 @@
-<div class="w-full flex flex-col justify-center items-center">
+<div class="flex flex-col items-center justify-center flex-grow min-h-screen bg-white">
     <!-- Logo -->
     <a href="/"><i class="fa-brands fa-threads fa-3x"></i></a>
+    <div class="text-center w-full max-w-[386px] sm-custom:max-w-[418px] p-6 gap-0 mb-2">
+        <!-- Heading -->
+        <h1 class="mb-4 text-xl font-bold">Log in</h1>
 
-    <!-- Heading -->
-    <h1 class="font-bold text-3xl p-4">Log in</h1>
+        <!-- Form -->
+        <form action="/login" class="flex flex-col gap-2" id="login-form" method="POST"
+            onsubmit="validateForm(event)">
+            <!-- Email Input -->
+            <div>
+                <label for="emailOrUsername" class="sr-only">Username or email</label>
+                <input type="text" id="emailOrUsername"
+                    class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" name="emailOrUsername"
+                    value="{{emailOrUsername}}"
+                    placeholder="Email or username">
+                <small id="email-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
+            </div>
+            <!-- Password Input -->
+            <div>
+                <div  class="relative">
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" id="password" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                        name="password" value="{{password}}"
+                        placeholder="Password">
+                        <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
+                            id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
+                </div>
+                <small id="password-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
+            </div>
 
-    <!-- Form -->
-    <form class="flex flex-col w-1/3 min-w-[400px] gap-4" method="POST" action="/login">
-        <!-- Email Input -->
-        <input type="text" class="form-control rounded-2xl p-3 outline-none bg-[#f5f5f5]" name="email"
-            placeholder="Username or email" required>
+            {{#if loginMessage}}
+            <div class="flex justify-start">
+                <small class="text-left text-red-600" style="text-indent: 1rem;">{{{loginMessage}}}</small>
+            </div>   
+            {{/if}}
+            <!-- Submit Button -->
+            <button id="login-button" type="submit"
+                class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl">
+                Log in
+            </button>
+            
+        </form>
+
+        <div class="my-2 text-center ">
+            <a href="/forgot" class="opacity-40"><small>Forgot password?</small></a>
+        </div>
+
+        <!-- Or divider -->
+        <div class="flex items-center mb-5">
+            <hr class="flex-grow">
+            <small class="mx-2 opacity-40 ">or</small>
+            <hr class="flex-grow">
+        </div>
 
 
-        <!-- Password Input -->
-
-        <input type="password" class="form-control rounded-2xl p-3 outline-none bg-[#f5f5f5]" name="password"
-            placeholder="Password" required>
-
-        <!-- Submit Button -->
-        <!-- Web tĩnh nên tạm thời sử dụng type = button
-                    và dùng onclick điều hướng đến trang chủ, coi như đã đăng nhập -->
-        <button id="login-button" type="submit"
-            class="bg-black text-white text-opacity-40 font-medium rounded-2xl p-4 w-full">
-            Log in
+        <!-- Login with Google -->
+        <button type="button"
+            class="w-full p-4 mb-2 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-100"
+            onclick="window.location.href='#'">
+            <i class="fa-brands fa-google fa-xl me-2"></i>
+            Continue with Google
         </button>
-    </form>
+        
+        <input type="hidden" name="reqUrl" value="{{reqUrl}}">
 
-    <div class="text-center opacity-40 my-2">
-        <a href="/forgotPassword" class="">Forgot password?</a>
+        <!-- Signup Redirect -->
+        <button id="signup-button" type="button" class="w-full p-4 font-medium text-white bg-black rounded-2xl"
+            onclick="window.location.href='/signup'">
+            Sign up
+        </button>
     </div>
-
-    <!-- Or divider -->
-    <div class="">
-        <hr class="w-1/2 min-w-[400px]">
-        <span class="opacity-40 flex justify-center mb-1">or</span>
-        <hr class="w-1/2 min-w-[400px]">
-    </div>
-
-    <!-- Login with Google -->
-    <button type="button" id="google-login" onclick="window.location.href='/'"
-        class="flex my-2 justify-center items-center gap-2 p-4 rounded-2xl border border-black w-1/3 min-w-[400px] hover:bg-black hover:text-white">
-        <i class="fa-brands fa-google fa-xl pt-[3px]"></i>
-        <span>Continue with Google</span>
-    </button>
-
-
-    <!-- Signup Redirect -->
-    <button type="button" class="bg-black text-white font-medium rounded-2xl p-4 w-1/3 min-w-[400px]"
-        onclick="window.location.href='/'">
-        Sign up
-    </button>
 </div>
 
 <script>
@@ -72,4 +93,56 @@
             }
         });
     });
+
+    function togglePasswordVisibility(icon) {
+        // Lấy id của icon
+        const iconId = icon.id;
+        // Lấy id của input field
+        const inputId = iconId.replace('toggle', '');
+        const inputFieldId = inputId.charAt(0).toLowerCase() + inputId.slice(1); 
+
+        const inputField = document.querySelector(`#${inputFieldId}`);
+
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            inputField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+
+    function validateForm(event) {
+        event.preventDefault();
+        // Lấy giá trị từ các input
+        const emailOrUsername = document.getElementById('emailOrUsername').value.trim();
+        const password = document.getElementById('password').value.trim();
+        // Lấy các phần tử thông báo lỗi
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        // Xóa thông báo lỗi cũ
+        emailError.classList.add('hidden');
+        emailError.textContent = '';
+        passwordError.classList.add('hidden');
+        passwordError.textContent = '';
+        // Kiểm tra trạng thái hợp lệ
+        let isValid = true;
+        if (!emailOrUsername) {
+            emailError.textContent = 'Email or username is required';
+            emailError.classList.remove('hidden');
+            isValid = false;
+        }
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.classList.remove('hidden');
+            isValid = false;
+        }
+        // Nếu không hợp lệ, dừng lại
+        if (!isValid) return;
+        // Tiến hành gửi dữ liệu bằng Fetch API
+        document.getElementById('login-form').submit();
+    }
 </script>

@@ -1,26 +1,21 @@
 let controller = {};
-const { where } = require('sequelize');
 const sequelize = require('sequelize');
 const models = require('../models');
-const { use } = require('../routes/home');
-const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
+const { hashPassword } = require('../utils/bcryptUtils');
 const { uploadToCloudinary } = require('../middleware/upload');
 
 controller.renderHome = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
     // const threads = await models.Thread.findAll({
     //     include: ['user', 'likes', 'comments'],
     //     order: [['createdAt', 'DESC']],
     // });
 
     // res.locals.threads = threads;
-    res.locals.currentUser = currentUser;
 
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
         following: false,
     });
 }
@@ -28,12 +23,16 @@ controller.renderHome = async (req, res) => {
 controller.loadThreads = async (req, res) => {
     const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
     const mode = req.query.mode;
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const following = await models.Follow.findAll({ where: { followerId: userId} });
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const userId = req.user.id;
+    const following = await models.Follow.findAll({ where: { followerId: userId } });
     console.log(following);
+    
     let threads = [];
 
-    if(mode === 'all') {
+    if (mode === 'all') {
         threads = await models.Thread.findAll({
             include: ['user', 'likes', 'comments'],
             order: [['updatedAt', 'DESC']],
@@ -41,7 +40,7 @@ controller.loadThreads = async (req, res) => {
             offset: (page - 1) * 10,
         });
     }
-    else if(mode === 'following') {
+    else if (mode === 'following') {
         threads = await models.Thread.findAll({
             include: ['user', 'likes', 'comments'],
             where: {
@@ -59,9 +58,9 @@ controller.loadThreads = async (req, res) => {
             content: thread.content,
             imageUrl: thread.imageUrl,
             user: {
-            id: thread.user.id,
-            username: thread.user.username,
-            avatarUrl: thread.user.avatarUrl,
+                id: thread.user.id,
+                username: thread.user.username,
+                avatarUrl: thread.user.avatarUrl,
             },
             likes: thread.likes.length,
             comments: thread.comments.length,
@@ -72,16 +71,12 @@ controller.loadThreads = async (req, res) => {
 }
 
 controller.loadFollowingThreads = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
-    res.locals.currentUser = currentUser;
-
     // res.locals.threads = threads;
 
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
         following: true,
     });
 }

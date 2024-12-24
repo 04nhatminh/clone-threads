@@ -1002,7 +1002,6 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userId: '1',
                         thread: threadId
                     }),
                 });
@@ -1057,14 +1056,12 @@
             exitComment();
 
             const threadId = this.dataset.threadId;
-            const userId = '1';
             const response = await fetch('/comment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId,
                     thread: threadId,
                     comment: commentContent
                 }),

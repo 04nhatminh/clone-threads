@@ -208,7 +208,6 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userId: '1',
                         thread: threadId
                     }),
                 });
@@ -258,7 +257,6 @@
             if (commentContent === '') return;
 
             const threadId = document.querySelector('.comment-button').dataset.threadId;
-            const userId = 1;
 
             try {
                 const response = await fetch('/comment', {
@@ -267,7 +265,6 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userId,
                         thread: threadId,
                         comment: commentContent
                     }),
@@ -281,7 +278,7 @@
                     const newComment = createCommentElement(
                         commentContent,
                         {
-                            id: userId,
+                            id: {{currentUser.id}},
                             username: document.querySelector('.user-username').textContent.trim(),
                             avatarUrl: document.querySelector('.user-avatarUrl').src
                         }

@@ -3,15 +3,13 @@ const models = require('../models');
 const { Op } = require('sequelize');
 
 controller.renderSearch = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
-
-    res.locals.currentUser = currentUser;
-
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
     res.render('search', {
         title: "Search • Simple Threads",
         isSearch: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
     });
 }
 

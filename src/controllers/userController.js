@@ -4,9 +4,13 @@ let userController = {};
 
 userController.profilePage = async (req, res) => {
     try {
-        const userId = 1;
+        if (!req.isAuthenticated()) {
+            return res.redirect('/login');
+        }
+
+        const passportUser = req.user;
         const user = await models.User.findOne({
-            where: { id: userId },
+            where: { id: passportUser.id },
         });
 
         if (!user) {
@@ -43,8 +47,8 @@ userController.profilePage = async (req, res) => {
                 attributes: ['followerId'],
                 include: [{
                     model: models.User,
-                    as: 'follower', 
-                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], 
+                    as: 'follower',
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'],
                 }]
             }),
             models.Follow.findAll({
@@ -52,8 +56,8 @@ userController.profilePage = async (req, res) => {
                 attributes: ['userId'],
                 include: [{
                     model: models.User,
-                    as: 'user', 
-                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], 
+                    as: 'user',
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'],
                 }]
             })
         ]);
@@ -102,7 +106,6 @@ userController.profilePage = async (req, res) => {
             follows: followsWithFollowStatus,
             followerCount,
             followingCount,
-            currentUser: user,
         });
     } catch (error) {
         console.error(error);
@@ -111,13 +114,13 @@ userController.profilePage = async (req, res) => {
 };
 
 userController.otherUserProfile = async (req, res) => {
-    const { username } = req.params; 
+    const { username } = req.params;
 
-    const userId = 1;
-    const currentUser = await models.User.findOne({
-        where: { id: userId },
-    });
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
 
+    const currentUser = req.user; 
     if (currentUser.username === username) {
         return res.redirect("/profile");
     }
@@ -221,14 +224,13 @@ userController.otherUserProfile = async (req, res) => {
 
         res.render("other-profile", {
             title: `${user.fullName} (@${user.username})`,
-            isProfile: false,  
+            isProfile: false,
             user: user,
             threads: threads,
             followers: followersWithFollowBackStatus,
             follows: followsWithFollowStatus,
             followerCount,
             followingCount,
-            currentUser,
             isFollow: !!isFollow,
         });
     } catch (error) {
@@ -239,9 +241,13 @@ userController.otherUserProfile = async (req, res) => {
 
 
 userController.Like = async (req, res) => {
-    const userId = parseInt(req.body.userId);
     const threadId = parseInt(req.body.thread);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
+
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const currentUser = req.user; 
+    const userId = currentUser.id;
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
@@ -284,10 +290,14 @@ userController.Like = async (req, res) => {
 };
 
 userController.Comment = async (req, res) => {
-    const userId = parseInt(req.body.userId);
     const threadId = parseInt(req.body.thread);
     const content = req.body.comment;
-    const currentUser = await models.User.findOne({ where: { id: userId } });
+    
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const currentUser = req.user;
+    const userId = currentUser.id;
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
@@ -322,14 +332,18 @@ userController.Comment = async (req, res) => {
 }
 
 userController.follow = async (req, res) => {
-    const currentUserId = parseInt(req.body.currentUserId); 
-    const targetUserId = parseInt(req.body.targetUserId);   
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const currentUserId = req.user.id;
+
+    const targetUserId = parseInt(req.body.targetUserId);
 
     try {
         const existingFollow = await models.Follow.findOne({
             where: {
-                userId: targetUserId,     
-                followerId: currentUserId  
+                userId: targetUserId,
+                followerId: currentUserId
             }
         });
 
@@ -343,8 +357,8 @@ userController.follow = async (req, res) => {
         }
 
         await models.Follow.create({
-            userId: targetUserId,     
-            followerId: currentUserId  
+            userId: targetUserId,
+            followerId: currentUserId
         });
 
         if (currentUserId !== targetUserId) {

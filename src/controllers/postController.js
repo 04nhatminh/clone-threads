@@ -5,11 +5,10 @@ let postController = {};
 postController.threadPage = async (req, res) => {
     try {
         const threadId = parseInt(req.params.id || 1);
-        const userId = 1;
-
-        const currentUser = await models.User.findOne({
-            where: { id: userId },
-        });
+        if (!req.isAuthenticated()) {
+            return res.redirect('/login');
+        }
+        const userId = req.user.id;
 
         const thread = await models.Thread.findOne({
             where: { id: threadId },
@@ -61,7 +60,6 @@ postController.threadPage = async (req, res) => {
         res.render('post', {
             title: `${author.fullName} (@${author.username})`,
             thread,
-            currentUser,
             author,
             comments: formattedComments,
             likes,
