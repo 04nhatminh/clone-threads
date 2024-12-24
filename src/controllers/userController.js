@@ -16,7 +16,7 @@ userController.profilePage = async (req, res) => {
         const threads = await models.Thread.findAll({
             where: { userId: user.id },
             attributes: ['id', 'content', 'imageUrl', 'createdAt'],
-            order: [['createdAt', 'DESC']],
+            order: [['updatedAt', 'DESC']],
         });
 
         const threadIds = threads.map(thread => thread.id);
@@ -43,8 +43,8 @@ userController.profilePage = async (req, res) => {
                 attributes: ['followerId'],
                 include: [{
                     model: models.User,
-                    as: 'follower', // This is the alias for the follower
-                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], // Include follower's user data
+                    as: 'follower', 
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], 
                 }]
             }),
             models.Follow.findAll({
@@ -52,8 +52,8 @@ userController.profilePage = async (req, res) => {
                 attributes: ['userId'],
                 include: [{
                     model: models.User,
-                    as: 'user', // This is the alias for the user being followed
-                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], // Include followed user's data
+                    as: 'user', 
+                    attributes: ['id', 'fullName', 'username', 'avatarUrl'], 
                 }]
             })
         ]);
@@ -346,6 +346,17 @@ userController.follow = async (req, res) => {
             userId: targetUserId,     
             followerId: currentUserId  
         });
+
+        if (currentUserId !== targetUserId) {
+            await models.Notification.create({
+                userId: targetUserId,
+                fromId: currentUserId,
+                type: 'follow',
+                isRead: false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
 
         return res.json({
             success: true,

@@ -14,14 +14,22 @@ module.exports = {
      * }], {});
     */
     let likes = [];
+    let likesSet = new Set();
 
     for (let i = 0; i < 1000; i++) {
-      likes.push({
-        userId: Math.floor(Math.random() * 100) + 1,
-        threadId: Math.floor(Math.random() * 100) + 1,
-        createdAt: Sequelize.literal("NOW()"),
-        updatedAt: Sequelize.literal("NOW()")
-      });
+      let userId = Math.floor(Math.random() * 100) + 1;
+      let threadId = Math.floor(Math.random() * 100) + 1;
+
+      let likePair = `${userId}-${threadId}`;
+      if (!likesSet.has(likePair)) {
+        likesSet.add(likePair);
+        likes.push({
+          userId,
+          threadId,
+          createdAt: Sequelize.literal("NOW()"),
+          updatedAt: Sequelize.literal("NOW()")
+        });
+      }
     }
 
     await queryInterface.bulkInsert('Likes', likes, {});
