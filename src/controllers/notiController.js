@@ -8,7 +8,10 @@ controller.renderNotification = async (req, res) => {
     const currentUser = await models.User.findOne({ where: { id: userId } });
     
     const noti = await models.Notification.findAll({
-        where: { userId: userId },
+        where: {
+            userId: userId,
+            fromId: { [sequelize.Op.ne]: userId }
+        },
         order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
         include: ['from'],
     });
