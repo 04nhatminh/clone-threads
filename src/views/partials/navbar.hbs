@@ -5,7 +5,7 @@
 </div>
 
 <div id="mobile-logo" class="z-20 p-2 md fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
-    <a href="./index.html">
+    <a href="/">
         <i class="fa-brands fa-threads fa-2xl"></i>
     </a>
 </div>
@@ -83,7 +83,8 @@
         logoutButton.textContent = 'Log out';
         logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'pl-2', 'pr-10', 'py-2', 'rounded-xl', 'dark:bg-eerie-black', 'hover:bg-[#f5f5f5]');
         logoutButton.onclick = function () {
-            window.location.href = './login.html';
+            //cookie.remove('userId');
+            window.location.href = '/login';
         };
 
         popup.appendChild(logoutButton);
@@ -106,7 +107,7 @@
         logoutButton.textContent = 'Log out';
         logoutButton.classList.add('bg-white', 'text-red-salsa', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]', 'dark:bg-eerie-black');
         logoutButton.onclick = function () {
-            window.location.href = './login.html';
+            window.location.href = '/login';
         };
 
         popup.appendChild(logoutButton);

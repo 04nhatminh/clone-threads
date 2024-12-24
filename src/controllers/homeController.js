@@ -13,18 +13,8 @@ controller.renderHome = async (req, res) => {
     //     order: [['createdAt', 'DESC']],
     // });
 
-    // Lấy danh sách các thread mà người dùng hiện tại đã like
-    const likedThreads = await models.Like.findAll({
-        where: { userId: userId },
-        attributes: ['threadId']
-    });
-
-    // Chuyển đổi danh sách likedThreads thành mảng các threadId
-    const likedThreadIds = likedThreads.map(like => like.threadId);
-
     // res.locals.threads = threads;
     res.locals.currentUser = currentUser;
-    res.locals.likedThreadIds = likedThreadIds;
 
     res.render("home", {
         title: "Home • Simple Threads",
@@ -36,13 +26,31 @@ controller.renderHome = async (req, res) => {
 
 controller.loadThreads = async (req, res) => {
     const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+    const mode = req.query.mode;
     const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const threads = await models.Thread.findAll({
-        include: ['user', 'likes', 'comments'],
-        order: [['updatedAt', 'DESC']],
-        limit: 10,
-        offset: (page - 1) * 10,
-    });
+    const following = await models.Follow.findAll({ where: { followerId: userId} });
+    console.log(following);
+    let threads = [];
+
+    if(mode === 'all') {
+        threads = await models.Thread.findAll({
+            include: ['user', 'likes', 'comments'],
+            order: [['updatedAt', 'DESC']],
+            limit: 10,
+            offset: (page - 1) * 10,
+        });
+    }
+    else if(mode === 'following') {
+        threads = await models.Thread.findAll({
+            include: ['user', 'likes', 'comments'],
+            where: {
+                userId: following.map(follow => follow.userId)
+            },
+            order: [['updatedAt', 'DESC']],
+            limit: 10,
+            offset: (page - 1) * 10,
+        });
+    }
 
     res.json(threads.map(thread => {
         return {
@@ -50,9 +58,9 @@ controller.loadThreads = async (req, res) => {
             content: thread.content,
             imageUrl: thread.imageUrl,
             user: {
-                id: thread.user.id,
-                username: thread.user.username,
-                avatarUrl: thread.user.avatarUrl,
+            id: thread.user.id,
+            username: thread.user.username,
+            avatarUrl: thread.user.avatarUrl,
             },
             likes: thread.likes.length,
             comments: thread.comments.length,
@@ -65,29 +73,10 @@ controller.loadThreads = async (req, res) => {
 controller.loadFollowingThreads = async (req, res) => {
     const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
     const currentUser = await models.User.findOne({ where: { id: userId } });
-    const following = await models.Follow.findAll({ where: { followerId: currentUser.id } });
-    const followingUserIds = following.map(follow => follow.userId);
-    // console.log("--------------------");
-    // console.log(followingUserIds);
-    // console.log("--------------------");
-    const threads = await models.Thread.findAll({
-        include: ['user', 'likes', 'comments'],
-        order: [['updatedAt', 'DESC']],
-        where: { userId: followingUserIds }
-    });
-
-    // Lấy danh sách các thread mà người dùng hiện tại đã like
-    const likedThreads = await models.Like.findAll({
-        where: { userId: userId },
-        attributes: ['threadId']
-    });
-
-    // Chuyển đổi danh sách likedThreads thành mảng các threadId
-    const likedThreadIds = likedThreads.map(like => like.threadId);
-
-    res.locals.threads = threads;
     res.locals.currentUser = currentUser;
-    res.locals.likedThreadIds = likedThreadIds;
+
+    // res.locals.threads = threads;
+
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,

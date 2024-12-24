@@ -205,19 +205,35 @@
             if (loading) return;
             loading = true;
             document.getElementById('loading-spinner').classList.remove('hidden');
+            
+            if({{following}}) {
+                const res = await fetch(`/loadThreads?mode=following&page=${page}`);
+                const threads = await res.json();
 
-            const res = await fetch(`/loadThreads?page=${page}`);
-            const threads = await res.json();
+                // Render threads mới vào giao diện
+                const feedsContainer = document.getElementById('feeds');
+                threads.forEach(thread => {
+                    const threadElement = createThreadElement(thread);
+                    feedsContainer.appendChild(threadElement);
+                    attachThreadEvents(threadElement);
+                });
 
-            // Render threads mới vào giao diện
-            const feedsContainer = document.getElementById('feeds');
-            threads.forEach(thread => {
-                const threadElement = createThreadElement(thread);
-                feedsContainer.appendChild(threadElement);
-                attachThreadEvents(threadElement);
-            });
+                page++;
+            }
+            else {
+                const res = await fetch(`/loadThreads?mode=all&page=${page}`);
+                const threads = await res.json();
 
-            page++;
+                // Render threads mới vào giao diện
+                const feedsContainer = document.getElementById('feeds');
+                threads.forEach(thread => {
+                    const threadElement = createThreadElement(thread);
+                    feedsContainer.appendChild(threadElement);
+                    attachThreadEvents(threadElement);
+                });
+
+                page++;
+            }
         } catch (error) {
             console.error('Error loading threads:', error);
         } finally {
