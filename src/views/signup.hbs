@@ -1,1 +1,179 @@
-<h1>Sign up Page</h1>
+<div class="flex flex-col items-center justify-center flex-grow min-h-screen bg-white">
+    <!-- Logo -->
+    <a href="/"><i class="fa-brands fa-threads fa-3x"></i></a>
+    <div class="text-center w-full max-w-[386px] sm-custom:max-w-[418px] p-6 gap-0 mb-2">
+        <!-- Heading -->
+        <h1 class="mb-4 text-xl font-bold">Sign up</h1>
+        {{#if done}}
+        <p class="mb-4 opacity-40">An email has been sent to your email. Please follow the instructtion in that email to verify and continue signup. </p>
+        {{/if}}
+
+        {{#unless done}}
+
+        <!-- Form -->
+        <form id="signup-form" class="flex flex-col gap-2" action="/signup" method="POST" onsubmit="validateSignupForm(event)">
+            <!-- Email input -->
+            <div>
+                <label for="email" class="sr-only">Email</label>
+                <input type="text" id="email" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                    name="email" placeholder="Email">
+                <small id="email-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
+            </div>
+
+            <!-- Username input -->
+            <div>
+                <label for="username" class="sr-only">Username</label>
+                <input type="text" id="username" class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                    name="username" placeholder="Username">
+                <small id="username-error" class="hidden block text-left text-red-600"
+                    style="text-indent: 1rem;"></small>
+            </div>
+
+            <!-- Password Input -->
+            <div>
+                <div  class="relative">
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" id="password"
+                        class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" name="password"
+                        placeholder="Password">
+                    <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
+                        id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
+                </div>
+                <small id="password-error" class="hidden block text-left text-red-600"
+                    style="text-indent: 1rem;"></small>
+            </div>
+            {{#if signupMessage}}
+            <div class="flex justify-start">
+                <small class="text-left text-red-600" style="text-indent: 1rem;">{{{signupMessage}}}</small>
+            </div>
+            {{/if}}
+
+            <!-- Submit Button -->
+            <button id="signup-button" type="submit"
+                class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl">
+                Sign up
+            </button>
+        </form>
+
+        <div class="flex items-center py-5 mt-4">
+            <hr class="flex-grow">
+            <small class="mx-2 opacity-40 ">Already have an account?</small>
+            <hr class="flex-grow">
+        </div>
+
+        <button id="loginBtn" type="button" class="w-full p-4 font-medium text-white bg-black rounded-2xl"
+            onclick="window.location.href='/login'">
+            Log in
+        </button>
+        {{/unless}}
+    </div>
+</div>
+
+<script>
+    // Định nghĩa regex bên ngoài hàm
+    
+    const regexUsername = /^[a-z0-9._]{3,20}$/;
+    const regexEmail = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
+    const regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', () => {
+            input.classList.add('border', 'border-gray-300');
+        });
+        input.addEventListener('blur', () => {
+            input.classList.remove('border', 'border-gray-300');
+        });
+    });
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', () => {
+            const allFilled = Array.from(document.querySelectorAll('.form-control')).every(input => input.value);
+            if (allFilled) {
+                document.getElementById('signup-button').classList.remove('text-opacity-40');
+                signupButton.disabled = false;
+            } else {
+                document.getElementById('signup-button').classList.add('text-opacity-40');
+                signupButton.disabled = true;
+            }
+        });
+    });
+
+    function togglePasswordVisibility(icon) {
+        // Lấy id của icon
+        const iconId = icon.id;
+        // Lấy id của input field
+        const inputId = iconId.replace('toggle', '');
+        const inputFieldId = inputId.charAt(0).toLowerCase() + inputId.slice(1);
+
+        const inputField = document.querySelector(`#${inputFieldId}`);
+
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            inputField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function validateSignupForm(event) {
+        event.preventDefault();
+
+        // Lấy giá trị từ các input
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        // Lấy các phần tử thông báo lỗi
+        const usernameError = document.getElementById('username-error');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        // Xóa thông báo lỗi cũ
+        usernameError.classList.add('hidden');
+        emailError.classList.add('hidden');
+        passwordError.classList.add('hidden');
+        usernameError.textContent = '';
+        emailError.textContent = '';
+        passwordError.textContent = '';
+        // Kiểm tra trạng thái hợp lệ
+        let isValid = true;
+        // Kiểm tra email
+        if (!email) {
+            emailError.textContent = 'Email is required';
+            emailError.classList.remove('hidden');
+            isValid = false;
+        } else if (!regexEmail.test(email)) {
+            emailError.textContent = 'Please enter a valid email address';
+            emailError.classList.remove('hidden');
+            isValid = false;
+        }
+        // Kiểm tra username (chỉ chứa ký tự viết thường và dấu gạch dưới)
+        if (!username) {
+            usernameError.textContent = 'Username is required';
+            usernameError.classList.remove('hidden');
+            isValid = false;
+        } else if (!regexUsername.test(username)) {
+            usernameError.textContent = 'Username must be 3-20 chars, only lowercase, numbers, dots, and underscores.';
+            usernameError.classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Kiểm tra password
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.classList.remove('hidden');
+            isValid = false;
+        } else if (!regexPassword.test(password)) {
+            passwordError.textContent = 'Password must be 8-16 characters, including 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character';
+            passwordError.classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Nếu không hợp lệ, dừng lại
+        if (!isValid) return;
+        // Tiến hành gửi dữ liệu bằng Fetch API hoặc submit form
+        document.getElementById('signup-form').submit();
+    }
+
+</script>

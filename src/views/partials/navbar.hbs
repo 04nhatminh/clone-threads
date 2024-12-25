@@ -5,23 +5,23 @@
 </div>
 
 <div id="mobile-logo" class="z-20 p-2 md fixed top-2 left-1/2 -translate-x-1/2 md:hidden">
-    <a href="./index.html">
+    <a href="/">
         <i class="fa-brands fa-threads fa-2xl"></i>
     </a>
 </div>
 
 <nav
-    class="fixed bottom-0 z-10 w-full md:w-20 h-20 md:h-screen flex md:flex-col md:justify-between bg-lotion dark:bg-vampire-black text-center">
-    <div class="z-10 md:p-4 hidden md:block hover:scale-110 transition ease-in-out duration-200" id="pc-logo">
+    class="fixed bottom-0 z-10 flex w-full h-20 text-center md:w-20 md:h-screen md:flex-col md:justify-between bg-lotion dark:bg-vampire-black">
+    <div class="z-10 hidden transition duration-200 ease-in-out md:p-4 md:block hover:scale-110" id="pc-logo">
         <a href="/">
             <i class="fa-brands fa-threads fa-2xl"></i>
         </a>
     </div>
 
-    <div class="flex md:flex-col w-full justify-around items-center md:gap-4">
+    <div class="flex items-center justify-around w-full md:flex-col md:gap-4">
         <a href="/">
             <div
-                class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black transition ease-in-out duration-200">
+                class="px-3 py-5 transition duration-200 ease-in-out sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black">
                 <i
                     class="fa-solid fa-house fa-xl {{#if isHome}}text-black dark:text-cultured-active{{else}}text-philippine-silver dark:text-davy-grey{{/if}}"></i>
             </div>
@@ -29,26 +29,26 @@
 
         <a href="/search">
             <div
-                class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black cursor-pointer transition ease-in-out duration-200">
+                class="px-3 py-5 transition duration-200 ease-in-out cursor-pointer sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black">
                 <i
                     class="fa-solid fa-magnifying-glass fa-xl {{#if isSearch}}text-black dark:text-cultured-active{{else}}text-philippine-silver dark:text-davy-grey{{/if}}"></i>
             </div>
         </a>
 
-        <div class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl bg-anti-flash-white dark:bg-chinese-black dark:hover:bg-chinese-black cursor-pointer transition ease-in-out duration-200 hidden md:block"
+        <div class="hidden px-3 py-5 transition duration-200 ease-in-out cursor-pointer sm:px-10 md:px-5 md:py-3 rounded-2xl bg-anti-flash-white dark:bg-chinese-black dark:hover:bg-chinese-black md:block"
             onclick="createNewThread()">
             <i
                 class="fa-solid fa-plus fa-xl text-philippine-silver hover:text-black dark:text-davy-grey dark:hover:text-cultured-active"></i>
         </div>
 
-        <div class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black cursor-pointer transition ease-in-out duration-200 md:hidden"
+        <div class="px-3 py-5 transition duration-200 ease-in-out cursor-pointer sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black md:hidden"
             onclick="createNewThread()">
             <i class="fa-regular fa-pen-to-square fa-xl text-philippine-silver"></i>
         </div>
 
         <a href="/notifications">
             <div
-                class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black transition ease-in-out duration-200">
+                class="px-3 py-5 transition duration-200 ease-in-out sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black">
                 <i
                     class="fa-regular fa-bell fa-xl {{#if isNoti}}text-black dark:text-cultured-active{{else}}text-philippine-silver dark:text-davy-grey{{/if}}"></i>
             </div>
@@ -56,15 +56,15 @@
 
         <a href="/profile">
             <div
-                class="px-3 py-5 sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black cursor-pointer transition ease-in-out duration-200">
+                class="px-3 py-5 transition duration-200 ease-in-out cursor-pointer sm:px-10 md:px-5 md:py-3 rounded-2xl hover:bg-anti-flash-white dark:hover:bg-chinese-black">
                 <i
                     class="fa-regular fa-user fa-xl {{#if isProfile}}text-black dark:text-cultured-active{{else}}text-philippine-silver dark:text-davy-grey {{/if}}"></i>
             </div>
         </a>
     </div>
 
-    <div id="more" class="mb-9 rounded-2xl cursor-pointer hidden md:block transition ease-in-out duration-200">
-        <i class="fa-solid fa-bars fa-xl text-philippine-silver hover:text-black dark:text-davy-grey dark:hover:text-white transition ease-in-out duration-75"
+    <div id="more" class="hidden transition duration-200 ease-in-out cursor-pointer mb-9 rounded-2xl md:block">
+        <i class="transition duration-75 ease-in-out fa-solid fa-bars fa-xl text-philippine-silver hover:text-black dark:text-davy-grey dark:hover:text-white"
             onclick="showLogOutPC()"></i>
     </div>
 </nav>
@@ -83,7 +83,7 @@
         logoutButton.textContent = 'Log out';
         logoutButton.classList.add('bg-white', 'text-[#ff3042]', 'font-medium', 'pl-2', 'pr-10', 'py-2', 'rounded-xl', 'dark:bg-eerie-black', 'hover:bg-[#f5f5f5]');
         logoutButton.onclick = function () {
-            window.location.href = './login.html';
+            window.location.href = '/logout';
         };
 
         popup.appendChild(logoutButton);
@@ -106,7 +106,7 @@
         logoutButton.textContent = 'Log out';
         logoutButton.classList.add('bg-white', 'text-red-salsa', 'font-medium', 'px-4', 'py-2', 'rounded-xl', 'hover:bg-[#f5f5f5]', 'dark:bg-eerie-black');
         logoutButton.onclick = function () {
-            window.location.href = './login.html';
+            window.location.href = '/logout';
         };
 
         popup.appendChild(logoutButton);

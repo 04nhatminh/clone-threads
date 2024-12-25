@@ -1,51 +1,60 @@
 let controller = {};
-const { where } = require('sequelize');
 const sequelize = require('sequelize');
 const models = require('../models');
-const { use } = require('../routes/home');
-const { hashPassword, comparePassword } = require('../utils/bcryptUtils');
+const { hashPassword } = require('../utils/bcryptUtils');
 const { uploadToCloudinary } = require('../middleware/upload');
+const he = require('he');
+
 controller.renderHome = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
     // const threads = await models.Thread.findAll({
     //     include: ['user', 'likes', 'comments'],
     //     order: [['createdAt', 'DESC']],
     // });
 
-    // Lấy danh sách các thread mà người dùng hiện tại đã like
-    const likedThreads = await models.Like.findAll({
-        where: { userId: userId },
-        attributes: ['threadId']
-    });
-
-    // Chuyển đổi danh sách likedThreads thành mảng các threadId
-    const likedThreadIds = likedThreads.map(like => like.threadId);
-
     // res.locals.threads = threads;
-    res.locals.currentUser = currentUser;
-    res.locals.likedThreadIds = likedThreadIds;
 
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
         following: false,
     });
 }
 
 controller.loadThreads = async (req, res) => {
     const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const threads = await models.Thread.findAll({
-        include: ['user', 'likes', 'comments'],
-        order: [['updatedAt', 'DESC']],
-        limit: 10,
-        offset: (page - 1) * 10,
-    });
+    const mode = req.query.mode;
+    const userId = req.isAuthenticated() ? req.user.id : null;
 
-    res.json(threads.map(thread => {
-        return {
+    if (mode === 'following' && !req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+
+    try {
+        let threads = [];
+        const baseQuery = {
+            include: ['user', 'likes', 'comments'],
+            order: [['updatedAt', 'DESC']],
+            limit: 10,
+            offset: (page - 1) * 10,
+        };
+
+        if (mode === 'following') {
+            const following = await models.Follow.findAll({
+                where: { followerId: userId }
+            });
+
+            threads = await models.Thread.findAll({
+                ...baseQuery,
+                where: {
+                    userId: following.map(follow => follow.userId)
+                }
+            });
+        } else {
+            threads = await models.Thread.findAll(baseQuery);
+        }
+
+        const mappedThreads = threads.map(thread => ({
             id: thread.id,
             content: thread.content,
             imageUrl: thread.imageUrl,
@@ -57,41 +66,26 @@ controller.loadThreads = async (req, res) => {
             likes: thread.likes.length,
             comments: thread.comments.length,
             createdAt: thread.createdAt,
-            liked: thread.likes.some(like => like.userId === userId),
-        }
-    }));
-}
+            liked: userId ? thread.likes.some(like => like.userId === userId) : false,
+        }));
+
+        res.json(mappedThreads);
+
+    } catch (error) {
+        console.error('Error loading threads:', error);
+        res.status(500).json({ error: 'Failed to load threads' });
+    }
+};
 
 controller.loadFollowingThreads = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
-    const following = await models.Follow.findAll({ where: { followerId: currentUser.id } });
-    const followingUserIds = following.map(follow => follow.userId);
-    // console.log("--------------------");
-    // console.log(followingUserIds);
-    // console.log("--------------------");
-    const threads = await models.Thread.findAll({
-        include: ['user', 'likes', 'comments'],
-        order: [['updatedAt', 'DESC']],
-        where: { userId: followingUserIds }
-    });
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }    
 
-    // Lấy danh sách các thread mà người dùng hiện tại đã like
-    const likedThreads = await models.Like.findAll({
-        where: { userId: userId },
-        attributes: ['threadId']
-    });
-
-    // Chuyển đổi danh sách likedThreads thành mảng các threadId
-    const likedThreadIds = likedThreads.map(like => like.threadId);
-
-    res.locals.threads = threads;
-    res.locals.currentUser = currentUser;
-    res.locals.likedThreadIds = likedThreadIds;
     res.render("home", {
         title: "Home • Simple Threads",
         isHome: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
         following: true,
     });
 }
@@ -111,7 +105,7 @@ controller.addNewThread = async (req, res) => {
         console.log('Creating thread in database...');
         const newThread = await models.Thread.create({
             userId: isNaN(req.body.userId) ? null : parseInt(req.body.userId),
-            content: req.body.content,
+            content: req.body.content ? he.encode(req.body.content) : '',
             imageUrl: imageUrl, // Lưu URL ảnh
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -182,7 +176,7 @@ controller.toggleLikes = async (req, res) => {
 controller.addComment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
     const userId = parseInt(req.body.user);
-    const content = req.body.comment;
+    const content = req.body.comment ? he.encode(req.body.comment) : '';
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });

@@ -21,7 +21,7 @@
         <div class="overflow-y-auto scrollable flex-1" id="scrollable-content">
             <div class="p-4 flex">
                 <div class="basis-1/12 min-w-10 bg-white dark:bg-eerie-black">
-                    <img class="rounded-full" src="{{avatarUrl}}" alt="Avatar">
+                    <img class="rounded-full user-avatarUrl" src="{{avatarUrl}}" alt="Avatar">
                 </div>
                 <div class="basis-11/12 pl-4 bg-white dark:bg-eerie-black flex flex-col">
                     <div class="font-medium">{{username}}</div>
@@ -47,11 +47,15 @@
 {{/with}}
 
 <script>
-    // Create new thread + close
+    const newThreadButton = document.getElementById('new-thread-button');
+    const newThreadOverlay = document.getElementById('new-thread-overlay');
+    const createContainer = document.getElementById('create-container');
     const postInput = document.querySelector('.post-input');
     const postButton = document.getElementById('post-button');
+    const image = document.getElementById('attach-image');
+    const textarea = document.getElementById('content');
+    const fileInput = document.getElementById('image-upload');
 
-    // Post button state
     if (postInput && postButton) {
         postInput.addEventListener('input', () => {
             if (postInput.value.trim()) {
@@ -67,52 +71,43 @@
     }
 
     const createNewThread = () => {
-        document.getElementById('new-thread-overlay').classList.remove('hidden');
-        document.getElementById('new-thread-overlay').classList.add('flex');
-        const createContainer = document.getElementById('create-container');
+        newThreadOverlay.classList.remove('hidden');
+        newThreadOverlay.classList.add('flex');
+
         setTimeout(() => {
-            const createContainer = document.getElementById('create-container');
             createContainer.classList.remove('scale-95', 'opacity-0');
             createContainer.classList.add('scale-100', 'opacity-100');
         }, 100);
     }
 
     const exitCreate = () => {
-        document.getElementById('new-thread-overlay').classList.add('hidden');
-        const createContainer = document.getElementById('create-container');
+        newThreadOverlay.classList.add('hidden');
         createContainer.classList.remove('scale-100', 'opacity-100');
         createContainer.classList.add('scale-95', 'opacity-0');
 
-        const textarea = document.getElementById('content');
         textarea.value = '';
         textarea.style.height = 'auto';
 
-        const image = document.getElementById('attach-image');
         image.src = '';
         image.classList.add('hidden');
 
-        const fileInput = document.getElementById('image-upload');
         fileInput.value = '';
 
-        const postButton = document.getElementById('post-button');
         postButton.classList.add('text-gray-400', 'cursor-not-allowed');
         postButton.classList.remove('text-blue-500', 'cursor-pointer');
 
         if (image.src.startsWith('blob:')) {
             URL.revokeObjectURL(image.src);
         }
-    }
+    } 
 
-    document.getElementById('new-thread-overlay').addEventListener('click', (e) => {
-        const createContainer = document.getElementById('create-container');
+    newThreadOverlay.addEventListener('click', (e) => {
         if (!createContainer.contains(e.target)) {
             exitCreate();
         }
     });
 
     const previewImage = (event) => {
-        const image = document.getElementById('attach-image');
-
         image.src = URL.createObjectURL(event.target.files[0]);
         image.classList.remove('hidden');
 

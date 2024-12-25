@@ -1,6 +1,16 @@
 {{> navbar}}
 {{> post-button}}
-{{> login-button}}
+
+{{!-- Login button --}}
+{{#if isLoggedIn }}
+{{else}}
+<a href="/login">
+    <button id="login-button"
+        class="fixed z-20 px-4 py-2 font-medium leading-none text-center text-white bg-black top-4 right-4 rounded-xl hover:scale-95">
+        Log in
+    </button>
+</a>
+{{/if}}
 
 {{!-- All/Following Options --}}
 <div id="options"
@@ -26,7 +36,7 @@
             <span class="opacity-40 leading-none p-4 cursor-text" onclick="createNewThread()">How are you
                 today?</span>
             <button
-                class="absolute right-4 bg-white dark:bg-eerie-black text-center font-medium rounded-xl px-4 py-2 hover:scale-95 border border-light-gray dark:border-charleston-green leading-none"
+                class="absolute px-4 py-2 font-medium leading-none text-center bg-white border right-4 dark:bg-eerie-black rounded-xl hover:scale-95 border-light-gray dark:border-charleston-green"
                 onclick="createNewThread()">Post
             </button>
         </div>
@@ -54,7 +64,7 @@
                 <img class="rounded-full" src="{{avatarUrl}}" alt="Avatar">
             </div>
 
-            <div class="basis-11/12 pl-4 bg-white flex flex-col">
+            <div class="flex flex-col pl-4 bg-white basis-11/12">
                 <div class="font-medium">
                     {{username}}
                 </div>
@@ -106,7 +116,7 @@
                         ${getDifTime(thread.createdAt)}
                     </div>
                 </div>
-                <a href="/thread?id=${thread.id}">
+                <a href="/thread/${thread.id}">
                     <p>${thread.content}</p>
                 </a>
                 <img src="${thread.imageUrl}" alt="Image"
@@ -205,19 +215,35 @@
             if (loading) return;
             loading = true;
             document.getElementById('loading-spinner').classList.remove('hidden');
+            
+            if({{following}}) {
+                const res = await fetch(`/loadThreads?mode=following&page=${page}`);
+                const threads = await res.json();
 
-            const res = await fetch(`/loadThreads?page=${page}`);
-            const threads = await res.json();
+                // Render threads mới vào giao diện
+                const feedsContainer = document.getElementById('feeds');
+                threads.forEach(thread => {
+                    const threadElement = createThreadElement(thread);
+                    feedsContainer.appendChild(threadElement);
+                    attachThreadEvents(threadElement);
+                });
 
-            // Render threads mới vào giao diện
-            const feedsContainer = document.getElementById('feeds');
-            threads.forEach(thread => {
-                const threadElement = createThreadElement(thread);
-                feedsContainer.appendChild(threadElement);
-                attachThreadEvents(threadElement);
-            });
+                page++;
+            }
+            else {
+                const res = await fetch(`/loadThreads?mode=all&page=${page}`);
+                const threads = await res.json();
 
-            page++;
+                // Render threads mới vào giao diện
+                const feedsContainer = document.getElementById('feeds');
+                threads.forEach(thread => {
+                    const threadElement = createThreadElement(thread);
+                    feedsContainer.appendChild(threadElement);
+                    attachThreadEvents(threadElement);
+                });
+
+                page++;
+            }
         } catch (error) {
             console.error('Error loading threads:', error);
         } finally {

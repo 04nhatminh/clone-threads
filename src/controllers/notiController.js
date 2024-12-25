@@ -4,11 +4,16 @@ const { where } = require('sequelize');
 const sequelize = require('sequelize');
 
 controller.renderNotification = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
-    const currentUser = await models.User.findOne({ where: { id: userId } });
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    const userId = req.user.id;
     
     const noti = await models.Notification.findAll({
-        where: { userId: userId },
+        where: {
+            userId: userId,
+            fromId: { [sequelize.Op.ne]: userId }
+        },
         order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
         include: ['from'],
     });
@@ -29,13 +34,11 @@ controller.renderNotification = async (req, res) => {
         }
     });
 
-    res.locals.currentUser = currentUser;
-
     res.render('noti', {
         title: "Notifications • Simple Threads",
         noti,
         isNoti: true,
-        loggedIn: currentUser ? true : false,
+        loggedIn: req.isAuthenticated(),
     });
 }
 
