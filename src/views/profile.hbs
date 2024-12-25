@@ -539,7 +539,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="main-container mt-[50px] phone:mt-[60px] h-[calc(100vh - 60px)] flex justify-center overflow-hidden">
+<div class="main-container mt-[50px] phone:mt-[60px] h-full flex justify-center overflow-hidden">
     <div
         class="profile-card shadow-lg bg-[#ffffff] w-full h-full max-w-[640px] border-[#d5d5d5] border-[0.5px] rounded-t-[22px] overflow-y-auto">
         <!-- Profile Info -->
@@ -859,7 +859,7 @@
 
                     const userUsername = document.querySelectorAll('.user-username');
                     userUsername.forEach(username => {
-                        username.innerText = data.username;
+                        username.innerText = "@" + data.username;
                     });
 
                     const userFullName = document.querySelectorAll('.user-fullname');

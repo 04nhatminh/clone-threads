@@ -125,9 +125,10 @@ class authController {
                     email,
                     username,
                     password,
-                    description: (displayname && displayname.trim() !== '') 
+                    fullName: (displayname && displayname.trim() !== '') 
                         ? displayname 
                         : username,
+                    avatarUrl: 'https://res.cloudinary.com/ds9macgdo/image/upload/v1719592662/g2/avatar/default.png',
                 });
                 // delete session
                 await redisClient.del(tempUserKey);
