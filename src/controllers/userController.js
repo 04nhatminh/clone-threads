@@ -1,4 +1,5 @@
 const models = require("../models");
+const he = require('he');
 
 let userController = {};
 
@@ -291,7 +292,7 @@ userController.Like = async (req, res) => {
 
 userController.Comment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
-    const content = req.body.comment;
+    const content = req.body.comment ? he.encode(req.body.comment) : '';
     
     if (!req.isAuthenticated()) {
         return res.redirect('/login');
@@ -303,6 +304,10 @@ userController.Comment = async (req, res) => {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
         if (!thread) {
             return res.status(404).json({ success: false, message: 'Thread not found' });
+        }
+
+        if (!content.trim()) {
+            return res.status(400).json({ success: false, message: 'Content cannot be empty' });
         }
 
         const newComment = await models.Comment.create({

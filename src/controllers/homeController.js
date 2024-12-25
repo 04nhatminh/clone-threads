@@ -3,6 +3,7 @@ const sequelize = require('sequelize');
 const models = require('../models');
 const { hashPassword } = require('../utils/bcryptUtils');
 const { uploadToCloudinary } = require('../middleware/upload');
+const he = require('he');
 
 controller.renderHome = async (req, res) => {
     // const threads = await models.Thread.findAll({
@@ -23,37 +24,37 @@ controller.renderHome = async (req, res) => {
 controller.loadThreads = async (req, res) => {
     const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
     const mode = req.query.mode;
-    if (!req.isAuthenticated()) {
+    const userId = req.isAuthenticated() ? req.user.id : null;
+
+    if (mode === 'following' && !req.isAuthenticated()) {
         return res.redirect('/login');
     }
-    const userId = req.user.id;
-    const following = await models.Follow.findAll({ where: { followerId: userId } });
-    console.log(following);
-    
-    let threads = [];
 
-    if (mode === 'all') {
-        threads = await models.Thread.findAll({
+    try {
+        let threads = [];
+        const baseQuery = {
             include: ['user', 'likes', 'comments'],
             order: [['updatedAt', 'DESC']],
             limit: 10,
             offset: (page - 1) * 10,
-        });
-    }
-    else if (mode === 'following') {
-        threads = await models.Thread.findAll({
-            include: ['user', 'likes', 'comments'],
-            where: {
-                userId: following.map(follow => follow.userId)
-            },
-            order: [['updatedAt', 'DESC']],
-            limit: 10,
-            offset: (page - 1) * 10,
-        });
-    }
+        };
 
-    res.json(threads.map(thread => {
-        return {
+        if (mode === 'following') {
+            const following = await models.Follow.findAll({
+                where: { followerId: userId }
+            });
+
+            threads = await models.Thread.findAll({
+                ...baseQuery,
+                where: {
+                    userId: following.map(follow => follow.userId)
+                }
+            });
+        } else {
+            threads = await models.Thread.findAll(baseQuery);
+        }
+
+        const mappedThreads = threads.map(thread => ({
             id: thread.id,
             content: thread.content,
             imageUrl: thread.imageUrl,
@@ -65,13 +66,21 @@ controller.loadThreads = async (req, res) => {
             likes: thread.likes.length,
             comments: thread.comments.length,
             createdAt: thread.createdAt,
-            liked: thread.likes.some(like => like.userId === userId),
-        }
-    }));
-}
+            liked: userId ? thread.likes.some(like => like.userId === userId) : false,
+        }));
+
+        res.json(mappedThreads);
+
+    } catch (error) {
+        console.error('Error loading threads:', error);
+        res.status(500).json({ error: 'Failed to load threads' });
+    }
+};
 
 controller.loadFollowingThreads = async (req, res) => {
-    // res.locals.threads = threads;
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }    
 
     res.render("home", {
         title: "Home • Simple Threads",
@@ -96,7 +105,7 @@ controller.addNewThread = async (req, res) => {
         console.log('Creating thread in database...');
         const newThread = await models.Thread.create({
             userId: isNaN(req.body.userId) ? null : parseInt(req.body.userId),
-            content: req.body.content,
+            content: req.body.content ? he.encode(req.body.content) : '',
             imageUrl: imageUrl, // Lưu URL ảnh
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -167,7 +176,7 @@ controller.toggleLikes = async (req, res) => {
 controller.addComment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
     const userId = parseInt(req.body.user);
-    const content = req.body.comment;
+    const content = req.body.comment ? he.encode(req.body.comment) : '';
 
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
