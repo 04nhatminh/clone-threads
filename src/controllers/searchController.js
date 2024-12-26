@@ -22,7 +22,7 @@ controller.loadUsers = async (req, res) => {
     if (keywords.trim() != "") {
         options.where[Op.or] = {
             username: { [Op.iLike]: `%${keywords.trim()}%` },
-            description: { [Op.iLike]: `%${keywords.trim()}%` },
+            fullName: { [Op.iLike]: `%${keywords.trim()}%` },
         }
     }
 
@@ -40,6 +40,7 @@ controller.loadUsers = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 avatarUrl: user.avatarUrl,
+                fullName: user.fullName,
                 description: user.description || '',
                 followers: user.follows.length || 0,
                 followed: user.follows.some(follower => follower.followerId === userId),

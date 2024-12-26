@@ -25,10 +25,6 @@ controller.loadThreads = async (req, res) => {
     const mode = req.query.mode;
     const userId = req.isAuthenticated() ? req.user.id : null;
 
-    if (mode === 'following' && !req.isAuthenticated()) {
-        return res.redirect('/login');
-    }
-
     try {
         let threads = [];
         const baseQuery = {
