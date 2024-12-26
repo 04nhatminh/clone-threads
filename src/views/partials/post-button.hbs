@@ -8,13 +8,14 @@
 {{#with currentUser}}
 <div id="new-thread-overlay"
     class="bg-vampire-black dark:bg-eerie-black dark:bg-opacity-10 bg-opacity-50 backdrop-blur-[0.1px] w-screen h-screen fixed z-[1002] justify-center place-items-center hidden">
-    <form action="/" method="POST" enctype="multipart/form-data" class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+    <form action="/" method="POST" enctype="multipart/form-data"
+        class="w-full h-screen md:max-w-[600px] md:h-auto md:max-h-[70vh] bg-white dark:bg-eerie-black md:rounded-xl relative overflow-hidden flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0"
         id="create-container">
         <input type="hidden" name="userId" value="{{id}}">
         <!-- Header -->
         <div class="text-center font-semibold p-4 border-b border-gray-300 relative">
             New thread
-            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate()">Cancel</button>
+            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitCreate(event)">Cancel</button>
         </div>
 
         <!-- Scrollable content area -->
@@ -28,7 +29,8 @@
                     <textarea name="content"
                         class="post-input leading-5 outline-none resize-none pt-1 dark:bg-eerie-black placeholder:text-spanish-gray dark:placeholder:text-sonic-silver"
                         id="content" placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
-                    <input type="file" accept="image/*" name="image" id="image-upload" class="hidden" onchange="previewImage(event)">
+                    <input type="file" accept="image/*" name="image" id="image-upload" class="hidden"
+                        onchange="previewImage(event)">
                     <label for="image-upload" class="cursor-pointer">
                         <i class="fa-regular fa-image mt-2"></i>
                     </label>
@@ -47,32 +49,14 @@
 {{/with}}
 
 <script>
-    const newThreadButton = document.getElementById('new-thread-button');
-    const newThreadOverlay = document.getElementById('new-thread-overlay');
-    const createContainer = document.getElementById('create-container');
-    const postInput = document.querySelector('.post-input');
-    const postButton = document.getElementById('post-button');
-    const image = document.getElementById('attach-image');
-    const textarea = document.getElementById('content');
-    const fileInput = document.getElementById('image-upload');
+    function createNewThread() {
+        const newThreadOverlay = document.getElementById('new-thread-overlay');
+        const createContainer = document.getElementById('create-container');
 
-    if (postInput && postButton) {
-        postInput.addEventListener('input', () => {
-            if (postInput.value.trim()) {
-                postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
-                postButton.type = 'submit';
-            } else {
-                postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
-                postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
-                postButton.type = 'button';
-            }
-        });
-    }
-
-    const createNewThread = () => {
         newThreadOverlay.classList.remove('hidden');
         newThreadOverlay.classList.add('flex');
+
+        adjustContainerHeight();
 
         setTimeout(() => {
             createContainer.classList.remove('scale-95', 'opacity-0');
@@ -80,7 +64,22 @@
         }, 100);
     }
 
-    const exitCreate = () => {
+    function exitCreate(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        const newThreadOverlay = document.getElementById('new-thread-overlay');
+        const createContainer = document.getElementById('create-container');
+        const textarea = document.getElementById('content');
+        const image = document.getElementById('attach-image');
+        const fileInput = document.getElementById('image-upload');
+        const postButton = document.getElementById('post-button');
+        const form = document.querySelector('form'); 
+
+        if (form) {
+            form.reset();
+        }
+
         newThreadOverlay.classList.add('hidden');
         createContainer.classList.remove('scale-100', 'opacity-100');
         createContainer.classList.add('scale-95', 'opacity-0');
@@ -98,16 +97,12 @@
 
         if (image.src.startsWith('blob:')) {
             URL.revokeObjectURL(image.src);
+            adjustContainerHeight();
         }
-    } 
+    }
 
-    newThreadOverlay.addEventListener('click', (e) => {
-        if (!createContainer.contains(e.target)) {
-            exitCreate();
-        }
-    });
-
-    const previewImage = (event) => {
+    function previewImage(event) {
+        const image = document.getElementById('attach-image');
         image.src = URL.createObjectURL(event.target.files[0]);
         image.classList.remove('hidden');
 
@@ -115,4 +110,69 @@
             URL.revokeObjectURL(image.src);
         };
     }
+
+    function adjustContainerHeight() {
+        const createContainer = document.getElementById('create-container');
+        const scrollableContent = document.getElementById('scrollable-content');
+
+        if (window.innerWidth < 768) {
+            createContainer.style.height = '100vh';
+            scrollableContent.style.overflowY = 'auto';
+        } else {
+            createContainer.style.height = 'auto';
+            const maxHeight = window.innerHeight * 0.7;
+            const containerHeight = createContainer.offsetHeight;
+
+            if (containerHeight > maxHeight) {
+                createContainer.style.height = `${maxHeight}px`;
+                scrollableContent.style.overflowY = 'auto';
+            } else {
+                createContainer.style.height = 'auto';
+                scrollableContent.style.overflowY = 'hidden';
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const newThreadOverlay = document.getElementById('new-thread-overlay');
+        const createContainer = document.getElementById('create-container');
+        const postInput = document.querySelector('.post-input');
+        const postButton = document.getElementById('post-button');
+
+        window.addEventListener('resize', adjustContainerHeight);
+
+        if (postInput && postButton) {
+            postInput.addEventListener('input', () => {
+                postInput.style.height = 'auto';
+                postInput.style.height = postInput.scrollHeight + 'px';
+
+                adjustContainerHeight();
+
+                if (postInput.value.trim()) {
+                    postButton.classList.remove('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                    postButton.classList.add('bg-white', 'text-black', 'cursor-pointer');
+                    postButton.type = 'submit';
+                } else {
+                    postButton.classList.add('bg-white/10', 'text-gray-400', 'cursor-not-allowed');
+                    postButton.classList.remove('bg-white', 'text-black', 'cursor-pointer');
+                    postButton.type = 'button';
+                }
+            });
+        }
+
+        newThreadOverlay.addEventListener('click', (e) => {
+            if (!createContainer.contains(e.target)) {
+                exitCreate();
+            }
+        });
+
+        const textarea = document.getElementById('content');
+        textarea.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+            adjustContainerHeight();
+        });
+
+        adjustContainerHeight();
+    });
 </script>

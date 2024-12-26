@@ -2,7 +2,6 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const models = require("../models");
-const he = require('he');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -36,10 +35,10 @@ cloudinaryController.updateProfile = async (req, res) => {
         }
 
         try {
-            const description = he.encode(req.body.description);
-            const website = he.encode(req.body.website);
-            const fullName = he.encode(req.body.fullName);
-            const username = he.encode(req.body.username);
+            const description = req.body.description
+            const website = req.body.website;
+            const fullName = req.body.fullName;
+            const username = req.body.username;
             let avatarUrl = req.body.avatarUrl;
             const existingUser = await models.User.findOne({ where: { id: userId } });
 

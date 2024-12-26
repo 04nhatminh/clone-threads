@@ -109,7 +109,7 @@
                         <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
-                <button onclick="handleFollowAction({{id}}, {{../user.id}}, this)"
+                <button onclick="handleFollowAction({{id}}, {{../user.id}}, this, false)"
                     class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollowBack}}following{{/if}}">
                     {{#if isFollowBack}}Following{{else}}Follow back{{/if}}
                 </button>
@@ -128,7 +128,7 @@
                         <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
-                <button onclick="handleFollowAction({{id}}, {{../user.id}}, this)"
+                <button onclick="handleFollowAction({{id}}, {{../user.id}}, this, true)"
                     class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollow}}following{{else}}Follow{{/if}}">
                     {{#if isFollow}}Following{{else}}Follow{{/if}}
                 </button>
@@ -548,7 +548,7 @@
                 <div id="profile-name" class="text-2xl font-bold cursor-pointer pt-[11px] user-fullname">
                     {{user.fullName}}
                 </div>
-                <div class="text-[15px] mt-[2px] user-username">
+                <div class="text-[15px] mt-[2px] user-username-at">
                     @{{user.username}}
                 </div>
             </div>
@@ -664,7 +664,7 @@
                     {{user.username}}
                 </div>
                 <textarea name="comment" class="leading-5 outline-none resize-none" id="comment"
-                    placeholder="What's new?" rows="1" style="scrollbar-width: none;"></textarea>
+                    placeholder="Enter your comment" rows="1" style="scrollbar-width: none;"></textarea>
             </div>
         </div>
 
@@ -694,6 +694,87 @@
             fileNameDisplay.innerHTML = '+ Edit avatar';
         }
     };
+
+    function adjustCommentContainerHeight() {
+        const commentContainer = document.getElementById('comment-container');
+        const scrollableContent = document.getElementById('comment-scrollable-content');
+        const commentTextarea = document.getElementById('comment');
+
+        if (!commentContainer || !scrollableContent || !commentTextarea) return;
+
+        if (window.innerWidth < 768) {
+            commentContainer.style.height = '100vh';
+            scrollableContent.style.overflowY = 'auto';
+        } else {
+            commentContainer.style.height = 'auto';
+            const maxHeight = window.innerHeight * 0.7;
+            const containerHeight = commentContainer.offsetHeight;
+
+            if (containerHeight > maxHeight) {
+                commentContainer.style.height = `${maxHeight}px`;
+                scrollableContent.style.overflowY = 'auto';
+            } else {
+                commentContainer.style.height = 'auto';
+                scrollableContent.style.overflowY = 'hidden';
+            }
+        }
+    }
+
+    function exitComment() {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const comment = document.getElementById('comment');
+        const form = document.getElementById('comment-form');
+
+        overlay.classList.remove('flex');
+        overlay.classList.add('hidden');
+        container.classList.remove('scale-100', 'opacity-100');
+        container.classList.add('scale-95', 'opacity-0');
+        comment.value = '';
+        comment.style.height = 'auto';
+    }
+
+    function showCommentOverlay(threadId) {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const threadIdInput = document.getElementById('comment-thread-id');
+
+        threadIdInput.value = threadId;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        adjustCommentContainerHeight();
+
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 100);
+    }
+
+    // Edit Profile Dialog
+    const editProfileDialogOverlay = document.getElementById('edit-profile-dialog-overlay');
+    function closeEditProfileDialog() {
+        if (editProfileDialogOverlay) {
+            editProfileDialogOverlay.classList.remove('flex');
+            editProfileDialogOverlay.classList.add('hidden');
+        }
+    };
+
+    function closeFollowDialog() {
+        const followDialogOverlay = document.getElementById('follow-dialog');
+        followDialogOverlay.classList.remove('active');
+        setTimeout(() => {
+            followDialogOverlay.style.display = 'none';
+        }, 300);
+    };
+
+    function openEditProfileDialog() {
+        if (editProfileDialogOverlay) {
+            editProfileDialogOverlay.classList.remove('hidden');
+            editProfileDialogOverlay.classList.add('flex');
+        }
+    };
+
 
     document.addEventListener('DOMContentLoaded', () => {
         // Tabs
@@ -801,23 +882,6 @@
             }
         });
 
-        // Edit Profile Dialog
-        const editProfileDialogOverlay = document.getElementById('edit-profile-dialog-overlay');
-
-        window.openEditProfileDialog = () => {
-            if (editProfileDialogOverlay) {
-                editProfileDialogOverlay.classList.remove('hidden');
-                editProfileDialogOverlay.classList.add('flex');
-            }
-        };
-
-        window.closeEditProfileDialog = () => {
-            if (editProfileDialogOverlay) {
-                editProfileDialogOverlay.classList.remove('flex');
-                editProfileDialogOverlay.classList.add('hidden');
-            }
-        };
-
         if (editProfileDialogOverlay) {
             editProfileDialogOverlay.addEventListener('click', function (e) {
                 if (e.target === this) {
@@ -859,7 +923,7 @@
 
                     const userUsername = document.querySelectorAll('.user-username');
                     userUsername.forEach(username => {
-                        username.innerText = "@" + data.username;
+                        username.innerText = data.username;
                     });
 
                     const userFullName = document.querySelectorAll('.user-fullname');
@@ -870,6 +934,11 @@
                     const userFullnameUsername = document.querySelectorAll('.user-fullname-username');
                     userFullnameUsername.forEach(fullnameUsername => {
                         fullnameUsername.innerText = `${data.fullName} (@${data.username})`;
+                    });
+
+                    const userUsernameAt = document.querySelectorAll('.user-username-at');
+                    userUsernameAt.forEach(usernameAt => {
+                        usernameAt.innerText = `@${data.username}`;
                     });
 
                     document.title = `${data.fullName} (@${data.username})`;
@@ -921,14 +990,6 @@
             }, 10);
         };
 
-        const closeFollowDialog = () => {
-            const followDialogOverlay = document.getElementById('follow-dialog');
-            followDialogOverlay.classList.remove('active');
-            setTimeout(() => {
-                followDialogOverlay.style.display = 'none';
-            }, 300);
-        };
-
         window.switchTab = (tab) => {
             const followersTab = document.getElementById('followersTab');
             const followingTab = document.getElementById('followingTab');
@@ -958,7 +1019,7 @@
             }
         };
 
-        window.handleFollowAction = async (targetUserId, currentUserId, buttonElement) => {
+        window.handleFollowAction = async (targetUserId, currentUserId, buttonElement, isFollowingTab) => {
             try {
                 const response = await fetch('/follow', {
                     method: 'POST',
@@ -978,7 +1039,7 @@
                         buttonElement.textContent = 'Following';
                         buttonElement.classList.add('following');
                     } else {
-                        buttonElement.textContent = 'Follow back';
+                        buttonElement.textContent = isFollowingTab ? 'Follow' : 'Follow back';
                         buttonElement.classList.remove('following');
                     }
                 } else {
@@ -1039,6 +1100,7 @@
 
                 const threadId = item.closest('.bg-white').id.split('-')[1];
                 document.getElementById('post-comment-button').dataset.threadId = threadId;
+                adjustCommentContainerHeight();
             });
         });
 
@@ -1048,6 +1110,17 @@
                 exitComment();
             }
         });
+
+        const commentTextarea = document.getElementById('comment');
+        if (commentTextarea) {
+            commentTextarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                adjustCommentContainerHeight();
+            });
+        }
+
+        window.addEventListener('resize', adjustCommentContainerHeight);
 
         document.getElementById('post-comment-button').addEventListener('click', async function () {
             const commentContent = document.getElementById('comment').value.trim();

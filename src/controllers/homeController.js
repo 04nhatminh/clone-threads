@@ -3,7 +3,6 @@ const sequelize = require('sequelize');
 const models = require('../models');
 const { hashPassword } = require('../utils/bcryptUtils');
 const { uploadToCloudinary } = require('../middleware/upload');
-const he = require('he');
 
 controller.renderHome = async (req, res) => {
     // const threads = await models.Thread.findAll({
@@ -105,7 +104,7 @@ controller.addNewThread = async (req, res) => {
         console.log('Creating thread in database...');
         const newThread = await models.Thread.create({
             userId: isNaN(req.body.userId) ? null : parseInt(req.body.userId),
-            content: req.body.content ? he.encode(req.body.content) : '',
+            content: req.body.content ? req.body.content : '',
             imageUrl: imageUrl, // Lưu URL ảnh
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -176,8 +175,7 @@ controller.toggleLikes = async (req, res) => {
 controller.addComment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
     const userId = parseInt(req.body.user);
-    const content = req.body.comment ? he.encode(req.body.comment) : '';
-
+    const content = req.body.comment ? req.body.comment : '';
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
         if (!thread) {

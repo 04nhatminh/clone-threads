@@ -1,5 +1,4 @@
 const models = require("../models");
-const he = require('he');
 
 let userController = {};
 
@@ -240,7 +239,6 @@ userController.otherUserProfile = async (req, res) => {
     }
 };
 
-
 userController.Like = async (req, res) => {
     const threadId = parseInt(req.body.thread);
 
@@ -283,6 +281,8 @@ userController.Like = async (req, res) => {
             });
         }
 
+        await models.Thread.update({ updatedAt: new Date() }, { where: { id: threadId } });
+
         res.json({ success: true, liked: !existingLike, likesCount, message: 'Like updated successfully' });
     } catch (error) {
         console.error(error);
@@ -292,7 +292,7 @@ userController.Like = async (req, res) => {
 
 userController.Comment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
-    const content = req.body.comment ? he.encode(req.body.comment) : '';
+    const content = req.body.comment ? req.body.comment : '';
     
     if (!req.isAuthenticated()) {
         return res.redirect('/login');
@@ -328,6 +328,8 @@ userController.Comment = async (req, res) => {
                 updatedAt: new Date(),
             });
         }
+
+        await models.Thread.update({ updatedAt: new Date() }, { where: { id: threadId } });
 
         return res.json({ success: true, comment: newComment, message: 'Comment posted successfully!' });
     } catch (error) {

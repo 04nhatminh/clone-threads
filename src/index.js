@@ -92,7 +92,8 @@ app.engine(
                     }
                 }
                 return 'Just now';
-            }
+            },
+            eq: (a, b) => a === b,
         }
     })
 );
@@ -107,7 +108,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            maxAge: 20 * 60 * 1000, // Cookie hết hạn sau 20 phút
+            maxAge: 30 * 60 * 1000, // Cookie hết hạn sau 20 phút
         },
     })
 );

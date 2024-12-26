@@ -109,10 +109,12 @@
                         <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
+                {{#unless (eq id ../currentUser.id)}}
                 <button onclick="handleFollowAction({{id}}, {{../currentUser.id}}, this)"
                     class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollowBack}}following{{/if}}">
-                    {{#if isFollowBack}}Following{{else}}Follow back{{/if}}
+                    {{#if isFollowBack}}Following{{else}}Follow{{/if}}
                 </button>
+                {{/unless}}
             </div>
             {{/each}}
         </div>
@@ -128,10 +130,12 @@
                         <div class="text-[#999999] text-sm">{{fullName}}</div>
                     </div>
                 </div>
+                {{#unless (eq id ../currentUser.id)}}
                 <button onclick="handleFollowAction({{id}}, {{../currentUser.id}}, this)"
                     class="px-4 py-1.5 rounded-lg border border-gray-300 text-sm font-semibold text-black {{#if isFollow}}following{{else}}Follow{{/if}}">
                     {{#if isFollow}}Following{{else}}Follow{{/if}}
                 </button>
+                {{/unless}}
             </div>
             {{/each}}
         </div>
@@ -272,6 +276,70 @@
 </div>
 
 <script>
+    function adjustCommentContainerHeight() {
+        const commentContainer = document.getElementById('comment-container');
+        const scrollableContent = document.getElementById('comment-scrollable-content');
+        const commentTextarea = document.getElementById('comment');
+
+        if (!commentContainer || !scrollableContent || !commentTextarea) return;
+
+        if (window.innerWidth < 768) {
+            commentContainer.style.height = '100vh';
+            scrollableContent.style.overflowY = 'auto';
+        } else {
+            commentContainer.style.height = 'auto';
+            const maxHeight = window.innerHeight * 0.7;
+            const containerHeight = commentContainer.offsetHeight;
+
+            if (containerHeight > maxHeight) {
+                commentContainer.style.height = `${maxHeight}px`;
+                scrollableContent.style.overflowY = 'auto';
+            } else {
+                commentContainer.style.height = 'auto';
+                scrollableContent.style.overflowY = 'hidden';
+            }
+        }
+    }
+
+    function exitComment() {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const comment = document.getElementById('comment');
+        const form = document.getElementById('comment-form');
+
+        overlay.classList.remove('flex');
+        overlay.classList.add('hidden');
+        container.classList.remove('scale-100', 'opacity-100');
+        container.classList.add('scale-95', 'opacity-0');
+        comment.value = '';
+        comment.style.height = 'auto';
+    };
+
+    function showCommentOverlay(threadId) {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const threadIdInput = document.getElementById('comment-thread-id');
+
+        threadIdInput.value = threadId;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        adjustCommentContainerHeight();
+
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 100);
+    };
+
+    const closeFollowDialog = () => {
+        const followDialogOverlay = document.getElementById('follow-dialog');
+        followDialogOverlay.classList.remove('active');
+        setTimeout(() => {
+            followDialogOverlay.style.display = 'none';
+        }, 300);
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         const showToast = (toastId, message) => {
             const toast = document.getElementById(toastId);
@@ -415,14 +483,6 @@
             }, 10);
         };
 
-        const closeFollowDialog = () => {
-            const followDialogOverlay = document.getElementById('follow-dialog');
-            followDialogOverlay.classList.remove('active');
-            setTimeout(() => {
-                followDialogOverlay.style.display = 'none';
-            }, 300);
-        };
-
         window.switchTab = (tab) => {
             const followersTab = document.getElementById('followersTab');
             const followingTab = document.getElementById('followingTab');
@@ -472,7 +532,7 @@
                         buttonElement.textContent = 'Following';
                         buttonElement.classList.add('following');
                     } else {
-                        buttonElement.textContent = 'Follow back';
+                        buttonElement.textContent = 'Follow';
                         buttonElement.classList.remove('following');
                     }
                 } else {
@@ -568,6 +628,7 @@
 
                 const threadId = item.closest('.bg-white').id.split('-')[1];
                 document.getElementById('post-comment-button').dataset.threadId = threadId;
+                adjustCommentContainerHeight();
             });
         });
 
@@ -577,6 +638,17 @@
                 exitComment();
             }
         });
+
+        const commentTextarea = document.getElementById('comment');
+        if (commentTextarea) {
+            commentTextarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                adjustCommentContainerHeight();
+            });
+        }
+
+        window.addEventListener('resize', adjustCommentContainerHeight);
 
         document.getElementById('post-comment-button').addEventListener('click', async function () {
             const commentContent = document.getElementById('comment').value.trim();

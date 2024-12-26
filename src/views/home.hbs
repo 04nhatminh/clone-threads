@@ -56,7 +56,7 @@
         <input type="hidden" name="user" value="{{id}}">
         <input type="hidden" name="thread" id="comment-thread-id">
         <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
-            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
+            <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment(event)">Cancel</button>
         </div>
 
         <div class="p-4 flex h-3/4">
@@ -80,19 +80,61 @@
 {{/with}}
 
 <script>
-    function exitComment() {
-        document.getElementById('comment-overlay').classList.remove('flex');
-        document.getElementById('comment-overlay').classList.add('hidden');
-        document.getElementById('comment').value = '';
+    function adjustCommentContainerHeight() {
+        const commentContainer = document.getElementById('comment-container');
+        const scrollableContent = document.getElementById('comment-scrollable-content');
+        const commentTextarea = document.getElementById('comment');
+
+        if (!commentContainer || !scrollableContent || !commentTextarea) return;
+
+        if (window.innerWidth < 768) {
+            commentContainer.style.height = '100vh';
+            scrollableContent.style.overflowY = 'auto';
+        } else {
+            commentContainer.style.height = 'auto';
+            const maxHeight = window.innerHeight * 0.7;
+            const containerHeight = commentContainer.offsetHeight;
+
+            if (containerHeight > maxHeight) {
+                commentContainer.style.height = `${maxHeight}px`;
+                scrollableContent.style.overflowY = 'auto';
+            } else {
+                commentContainer.style.height = 'auto';
+                scrollableContent.style.overflowY = 'hidden';
+            }
+        }
     }
 
-    if (document.getElementById('comment-overlay')) {
-        document.getElementById('comment-overlay').addEventListener('click', function (e) {
-            const commentContainer = document.getElementById('comment-container');
-            if (!commentContainer.contains(e.target)) {
-                exitComment();
-            }
-        });
+    function exitComment(event) {
+        if (event) event.preventDefault();
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const comment = document.getElementById('comment');
+        const form = document.getElementById('comment-form');
+
+        overlay.classList.remove('flex');
+        overlay.classList.add('hidden');
+        container.classList.remove('scale-100', 'opacity-100');
+        container.classList.add('scale-95', 'opacity-0');
+        comment.value = '';
+        comment.style.height = 'auto';
+    }
+
+    function showCommentOverlay(threadId) {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const threadIdInput = document.getElementById('comment-thread-id');
+
+        threadIdInput.value = threadId;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        adjustCommentContainerHeight();
+
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 100);
     }
 
     // Load threads
@@ -104,40 +146,40 @@
         threadDiv.className = "p-4 pb-1 flex border-t border-light-gray dark:border-charleston-green";
 
         threadDiv.innerHTML = `
-            <div class="basis-1/12 min-w-10" id="thread-avatar">
-                <a href="/@${thread.user.username}"><img class="rounded-full" src="${thread.user.avatarUrl}" alt="Avatar"></a>
-            </div>
-            <div class="basis-11/12 px-4">
-                <div class="flex gap-2">
-                    <div class="font-medium hover:underline">
-                        <a href="/@${thread.user.username}">${thread.user.username}</a>
-                    </div>
-                    <div class="opacity-40">
-                        ${getDifTime(thread.createdAt)}
-                    </div>
+        <div class="basis-1/12 min-w-10" id="thread-avatar">
+            <a href="/@${thread.user.username}"><img class="rounded-full" src="${thread.user.avatarUrl}" alt="Avatar"></a>
+        </div>
+        <div class="basis-11/12 px-4">
+            <div class="flex gap-2">
+                <div class="font-medium hover:underline">
+                    <a href="/@${thread.user.username}">${thread.user.username}</a>
                 </div>
-                <a href="/thread/${thread.id}">
-                    <p>${thread.content}</p>
-                </a>
-                <img src="${thread.imageUrl}" alt="Image"
-                    class="rounded-xl max-h-[300px] my-2 ${thread.imageUrl ? 'block' : 'hidden'}">
-                <div class="flex gap-2 place-items-center">
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2 ${thread.liked ? 'text-red-500' : ''}" data-thread-id="${thread.id}">
-                        <i class="${thread.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                        <span class="likes-count">${thread.likes}</span>
-                    </div>
-                    <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="${thread.id}">
-                        <i class="fa-regular fa-comment"></i>
-                        <span class="comments-count">${thread.comments}</span>
-                    </div>
+                <div class="opacity-40">
+                    ${getDifTime(thread.createdAt)}
                 </div>
             </div>
-        `;
+            <a href="/thread/${thread.id}">
+                <p>${thread.content}</p>
+            </a>
+            <img src="${thread.imageUrl}" alt="Image"
+                class="rounded-xl max-h-[300px] my-2 ${thread.imageUrl ? 'block' : 'hidden'}">
+            <div class="flex gap-2 place-items-center">
+                <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2 ${thread.liked ? 'text-red-500' : ''}" data-thread-id="${thread.id}">
+                    <i class="${thread.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                    <span class="likes-count">${thread.likes}</span>
+                </div>
+                <div class="rounded-3xl hover:bg-[#f0f0f0] cursor-pointer px-3 py-2" data-thread-id="${thread.id}">
+                    <i class="fa-regular fa-comment"></i>
+                    <span class="comments-count">${thread.comments}</span>
+                </div>
+            </div>
+        </div>
+    `;
         return threadDiv;
     }
 
     function attachThreadEvents(threadElement) {
-        // Gắn sự kiện cho nút "like"
+        // Like button event
         const likeButton = threadElement.querySelector('.fa-heart');
         likeButton.parentElement.addEventListener('click', async function () {
             const threadId = likeButton.parentElement.getAttribute('data-thread-id');
@@ -169,13 +211,11 @@
             }
         });
 
-        // Gắn sự kiện cho nút "comment"
+        // Comment button event
         const commentButton = threadElement.querySelector('.fa-comment');
         commentButton.parentElement.addEventListener('click', function () {
             const threadId = commentButton.parentElement.getAttribute('data-thread-id');
-            document.getElementById('comment-thread-id').value = threadId;
-            document.getElementById('comment-overlay').classList.remove('hidden');
-            document.getElementById('comment-overlay').classList.add('flex');
+            showCommentOverlay(threadId);
         });
     }
 
@@ -215,36 +255,20 @@
             if (loading) return;
             loading = true;
             document.getElementById('loading-spinner').classList.remove('hidden');
-            
-            if({{following}}) {
-                const res = await fetch(`/loadThreads?mode=following&page=${page}`);
-                const threads = await res.json();
 
-                // Render threads mới vào giao diện
-                const feedsContainer = document.getElementById('feeds');
-                threads.forEach(thread => {
-                    const threadElement = createThreadElement(thread);
-                    feedsContainer.appendChild(threadElement);
-                    attachThreadEvents(threadElement);
-                });
+            const mode = {{ following }} ?'following' : 'all';
+            const res = await fetch(`/loadThreads?mode=${mode}&page=${page}`);
+            const threads = await res.json();
 
-                page++;
-            }
-            else {
-                const res = await fetch(`/loadThreads?mode=all&page=${page}`);
-                const threads = await res.json();
-
-                // Render threads mới vào giao diện
-                const feedsContainer = document.getElementById('feeds');
-                threads.forEach(thread => {
-                    const threadElement = createThreadElement(thread);
-                    feedsContainer.appendChild(threadElement);
-                    attachThreadEvents(threadElement);
-                });
-
-                page++;
-            }
-        } catch (error) {
+            // Render new threads
+            const feedsContainer = document.getElementById('feeds');
+            threads.forEach(thread => {
+                const threadElement = createThreadElement(thread);
+                feedsContainer.appendChild(threadElement);
+                attachThreadEvents(threadElement);
+            });
+            page++;
+    } catch (error) {
             console.error('Error loading threads:', error);
         } finally {
             loading = false;
@@ -252,11 +276,35 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', loadThreads);
-    document.getElementById('feeds').addEventListener('scroll', function () {
-        if (this.scrollTop + this.clientHeight >= this.scrollHeight - 10) {
-            loadThreads();
-        }
-    });
+    document.addEventListener('DOMContentLoaded', () => {
+        loadThreads();
 
+        document.getElementById('feeds').addEventListener('scroll', function () {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 10) {
+                loadThreads();
+            }
+        });
+
+        const commentOverlay = document.getElementById('comment-overlay');
+        const commentContainer = document.getElementById('comment-container');
+        const commentTextarea = document.getElementById('comment');
+
+        if (commentOverlay && commentContainer) {
+            commentOverlay.addEventListener('click', (e) => {
+                if (!commentContainer.contains(e.target)) {
+                    exitComment();
+                }
+            });
+
+            if (commentTextarea) {
+                commentTextarea.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                    adjustCommentContainerHeight();
+                });
+            }
+        }
+
+        window.addEventListener('resize', adjustCommentContainerHeight);
+    });
 </script>

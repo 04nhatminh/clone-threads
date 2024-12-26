@@ -144,6 +144,62 @@
 </div>
 
 <script>
+    function adjustCommentContainerHeight() {
+        const commentContainer = document.getElementById('comment-container');
+        const scrollableContent = document.getElementById('comment-scrollable-content');
+        const commentTextarea = document.getElementById('comment');
+
+        if (!commentContainer || !scrollableContent || !commentTextarea) return;
+
+        if (window.innerWidth < 768) {
+            commentContainer.style.height = '100vh';
+            scrollableContent.style.overflowY = 'auto';
+        } else {
+            commentContainer.style.height = 'auto';
+            const maxHeight = window.innerHeight * 0.7;
+            const containerHeight = commentContainer.offsetHeight;
+
+            if (containerHeight > maxHeight) {
+                commentContainer.style.height = `${maxHeight}px`;
+                scrollableContent.style.overflowY = 'auto';
+            } else {
+                commentContainer.style.height = 'auto';
+                scrollableContent.style.overflowY = 'hidden';
+            }
+        }
+    }
+
+    function exitComment() {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const comment = document.getElementById('comment');
+        const form = document.getElementById('comment-form');
+
+        overlay.classList.remove('flex');
+        overlay.classList.add('hidden');
+        container.classList.remove('scale-100', 'opacity-100');
+        container.classList.add('scale-95', 'opacity-0');
+        comment.value = '';
+        comment.style.height = 'auto';
+    }
+
+    function showCommentOverlay(threadId) {
+        const overlay = document.getElementById('comment-overlay');
+        const container = document.getElementById('comment-container');
+        const threadIdInput = document.getElementById('comment-thread-id');
+
+        threadIdInput.value = threadId;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        adjustCommentContainerHeight();
+
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 100);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const showToast = (toastId, message) => {
             const toast = document.getElementById(toastId);
@@ -242,6 +298,7 @@
             item.parentElement.addEventListener('click', function () {
                 document.getElementById('comment-overlay').classList.remove('hidden');
                 document.getElementById('comment-overlay').classList.add('flex');
+                adjustCommentContainerHeight();
             });
         });
 
@@ -251,6 +308,17 @@
                 exitComment();
             }
         });
+
+        const commentTextarea = document.getElementById('comment');
+        if (commentTextarea) {
+            commentTextarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                adjustCommentContainerHeight();
+            });
+        }
+
+        window.addEventListener('resize', adjustCommentContainerHeight);
 
         document.getElementById('post-comment-button').addEventListener('click', async function () {
             const commentContent = document.getElementById('comment').value.trim();
@@ -278,27 +346,27 @@
                     const newComment = createCommentElement(
                         commentContent,
                         {
-                            id: {{currentUser.id}},
-                            username: document.querySelector('.user-username').textContent.trim(),
-                            avatarUrl: document.querySelector('.user-avatarUrl').src
-                        }
+                            id: {{ currentUser.id }},
+                username: document.querySelector('.user-username').textContent.trim(),
+                    avatarUrl: document.querySelector('.user-avatarUrl').src
+            }
                     );
 
-                    repliesContainer.insertBefore(newComment, repliesContainer.firstChild);
+        repliesContainer.insertBefore(newComment, repliesContainer.firstChild);
 
-                    const commentCountElement = document.querySelector('.comment-button span');
-                    commentCountElement.textContent = parseInt(commentCountElement.textContent) + 1;
+        const commentCountElement = document.querySelector('.comment-button span');
+        commentCountElement.textContent = parseInt(commentCountElement.textContent) + 1;
 
-                    showToast('toast-success', result.message || 'Comment posted successfully!');
+        showToast('toast-success', result.message || 'Comment posted successfully!');
 
-                    exitComment();
-                } else {
-                    showToast('toast-error', result.message || 'An error occurred while posting your comment.');
+        exitComment();
+    } else {
+        showToast('toast-error', result.message || 'An error occurred while posting your comment.');
                 }
             } catch (error) {
-                console.error('Error posting comment:', error);
-                showToast('toast-error', 'An error occurred while posting your comment.');
-            }
+        console.error('Error posting comment:', error);
+        showToast('toast-error', 'An error occurred while posting your comment.');
+    }
         });
     });
 </script>
