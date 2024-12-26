@@ -50,7 +50,7 @@
 {{!-- Comment Overlay --}}
 {{#with currentUser}}
 <div id="comment-overlay"
-    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
+    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-[4001] justify-center place-items-center hidden">
     <form action="/addComment" method="POST"
         class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
         <input type="hidden" name="user" value="{{id}}">

@@ -108,7 +108,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            maxAge: 30 * 60 * 1000, // Cookie hết hạn sau 20 phút
+            maxAge: 60 * 60 * 1000, // Cookie hết hạn sau 1 tiếng
         },
     })
 );

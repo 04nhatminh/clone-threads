@@ -7,7 +7,7 @@
 <!-- Header -->
 <header
     class="flex justify-center items-center text-center bg-transparent fixed top-0 inset-x-0 bg-[#fafafa] p-5 z-[1000] max-w-[640px] mx-auto">
-    <div class="absolute left-4 top-4 text-black">
+    <div class="absolute top-4 left-4  text-black hidden md:block">
         <i class="back-button fa-solid fa-arrow-left te xt-xs px-2 py-2 rounded-full bg-white hover:scale-110 border border-[#d5d5d5] cursor-pointer"
             onclick="history.back()"></i>
     </div>
@@ -23,7 +23,7 @@
 </header>
 
 <!-- Main Content -->
-<div class="main-container flex mt-[50px] phone:mt-[60px] h-full justify-center overflow-hidden">
+<div class="main-container flex mt-[60px] h-full justify-center overflow-hidden">
     <div
         class="profile-card shadow-lg border-[0.5px] bg-[#ffffff] w-full h-full max-w-[640px] border-[#d5d5d5] overflow-y-auto rounded-t-[22px]">
         <div class="w-full max-w-2xl bg-[#ffffff] overflow-y-auto">
@@ -96,7 +96,7 @@
                                         </span>
                                         <span class="text-gray-500 text-sm">{{timeAgo createdAt}}</span>
                                     </div>
-                                    <p class="text-sm mb-2 w-[85%]">{{content}}</p>
+                                    <p class="text-sm mb-2 w-[85%]">{{{breaklines content}}}</p>
                                     <div class="flex space-x-4 mb-3">
                                     </div>
                                     {{#unless @last}}
@@ -115,7 +115,7 @@
 
 {{!-- Comment Overlay --}}
 <div id="comment-overlay"
-    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
+    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-[4001] justify-center place-items-center hidden">
     <div class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
         <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
             <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
@@ -178,7 +178,6 @@
         overlay.classList.remove('flex');
         overlay.classList.add('hidden');
         container.classList.remove('scale-100', 'opacity-100');
-        container.classList.add('scale-95', 'opacity-0');
         comment.value = '';
         comment.style.height = 'auto';
     }
