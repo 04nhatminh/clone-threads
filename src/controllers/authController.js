@@ -19,15 +19,17 @@ class authController {
                 return next(error);
             }
             if(!user) {
-                return res.render('login', { 
-                    loginMessage: 'Email or Username or Password is incorrect',
-                    emailOrUsername: req.body.emailOrUsername, // keep emailOrUsername
-                    password: req.body.password, // keep password
-                    reqUrl // keep reqUrl
-                });            }
+                // return res.render('login', { 
+                //     // loginMessage: 'Email or Username or Password is incorrect',
+                //     // emailOrUsername: req.body.emailOrUsername, // keep emailOrUsername
+                //     // password: req.body.password, // keep password
+                //     reqUrl // keep reqUrl
+                // });            
+                return res.redirect(`/login?returnUrl=${reqUrl}`);
+            }
             req.logIn(user, (error) =>{
                 if(error) {return next(error)};
-                req.session.cookie.maxAge = (20*60*1000);
+                req.session.cookie.maxAge = (60*60*1000);
                 return res.redirect(reqUrl);
             });
         })(req, res, next);
@@ -163,10 +165,10 @@ class authController {
             })
             .catch((error) => {
                 console.log(error.statusCode);
-                res.render('forgotpassword', {message: 'An error occurred while sending to your email. Please check your email!'});
+                res.render('forgotpassword', {forgotMessage: 'An error occurred while sending to your email. Please check your email!'});
             });
         } else {
-            return res.render('forgotpassword', {message : 'Email is not exits!'});
+            return res.render('forgotpassword', {forgotMessage : 'Email is not exist!'});
         }
     }
     resetPasswordShow(req, res) {

@@ -89,6 +89,8 @@ controller.addNewThread = async (req, res) => {
     try {
         console.log('Starting add new thread...');
         let imageUrl = null;
+        let content = req.body.content ? req.body.content : '';
+        content = content.replace(/<script>/g, '').replace(/<\/script>/g, '');
 
         if (req.file) {
             console.log('Uploading image to Cloudinary...');
@@ -100,7 +102,7 @@ controller.addNewThread = async (req, res) => {
         console.log('Creating thread in database...');
         const newThread = await models.Thread.create({
             userId: isNaN(req.body.userId) ? null : parseInt(req.body.userId),
-            content: req.body.content ? req.body.content : '',
+            content: content,
             imageUrl: imageUrl, // Lưu URL ảnh
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -171,7 +173,8 @@ controller.toggleLikes = async (req, res) => {
 controller.addComment = async (req, res) => {
     const threadId = parseInt(req.body.thread);
     const userId = parseInt(req.body.user);
-    const content = req.body.comment ? req.body.comment : '';
+    let content = req.body.comment ? req.body.comment : '';
+    content = content.replace(/<script>/g, '').replace(/<\/script>/g, '');
     try {
         const thread = await models.Thread.findOne({ where: { id: threadId } });
         if (!thread) {

@@ -143,7 +143,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="main-container mt-[50px] phone:mt-[60px] h-full flex justify-center overflow-hidden">
+<div class="main-container mt-[60px] h-full flex justify-center overflow-hidden">
     <div
         class="profile-card shadow-lg bg-[#ffffff] w-full h-full max-w-[640px] border-[#d5d5d5] border-[0.5px] rounded-t-[22px] overflow-y-auto">
         <!-- Profile Info -->
@@ -247,7 +247,7 @@
 
 {{!-- Comment Overlay --}}
 <div id="comment-overlay"
-    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-20 justify-center place-items-center hidden">
+    class="bg-[#030303] bg-opacity-50 w-screen h-screen fixed z-[4001] justify-center place-items-center hidden">
     <div class="w-full md:max-w-[600px] h-full md:max-h-[50vh] bg-white md:rounded-xl relative" id="comment-container">
         <div class="text-center font-bold p-4 border-b border-gray-300 relative">Reply
             <button class="absolute left-4 font-normal p-1 leading-none" onclick="exitComment()">Cancel</button>
@@ -310,7 +310,6 @@
         overlay.classList.remove('flex');
         overlay.classList.add('hidden');
         container.classList.remove('scale-100', 'opacity-100');
-        container.classList.add('scale-95', 'opacity-0');
         comment.value = '';
         comment.style.height = 'auto';
     };
