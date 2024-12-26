@@ -1,3 +1,4 @@
-.vscode
+./vscode
+pnpm-lock.json
+/node_modules
 
-node_modules/

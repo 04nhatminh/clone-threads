@@ -1,0 +1,37 @@
+{
+  "development": {
+    "username": "simple_threads_db_ww8w_user",
+    "password": "tEB5b7aGLbDVarktXuTwXBaCtxLCvCf7",
+    "database": "simple_threads_db_ww8w",
+    "host": "dpg-ctmgj4tumphs73df3730-a.singapore-postgres.render.com",
+    "dialect": "postgres",
+    "port": 5432,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "test": {
+    "username": "postgres",
+    "password": null,
+    "database": "threads",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "simple_threads_db_ww8w_user",
+    "password": "tEB5b7aGLbDVarktXuTwXBaCtxLCvCf7",
+    "database": "simple_threads_db_ww8w",
+    "host": "dpg-ctmgj4tumphs73df3730-a.singapore-postgres.render.com",
+    "dialect": "postgres",
+    "port": 5432,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}

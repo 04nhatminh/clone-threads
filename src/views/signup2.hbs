@@ -1,0 +1,85 @@
+<div class="flex flex-col items-center justify-center flex-grow min-h-screen bg-white">
+    <!-- Logo -->
+    <a href="/"><i class="fa-brands fa-threads fa-3x"></i></a>
+    <div class="text-center w-full max-w-[386px] sm-custom:max-w-[418px] p-6 gap-0 mb-2">
+        
+        <!-- Heading -->
+        <h1 class="mb-2 text-xl font-bold">Sign up</h1>
+        {{#if done}}
+        <p class="mb-4 opacity-40">Signup successd. You can now
+            <a class="!opacity-100 bold text-blue-600 underline hover:text-blue-800 visited:text-purple-600"
+                href="/login">login</a>
+            using your new account!
+        </p>
+        {{else}}
+        {{#if expired}}
+        <p class="mb-4 opacity-40">Your link is expired!</p>
+        {{else}}
+
+        <p class="mb-4 opacity-40">Create your display name.</p>
+
+        <!-- Form -->
+        <form id="signup2-form" class="flex flex-col gap-2" method="POST" action="/signup2">
+            
+            <div>
+                <label for="displayname" class="sr-only form-lable">Display name</label>
+                <input type="text" id="displayname" 
+                class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl"
+                name="displayname" placeholder="Display name"
+                >
+            </div>
+            {{!-- send email, token --}}
+            <input type="hidden" name="email" value="{{email}}">
+            <input type="hidden" name="token" value="{{token}}">
+            
+            {{#if message}}
+            <div class="flex justify-start">
+                <small class="text-left text-red-600" style="text-indent: 1rem;">{{{message}}}</small>
+            </div>
+            {{/if}}
+            <!-- Submit Button -->
+            <button id="updateBtn" type="submit"
+                class="w-full p-4 font-medium text-white bg-black text-opacity-40 rounded-2xl"
+                >
+                Update
+            </button>
+        </form>
+        <!-- Or divider -->
+        <div class="flex items-center py-5 mt-4">
+            <hr class="flex-grow">
+            <small class="mx-2 opacity-40 ">Remembered password</small>
+            <hr class="flex-grow">
+        </div>
+        <!-- Signup Redirect -->
+        <button id="loginBtn" type="button"
+                class="w-full p-4 font-medium text-white bg-black rounded-2xl"
+                onclick="window.location.href='/login'">
+                Log in
+        </button>
+        {{/if}}
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', () => {
+            input.classList.add('border', 'border-gray-300');
+        });
+        input.addEventListener('blur', () => {
+            input.classList.remove('border', 'border-gray-300');
+        });
+    });
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', () => {
+            const allFilled = Array.from(document.querySelectorAll('.form-control')).every(input => input.value);
+            if (allFilled) {
+                document.getElementById('updateBtn').classList.remove('text-opacity-40');
+            } else {
+                document.getElementById('updateBtn').classList.add('text-opacity-40');
+            }
+        });
+    });
+
+</script>
