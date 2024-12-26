@@ -13,7 +13,7 @@ class mail{
         {
           From: {
             Email: "phamminh0973@gmail.com",
-            Name: "Simple threads Group 06",
+            Name: "Simple threads Group 04",
           },
           To: [
             {
@@ -21,7 +21,7 @@ class mail{
               Name: user.username,
             },
           ],
-          Subject: "Simple Threads 06 - Reset Password",
+          Subject: "Simple Threads 04 - Reset Password",
           HTMLPart: `
                   <p>Hi ${user.username},</p>
                   <br>
@@ -32,7 +32,7 @@ class mail{
                   <p>If you did not request a password reset, please ignore this email or reply to let us know. This password reset link is only valid for the next 30 minutes.</p>
                   <br>
                   <p>Thanks,</p>
-                  <p>Simple Threads group 06</p>`,
+                  <p>Simple Threads group 04</p>`,
         },
       ],
     });
@@ -50,7 +50,7 @@ class mail{
         {
           From: {
             Email: "phamminh0973@gmail.com",
-            Name: "Simple threads Group 06",
+            Name: "Simple threads Group 04",
           },
           To: [
             {
@@ -58,7 +58,7 @@ class mail{
               Name: user.username,
             },
           ],
-          Subject: "Simple Threads 06 - Verify your email",
+          Subject: "Simple Threads 04 - Verify your email",
           HTMLPart: `
             <p>Hi ${user.username},</p>
             <br>
@@ -69,7 +69,7 @@ class mail{
             <p>If you did not sign up for this account, please ignore this email.</p>
             <br>
             <p>Thanks,</p>
-            <p>Simple Threads group 06</p>
+            <p>Simple Threads group 04</p>
           `,
         },
       ],

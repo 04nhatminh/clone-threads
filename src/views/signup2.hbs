@@ -75,9 +75,9 @@
         input.addEventListener('input', () => {
             const allFilled = Array.from(document.querySelectorAll('.form-control')).every(input => input.value);
             if (allFilled) {
-                document.getElementById('submit-button').classList.remove('text-opacity-40');
+                document.getElementById('updateBtn').classList.remove('text-opacity-40');
             } else {
-                document.getElementById('submit-button').classList.add('text-opacity-40');
+                document.getElementById('updateBtn').classList.add('text-opacity-40');
             }
         });
     });

@@ -15,7 +15,7 @@
                     class="form-control bg-[#F5F5F5] w-full p-4 outline-none rounded-xl" name="emailOrUsername"
                     value="{{emailOrUsername}}"
                     placeholder="Email or username">
-                <small id="email-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
+                <small id="email-error" class="block text-center text-red-600"></small>
             </div>
             <!-- Password Input -->
             <div>
@@ -27,12 +27,12 @@
                         <i class="absolute transform -translate-y-1/2 cursor-pointer far fa-eye right-5 top-1/2 opacity-30"
                             id="togglePassword" onclick="togglePasswordVisibility(this)"></i>
                 </div>
-                <small id="password-error" class="hidden block text-left text-red-600" style="text-indent: 1rem;"></small>
+                <small id="password-error" class="block text-center text-red-600"></small>
             </div>
 
             {{#if loginMessage}}
-            <div class="flex justify-start">
-                <small class="text-left text-red-600" style="text-indent: 1rem;">{{{loginMessage}}}</small>
+            <div class="flex justify-center">
+                <small class="text-center text-red-600">{{{loginMessage}}}</small>
             </div>   
             {{/if}}
             <!-- Submit Button -->
@@ -145,4 +145,13 @@
         // Tiến hành gửi dữ liệu bằng Fetch API
         document.getElementById('login-form').submit();
     }
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', () => {
+            document.querySelectorAll('.text-red-600').forEach(error => {
+                error.classList.add('hidden');
+                error.textContent = '';
+            });
+        });
+    });
 </script>
