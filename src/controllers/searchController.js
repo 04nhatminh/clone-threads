@@ -14,7 +14,7 @@ controller.renderSearch = async (req, res) => {
 }
 
 controller.loadUsers = async (req, res) => {
-    const userId = isNaN(req.cookies.userId) ? null : parseInt(req.cookies.userId);
+    const userId = req.user.id;
     const keywords = req.query.keywords;
 
     let options = { where: {} };
